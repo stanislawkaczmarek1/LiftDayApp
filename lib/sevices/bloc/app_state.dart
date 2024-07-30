@@ -14,3 +14,17 @@ abstract class AppState {
 class AppStateStart extends AppState {
   const AppStateStart({required super.isLoading});
 }
+
+class AppStateCreatePlanOrSkip extends AppState {
+  const AppStateCreatePlanOrSkip({
+    required super.isLoading,
+  });
+}
+
+class AppStateChooseTrainingDays extends AppState {
+  const AppStateChooseTrainingDays({required super.isLoading});
+}
+
+class AppStateAddFirstWeekPlan extends AppState {
+  const AppStateAddFirstWeekPlan({required super.isLoading});
+}

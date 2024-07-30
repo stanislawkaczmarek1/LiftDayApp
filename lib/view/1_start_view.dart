@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:liftday/sevices/bloc/app_bloc.dart';
+import 'package:liftday/sevices/bloc/app_event.dart';
+import 'package:liftday/view/ui_elements.dart';
 
 class StartView extends StatefulWidget {
   const StartView({super.key});
@@ -11,12 +15,7 @@ class _StartViewState extends State<StartView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Image.asset(
-          "assets/liftday_logo.png",
-          height: 25,
-        ),
-      ),
+      appBar: appBar(),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
@@ -24,7 +23,7 @@ class _StartViewState extends State<StartView> {
           const Padding(
             padding: EdgeInsets.all(8.0),
             child: Text(
-              '...',
+              'Witaj',
               style: TextStyle(fontSize: 34, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
@@ -32,26 +31,9 @@ class _StartViewState extends State<StartView> {
           Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              TextButton(
-                onPressed: () {},
-                style: TextButton.styleFrom(
-                    elevation: 3.0,
-                    backgroundColor: Colors.white,
-                    foregroundColor: Colors.black,
-                    side: const BorderSide(width: 2.0, color: Colors.black),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20))),
-                child: const Padding(
-                  padding: EdgeInsets.all(5.0),
-                  child: Text(
-                    "Rozpocznij",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.normal,
-                    ),
-                  ),
-                ),
-              ),
+              normalButton("Rozpocznij", () {
+                context.read<AppBloc>().add(const AppEventStartButton());
+              }),
               const SizedBox(
                 height: 20.0,
               ),
