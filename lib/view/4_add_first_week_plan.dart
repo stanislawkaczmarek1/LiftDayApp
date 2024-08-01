@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:liftday/sevices/bloc/app_bloc.dart';
 import 'package:liftday/sevices/bloc/app_event.dart';
@@ -13,37 +12,52 @@ class AddFirstWeekPlanView extends StatefulWidget {
 }
 
 class _AddFirstWeekPlanViewState extends State<AddFirstWeekPlanView> {
-  List<Exercise> exercises = [];
+  //def
+  List<ExerciseCard> exercises = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _addSetRow();
+  }
+
+  void _addSetRow() {
+    setState(() {
+      /*sets.add(ExerciseRow(
+        setNumber: setNumber++,
+        previousValue: 50,
+      ));*/
+    });
+  }
 
   void _addExercise(String name) {
     setState(() {
-      exercises.add(Exercise(name));
+      exercises.add(ExerciseCard(exercise: name));
     });
   }
 
   void _showAddExerciseDialog() {
     String exerciseName = '';
-
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Dodaj Ćwiczenie'),
           content: TextField(
+            autofocus: true,
             onChanged: (value) {
               exerciseName = value;
             },
-            decoration: InputDecoration(hintText: "Nazwa ćwiczenia"),
+            decoration: const InputDecoration(hintText: "Nazwa ćwiczenia"),
           ),
           actions: [
             TextButton(
-              child: Text('Anuluj'),
+              child: const Text('Anuluj'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text('Dodaj'),
+              child: const Text('Dodaj'),
               onPressed: () {
                 if (exerciseName.isNotEmpty) {
                   _addExercise(exerciseName);
@@ -68,19 +82,91 @@ class _AddFirstWeekPlanViewState extends State<AddFirstWeekPlanView> {
       },
       child: Scaffold(
         appBar: appBar(),
-        body: Column(
-          children: [
-            Flexible(
-              child: ListView.builder(
+        body: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
                 itemCount: exercises.length,
                 itemBuilder: (context, index) {
-                  return ExerciseTile(exercise: exercises[index]);
+                  return exercises[index];
                 },
               ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: ElevatedButton(
+                  onPressed: _showAddExerciseDialog,
+                  child: const Text("Dodaj Ćwiczenie"),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ExerciseCard extends StatefulWidget {
+  final String exercise;
+
+  const ExerciseCard({
+    super.key,
+    required this.exercise,
+  });
+
+  @override
+  State<ExerciseCard> createState() => _ExerciseCardState();
+}
+
+class _ExerciseCardState extends State<ExerciseCard> {
+  List<ExerciseRow> sets = [];
+  int setNumber = 1;
+
+  @override
+  void initState() {
+    super.initState();
+    sets.add(ExerciseRow(setNumber: setNumber));
+  }
+
+  void _addSet() {
+    setState(() {
+      sets.add(ExerciseRow(setNumber: ++setNumber));
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.all(16.0),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              widget.exercise,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
+            const SizedBox(height: 8.0),
+            const Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Set', style: TextStyle(fontWeight: FontWeight.bold)),
+                Text('kg', style: TextStyle(fontWeight: FontWeight.bold)),
+                Text('Reps', style: TextStyle(fontWeight: FontWeight.bold)),
+              ],
+            ),
+            const SizedBox(height: 8.0),
+            ...sets, // Rozpakowanie listy sets do widoku
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: normalButton("Dodaj Ćwiczenie", _showAddExerciseDialog),
+              child: ElevatedButton(
+                onPressed: _addSet,
+                child: const Text("Add Set"),
+              ),
             ),
           ],
         ),
@@ -89,80 +175,65 @@ class _AddFirstWeekPlanViewState extends State<AddFirstWeekPlanView> {
   }
 }
 
-class Exercise {
-  final String name;
-  final TextEditingController field1 = TextEditingController();
-  final TextEditingController field2 = TextEditingController();
-  final TextEditingController field3 = TextEditingController();
-  final TextEditingController field4 = TextEditingController();
+class ExerciseRow extends StatefulWidget {
+  final int setNumber;
+  const ExerciseRow({super.key, required this.setNumber});
 
-  Exercise(this.name);
+  @override
+  State<ExerciseRow> createState() => _ExerciseRowState();
 }
 
-class ExerciseTile extends StatelessWidget {
-  final Exercise exercise;
+class _ExerciseRowState extends State<ExerciseRow> {
+  late final TextEditingController _kgController;
+  late final TextEditingController _repsController;
+  late final int setNumber;
 
-  const ExerciseTile({super.key, required this.exercise});
+  @override
+  void initState() {
+    _kgController = TextEditingController();
+    _repsController = TextEditingController();
+    setNumber = widget.setNumber;
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _kgController.dispose();
+    _repsController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.all(8.0),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              exercise.name,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text('$setNumber'),
+          SizedBox(
+            width: 50,
+            child: TextField(
+              controller: _kgController,
+              decoration: const InputDecoration(
+                border: InputBorder.none,
+                hintText: '',
+              ),
+              keyboardType: TextInputType.number,
             ),
-            const SizedBox(height: 8.0),
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: exercise.field1,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: 'Pole 1',
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8.0),
-                Expanded(
-                  child: TextField(
-                    controller: exercise.field2,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: 'Pole 2',
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8.0),
-                Expanded(
-                  child: TextField(
-                    controller: exercise.field3,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: 'Pole 3',
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8.0),
-                Expanded(
-                  child: TextField(
-                    controller: exercise.field4,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: 'Pole 4',
-                    ),
-                  ),
-                ),
-              ],
+          ),
+          SizedBox(
+            width: 50,
+            child: TextField(
+              controller: _repsController,
+              decoration: const InputDecoration(
+                border: InputBorder.none,
+                hintText: '',
+              ),
+              keyboardType: TextInputType.number,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
