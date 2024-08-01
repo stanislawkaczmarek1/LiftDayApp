@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:liftday/constants/colors.dart';
 import 'package:liftday/sevices/bloc/app_bloc.dart';
 import 'package:liftday/sevices/bloc/app_event.dart';
 import 'package:liftday/view/ui_elements.dart';
@@ -12,23 +13,7 @@ class AddFirstWeekPlanView extends StatefulWidget {
 }
 
 class _AddFirstWeekPlanViewState extends State<AddFirstWeekPlanView> {
-  //def
   List<ExerciseCard> exercises = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _addSetRow();
-  }
-
-  void _addSetRow() {
-    setState(() {
-      /*sets.add(ExerciseRow(
-        setNumber: setNumber++,
-        previousValue: 50,
-      ));*/
-    });
-  }
 
   void _addExercise(String name) {
     setState(() {
@@ -95,12 +80,10 @@ class _AddFirstWeekPlanViewState extends State<AddFirstWeekPlanView> {
                 },
               ),
               Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: ElevatedButton(
-                  onPressed: _showAddExerciseDialog,
-                  child: const Text("Dodaj Ćwiczenie"),
-                ),
-              ),
+                  padding: const EdgeInsets.all(16.0),
+                  child: normalButton("+ Dodaj ćwiczenie", () {
+                    _showAddExerciseDialog();
+                  })),
             ],
           ),
         ),
@@ -142,32 +125,75 @@ class _ExerciseCardState extends State<ExerciseCard> {
     return Card(
       margin: const EdgeInsets.all(16.0),
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              widget.exercise,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8.0),
-            const Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Row(
               children: [
-                Text('Set', style: TextStyle(fontWeight: FontWeight.bold)),
-                Text('kg', style: TextStyle(fontWeight: FontWeight.bold)),
-                Text('Reps', style: TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(width: 15),
+                Text(
+                  widget.exercise,
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16.0),
+            const Row(
+              children: [
+                Expanded(
+                  child: Center(
+                    child: Text('seria',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        )),
+                  ),
+                ),
+                Expanded(
+                  child: Center(
+                    child: Text('kg',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        )),
+                  ),
+                ),
+                Expanded(
+                  child: Center(
+                    child: Text('x',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        )),
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 8.0),
             ...sets, // Rozpakowanie listy sets do widoku
             Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: ElevatedButton(
-                onPressed: _addSet,
-                child: const Text("Add Set"),
-              ),
-            ),
+                padding: const EdgeInsets.all(16.0),
+                child: TextButton(
+                  onPressed: _addSet,
+                  style: TextButton.styleFrom(
+                    elevation: 3.0,
+                    backgroundColor: colorPrimaryButton,
+                    foregroundColor: colorSecondaryButton,
+                  ),
+                  child: const Padding(
+                    padding: EdgeInsets.all(5.0),
+                    child: Text(
+                      "+ Dodaj serię",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                  ),
+                )),
           ],
         ),
       ),
@@ -186,51 +212,91 @@ class ExerciseRow extends StatefulWidget {
 class _ExerciseRowState extends State<ExerciseRow> {
   late final TextEditingController _kgController;
   late final TextEditingController _repsController;
+  late final FocusNode _kgFocusNode;
+  late final FocusNode _repsFocusNode;
   late final int setNumber;
 
   @override
   void initState() {
+    super.initState();
     _kgController = TextEditingController();
     _repsController = TextEditingController();
+    _kgFocusNode = FocusNode();
+    _repsFocusNode = FocusNode();
     setNumber = widget.setNumber;
-    super.initState();
   }
 
   @override
   void dispose() {
     _kgController.dispose();
     _repsController.dispose();
+    _kgFocusNode.dispose();
+    _repsFocusNode.dispose();
     super.dispose();
+  }
+
+  void _onRepsSubmitted() {
+    //to do
+  }
+
+  void _onKgSubmitted() {
+    FocusScope.of(context).requestFocus(_repsFocusNode);
   }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      padding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 8.0),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text('$setNumber'),
-          SizedBox(
-            width: 50,
-            child: TextField(
-              controller: _kgController,
-              decoration: const InputDecoration(
-                border: InputBorder.none,
-                hintText: '',
+          Expanded(
+            child: Center(
+              child: Text(
+                '$setNumber',
+                style: const TextStyle(fontSize: 16),
               ),
-              keyboardType: TextInputType.number,
             ),
           ),
-          SizedBox(
-            width: 50,
+          Expanded(
             child: TextField(
-              controller: _repsController,
+              controller: _kgController,
+              focusNode: _kgFocusNode,
               decoration: const InputDecoration(
-                border: InputBorder.none,
                 hintText: '',
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(width: 2, color: colorAccent),
+                ),
               ),
               keyboardType: TextInputType.number,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 16),
+              textInputAction: TextInputAction.next,
+              onSubmitted: (value) {
+                _onKgSubmitted();
+              },
+            ),
+          ),
+          Expanded(
+            child: TextField(
+              controller: _repsController,
+              focusNode: _repsFocusNode,
+              decoration: const InputDecoration(
+                hintText: '',
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(width: 2, color: colorAccent),
+                ),
+              ),
+              keyboardType: TextInputType.number,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 16),
+              textInputAction: TextInputAction.next,
+              onSubmitted: (value) {
+                _onRepsSubmitted();
+              },
             ),
           ),
         ],
