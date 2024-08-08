@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:liftday/constants/colors.dart';
-import 'package:liftday/helpers/loading/loading_screen.dart';
 import 'package:liftday/sevices/bloc/app_bloc.dart';
 import 'package:liftday/sevices/bloc/app_state.dart';
 import 'package:liftday/view/4_add_first_week_plan.dart';
@@ -35,6 +34,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocConsumer<AppBloc, AppState>(
       listener: (context, state) {
+        /*
         if (state.isLoading) {
           LoadingScreen().show(
               context: context,
@@ -42,6 +42,7 @@ class HomePage extends StatelessWidget {
         } else {
           LoadingScreen().hide();
         }
+        */
       },
       builder: (context, state) {
         if (state is AppStateStart) {

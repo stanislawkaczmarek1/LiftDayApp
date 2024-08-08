@@ -25,6 +25,16 @@ class _ChooseTrainingDaysViewState extends State<ChooseTrainingDaysView> {
 
   final List<bool> selectedDays = List<bool>.filled(7, false);
 
+  List<String> _convertDaysBoolToString() {
+    List<String> confirmedDays = [];
+    for (var i = 0; i < 7; i++) {
+      if (selectedDays[i]) {
+        confirmedDays.add(daysOfWeek[i]);
+      }
+    }
+    return confirmedDays;
+  }
+
   @override
   Widget build(BuildContext context) {
     // Pobierz szerokość ekranu
@@ -108,9 +118,10 @@ class _ChooseTrainingDaysViewState extends State<ChooseTrainingDaysView> {
             normalButton(
               "Dalej",
               () {
+                final List<String> confirmedDays = _convertDaysBoolToString();
                 context
                     .read<AppBloc>()
-                    .add(const AppEventConfirmTrainingDays());
+                    .add(AppEventConfirmTrainingDays(confirmedDays));
               },
             )
           ],

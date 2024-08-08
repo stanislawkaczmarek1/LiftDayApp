@@ -18,5 +18,12 @@ class AppEventChoseWeekAutomation extends AppEvent {
 }
 
 class AppEventConfirmTrainingDays extends AppEvent {
-  const AppEventConfirmTrainingDays();
+  final List<String> selectedDays;
+
+  const AppEventConfirmTrainingDays(this.selectedDays);
+}
+
+class AppEventConfirmExercisesInDay extends AppEvent {
+  final String data;
+  const AppEventConfirmExercisesInDay(this.data);
 }
