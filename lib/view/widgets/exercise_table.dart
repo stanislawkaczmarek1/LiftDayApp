@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:liftday/constants/colors.dart';
-import 'package:liftday/view/ui_elements.dart';
+import 'package:liftday/view/widgets/ui_elements.dart';
 
 class ExerciseTable extends StatefulWidget {
   const ExerciseTable({super.key});
+
+  List<String> get exercises => _ExerciseTableState().exerciseNames;
 
   @override
   State<ExerciseTable> createState() => _ExerciseTableState();
@@ -11,6 +13,7 @@ class ExerciseTable extends StatefulWidget {
 
 class _ExerciseTableState extends State<ExerciseTable> {
   List<ExerciseCard> exercises = [];
+  List<String> get exerciseNames => exercises.map((e) => e.exercise).toList();
 
   void _addExercise(String name) {
     setState(() {

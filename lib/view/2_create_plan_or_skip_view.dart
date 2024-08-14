@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:liftday/constants/colors.dart';
 import 'package:liftday/sevices/bloc/app_bloc.dart';
 import 'package:liftday/sevices/bloc/app_event.dart';
-import 'package:liftday/view/ui_elements.dart';
+import 'package:liftday/view/widgets/ui_elements.dart';
 
 class CreatePlanOrSkipView extends StatefulWidget {
   const CreatePlanOrSkipView({super.key});
@@ -56,7 +56,7 @@ class _CreatePlanOrSkipViewState extends State<CreatePlanOrSkipView> {
                   () {
                 context
                     .read<AppBloc>()
-                    .add(const AppEventChoseWeekAutomation());
+                    .add(const AppEventConfirmWeekAutomation());
               }),
               const SizedBox(
                 height: 24.0,

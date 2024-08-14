@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:liftday/sevices/crud/exercise_day.dart';
 
 @immutable
 abstract class AppEvent {
@@ -13,8 +14,8 @@ class AppEventGoBack extends AppEvent {
   const AppEventGoBack();
 }
 
-class AppEventChoseWeekAutomation extends AppEvent {
-  const AppEventChoseWeekAutomation();
+class AppEventConfirmWeekAutomation extends AppEvent {
+  const AppEventConfirmWeekAutomation();
 }
 
 class AppEventConfirmTrainingDays extends AppEvent {
@@ -24,6 +25,11 @@ class AppEventConfirmTrainingDays extends AppEvent {
 }
 
 class AppEventConfirmExercisesInDay extends AppEvent {
-  final String data;
-  const AppEventConfirmExercisesInDay(this.data);
+  final ExerciseDay exerciseDay;
+  const AppEventConfirmExercisesInDay(this.exerciseDay);
+}
+
+class AppEventConfirmPlanDuration extends AppEvent {
+  final int duration;
+  const AppEventConfirmPlanDuration(this.duration);
 }

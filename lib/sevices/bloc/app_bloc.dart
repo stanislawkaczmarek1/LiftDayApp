@@ -23,7 +23,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       },
     );
 
-    on<AppEventChoseWeekAutomation>(
+    on<AppEventConfirmWeekAutomation>(
       (event, emit) {
         _stateHistory.add(const AppStateCreatePlanOrSkip());
         emit(const AppStateChooseTrainingDays());
@@ -34,17 +34,26 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       (event, emit) {
         _stateHistory.add(const AppStateChooseTrainingDays());
         _trainingDays = event.selectedDays;
-        if (_trainingDays.isNotEmpty) {
-          emit(AppStateAddFirstWeekPlan(_trainingDays.removeAt(0)));
-        }
+        emit(AppStateAddFirstWeekPlan(_trainingDays.removeAt(0)));
       },
     );
 
     on<AppEventConfirmExercisesInDay>(
       (event, emit) {
         if (_trainingDays.isNotEmpty) {
+          //mam tu juz dostep do listy cwiczen w danym dniu
           emit(AppStateAddFirstWeekPlan(_trainingDays.removeAt(0)));
+        } else {
+          emit(const AppStateChooseDurationOfPlan());
         }
+      },
+    );
+
+    on<AppEventConfirmPlanDuration>(
+      (event, emit) {
+        _stateHistory.add(const AppStateChooseDurationOfPlan());
+        //mam tu juz dostep do okresu planu treningowego
+        emit(const AppStateMainView());
       },
     );
   }

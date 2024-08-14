@@ -3,10 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:liftday/constants/colors.dart';
 import 'package:liftday/sevices/bloc/app_bloc.dart';
 import 'package:liftday/sevices/bloc/app_state.dart';
-import 'package:liftday/view/4_add_first_week_plan.dart';
+import 'package:liftday/view/4_add_first_week_plan_view.dart';
 import 'package:liftday/view/3_choose_training_days_view.dart';
 import 'package:liftday/view/2_create_plan_or_skip_view.dart';
 import 'package:liftday/view/1_start_view.dart';
+import 'package:liftday/view/5_choose_duration_of_plan_view.dart';
+import 'package:liftday/view/main_view.dart';
 //import 'dart:developer' as devtools show log;
 
 void main() {
@@ -53,8 +55,11 @@ class HomePage extends StatelessWidget {
           return const ChooseTrainingDaysView();
         } else if (state is AppStateAddFirstWeekPlan) {
           return const AddFirstWeekPlanView();
-        }
-        {
+        } else if (state is AppStateChooseDurationOfPlan) {
+          return const PlanDurationView();
+        } else if (state is AppStateMainView) {
+          return const MainView();
+        } else {
           return const Scaffold(
             body: CircularProgressIndicator(),
           );

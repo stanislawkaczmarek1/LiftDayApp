@@ -21,3 +21,11 @@ class AppStateAddFirstWeekPlan extends AppState {
   final String dayOfWeek;
   const AppStateAddFirstWeekPlan(this.dayOfWeek);
 }
+
+class AppStateChooseDurationOfPlan extends AppState {
+  const AppStateChooseDurationOfPlan();
+}
+
+class AppStateMainView extends AppState {
+  const AppStateMainView();
+}

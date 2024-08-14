@@ -6,7 +6,8 @@ import 'package:liftday/constants/colors.dart';
 import 'package:liftday/sevices/bloc/app_bloc.dart';
 import 'package:liftday/sevices/bloc/app_event.dart';
 import 'package:liftday/sevices/bloc/app_state.dart';
-import 'package:liftday/view/exercise_table.dart';
+import 'package:liftday/sevices/crud/exercise_day.dart';
+import 'package:liftday/view/widgets/exercise_table.dart';
 
 class AddFirstWeekPlanView extends StatefulWidget {
   const AddFirstWeekPlanView({super.key});
@@ -17,6 +18,14 @@ class AddFirstWeekPlanView extends StatefulWidget {
 
 class _AddFirstWeekPlanViewState extends State<AddFirstWeekPlanView> {
   String dayOfWeek = "";
+  Key _exerciseTableKey = UniqueKey();
+  late ExerciseTable _exerciseTable;
+  @override
+  void initState() {
+    _exerciseTable = ExerciseTable(key: _exerciseTableKey);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AppBloc, AppState>(
@@ -40,9 +49,18 @@ class _AddFirstWeekPlanViewState extends State<AddFirstWeekPlanView> {
               actions: [
                 TextButton(
                   onPressed: () {
-                    context
-                        .read<AppBloc>()
-                        .add(const AppEventConfirmExercisesInDay("some data"));
+                    String day = dayOfWeek;
+                    List<String> exercises = _exerciseTable.exercises;
+                    context.read<AppBloc>().add(
+                          AppEventConfirmExercisesInDay(
+                            ExerciseDay(day: day, exercises: exercises),
+                          ),
+                        );
+                    setState(() {
+                      _exerciseTableKey =
+                          UniqueKey(); // Wymusza przebudowę ExerciseTable
+                      _exerciseTable = ExerciseTable(key: _exerciseTableKey);
+                    });
                   },
                   style: TextButton.styleFrom(foregroundColor: colorAccent),
                   child: const Text(
@@ -64,7 +82,7 @@ class _AddFirstWeekPlanViewState extends State<AddFirstWeekPlanView> {
                       textAlign: TextAlign.center,
                     ),
                   ),
-                  const ExerciseTable(),
+                  _exerciseTable,
                 ],
               ),
             ),

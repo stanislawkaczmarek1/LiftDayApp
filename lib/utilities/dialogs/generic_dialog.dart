@@ -4,7 +4,6 @@ typedef DialogOptionBuilder<T> = Map<String, T?> Function();
 
 Future<T?> showGenericDialog<T>({
   required BuildContext context,
-  required String title,
   required String content,
   required DialogOptionBuilder optionBuilder,
 }) {
@@ -13,8 +12,14 @@ Future<T?> showGenericDialog<T>({
     context: context,
     builder: (context) {
       return AlertDialog(
-        title: Text(title),
-        content: Text(content),
+        content: Text(
+          content,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.normal,
+          ),
+        ),
         actions: options.keys.map((optionTitle) {
           final T value = options[optionTitle];
           return TextButton(
