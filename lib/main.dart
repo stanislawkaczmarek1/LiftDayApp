@@ -1,32 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:liftday/constants/colors.dart';
 import 'package:liftday/sevices/bloc/app_bloc.dart';
 import 'package:liftday/sevices/bloc/app_state.dart';
-import 'package:liftday/view/4_add_first_week_plan_view.dart';
-import 'package:liftday/view/3_choose_training_days_view.dart';
-import 'package:liftday/view/2_create_plan_or_skip_view.dart';
-import 'package:liftday/view/1_start_view.dart';
-import 'package:liftday/view/5_choose_duration_of_plan_view.dart';
+import 'package:liftday/view/config/4_add_first_week_plan_view.dart';
+import 'package:liftday/view/config/3_choose_training_days_view.dart';
+import 'package:liftday/view/config/2_create_plan_or_skip_view.dart';
+import 'package:liftday/view/config/1_start_view.dart';
+import 'package:liftday/view/config/5_choose_duration_of_plan_view.dart';
 import 'package:liftday/view/main_view.dart';
 //import 'dart:developer' as devtools show log;
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(MaterialApp(
-    title: 'My notes',
-    theme: ThemeData(
-        colorScheme: const ColorScheme.light(
-            background: colorMainBackgroud,
-            onBackground: colorElements,
-            primary: colorElements,
-            onPrimary: colorMainBackgroud)),
-    home: BlocProvider<AppBloc>(
-      create: (context) => AppBloc(),
-      child: const HomePage(),
-    ),
-    routes: {},
-  ));
+  initializeDateFormatting().then((_) {
+    runApp(MaterialApp(
+      title: 'Lift Day',
+      theme: ThemeData(
+          colorScheme: const ColorScheme.light(
+              background: colorMainBackgroud,
+              onBackground: colorElements,
+              primary: colorElements,
+              onPrimary: colorMainBackgroud)),
+      home: BlocProvider<AppBloc>(
+        create: (context) => AppBloc(),
+        child: const HomePage(),
+      ),
+      routes: {},
+    ));
+  });
 }
 
 class HomePage extends StatelessWidget {

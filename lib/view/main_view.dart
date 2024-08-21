@@ -3,7 +3,6 @@ import 'package:liftday/constants/colors.dart';
 import 'package:liftday/view/pages/home_page.dart';
 import 'package:liftday/view/pages/plans_pages.dart';
 import 'package:liftday/view/pages/settings_page.dart';
-import 'package:liftday/view/widgets/ui_elements.dart';
 
 class MainView extends StatefulWidget {
   const MainView({super.key});
@@ -28,7 +27,6 @@ class _MainViewState extends State<MainView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBar(),
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
