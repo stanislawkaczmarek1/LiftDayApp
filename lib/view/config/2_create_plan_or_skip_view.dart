@@ -34,7 +34,7 @@ class _CreatePlanOrSkipViewState extends State<CreatePlanOrSkipView> {
               style: TextButton.styleFrom(foregroundColor: colorAccent),
               child: const Text(
                 "Pomiń automatyzacje",
-                style: TextStyle(fontSize: 18.0),
+                style: TextStyle(fontSize: 14.0),
               ),
             )
           ],
@@ -45,7 +45,7 @@ class _CreatePlanOrSkipViewState extends State<CreatePlanOrSkipView> {
             children: <Widget>[
               const Text(
                 'Wybierz formę\nw jakiej chcesz\ndodawać treningi',
-                style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(

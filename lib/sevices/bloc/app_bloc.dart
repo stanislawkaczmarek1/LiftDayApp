@@ -1,10 +1,16 @@
+import 'dart:developer';
+
 import 'package:bloc/bloc.dart';
 import 'package:liftday/sevices/bloc/app_event.dart';
 import 'package:liftday/sevices/bloc/app_state.dart';
+import 'package:liftday/sevices/crud/exercise_day.dart';
 
 class AppBloc extends Bloc<AppEvent, AppState> {
   final List<AppState> _stateHistory = [];
-  late List<String> _trainingDays;
+  final List<AppStateAddFirstWeekPlan> _firstWeekPlan = [];
+  final List<ExerciseDay> _exerciseDaysData = [];
+  late int durationOfPlan;
+  late int currentDayOfPlanConfig;
 
   AppBloc() : super(const AppStateStart()) {
     //
@@ -18,6 +24,16 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     on<AppEventGoBack>(
       (event, emit) {
         if (_stateHistory.isNotEmpty) {
+          if (_stateHistory.last is AppStateChooseTrainingDays) {
+            _firstWeekPlan.clear();
+          } else if (_stateHistory.last is AppStateAddFirstWeekPlan) {
+            currentDayOfPlanConfig--;
+            if (_exerciseDaysData.isNotEmpty) {
+              _exerciseDaysData.removeLast();
+              log("After removing: $_exerciseDaysData");
+            }
+          }
+
           emit(_stateHistory.removeLast());
         }
       },
@@ -25,34 +41,48 @@ class AppBloc extends Bloc<AppEvent, AppState> {
 
     on<AppEventConfirmWeekAutomation>(
       (event, emit) {
-        _stateHistory.add(const AppStateCreatePlanOrSkip());
+        _stateHistory.add(state);
         emit(const AppStateChooseTrainingDays());
       },
     );
 
     on<AppEventConfirmTrainingDays>(
       (event, emit) {
-        _stateHistory.add(const AppStateChooseTrainingDays());
-        _trainingDays = event.selectedDays;
-        emit(AppStateAddFirstWeekPlan(_trainingDays.removeAt(0)));
+        _stateHistory.add(state);
+
+        for (var i = 0; i < event.selectedDays.length; i++) {
+          _firstWeekPlan
+              .add(AppStateAddFirstWeekPlan(event.selectedDays.elementAt(i)));
+        }
+
+        currentDayOfPlanConfig = 0;
+        if (_firstWeekPlan.isNotEmpty) {
+          emit(_firstWeekPlan.elementAt(currentDayOfPlanConfig));
+        }
+        currentDayOfPlanConfig++;
       },
     );
 
     on<AppEventConfirmExercisesInDay>(
       (event, emit) {
-        if (_trainingDays.isNotEmpty) {
-          //mam tu juz dostep do listy cwiczen w danym dniu
-          emit(AppStateAddFirstWeekPlan(_trainingDays.removeAt(0)));
+        _stateHistory.add(state);
+        _exerciseDaysData.add(event.exerciseDay);
+        log("After adding: $_exerciseDaysData");
+        if (currentDayOfPlanConfig < _firstWeekPlan.length) {
+          if (_firstWeekPlan.isNotEmpty) {
+            emit(_firstWeekPlan.elementAt(currentDayOfPlanConfig));
+          }
         } else {
           emit(const AppStateChooseDurationOfPlan());
         }
+        currentDayOfPlanConfig++;
       },
     );
 
     on<AppEventConfirmPlanDuration>(
       (event, emit) {
-        _stateHistory.add(const AppStateChooseDurationOfPlan());
-        //mam tu juz dostep do okresu planu treningowego
+        _stateHistory.add(state);
+        durationOfPlan = event.duration;
         emit(const AppStateMainView());
       },
     );

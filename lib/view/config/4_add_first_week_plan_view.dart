@@ -1,13 +1,11 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:liftday/constants/colors.dart';
 import 'package:liftday/sevices/bloc/app_bloc.dart';
 import 'package:liftday/sevices/bloc/app_event.dart';
 import 'package:liftday/sevices/bloc/app_state.dart';
 import 'package:liftday/sevices/crud/exercise_day.dart';
-import 'package:liftday/view/widgets/exercise_table.dart';
+import 'package:liftday/view/widgets/simple_exercise_table.dart';
 
 class AddFirstWeekPlanView extends StatefulWidget {
   const AddFirstWeekPlanView({super.key});
@@ -19,10 +17,17 @@ class AddFirstWeekPlanView extends StatefulWidget {
 class _AddFirstWeekPlanViewState extends State<AddFirstWeekPlanView> {
   String dayOfWeek = "";
   Key _exerciseTableKey = UniqueKey();
-  late ExerciseTable _exerciseTable;
+  late SimpleExerciseTable _exerciseTable;
+  List<String> exercises = [];
+
   @override
   void initState() {
-    _exerciseTable = ExerciseTable(key: _exerciseTableKey);
+    _exerciseTable = SimpleExerciseTable(
+      key: _exerciseTableKey,
+      callback: (List<String> exercisesFromTable) {
+        exercises = exercisesFromTable;
+      },
+    );
     super.initState();
   }
 
@@ -38,6 +43,17 @@ class _AddFirstWeekPlanViewState extends State<AddFirstWeekPlanView> {
           onPopInvoked: (didPop) {
             if (!didPop) {
               context.read<AppBloc>().add(const AppEventGoBack());
+              exercises = [];
+              setState(() {
+                _exerciseTableKey =
+                    UniqueKey(); // Wymusza przebudowę ExerciseTable
+                _exerciseTable = SimpleExerciseTable(
+                  key: _exerciseTableKey,
+                  callback: (List<String> exercisesFromTable) {
+                    exercises = exercisesFromTable;
+                  },
+                );
+              });
             }
           },
           child: Scaffold(
@@ -50,7 +66,6 @@ class _AddFirstWeekPlanViewState extends State<AddFirstWeekPlanView> {
                 TextButton(
                   onPressed: () {
                     String day = dayOfWeek;
-                    List<String> exercises = _exerciseTable.exercises;
                     context.read<AppBloc>().add(
                           AppEventConfirmExercisesInDay(
                             ExerciseDay(day: day, exercises: exercises),
@@ -59,8 +74,14 @@ class _AddFirstWeekPlanViewState extends State<AddFirstWeekPlanView> {
                     setState(() {
                       _exerciseTableKey =
                           UniqueKey(); // Wymusza przebudowę ExerciseTable
-                      _exerciseTable = ExerciseTable(key: _exerciseTableKey);
+                      _exerciseTable = SimpleExerciseTable(
+                        key: _exerciseTableKey,
+                        callback: (List<String> exercisesFromTable) {
+                          exercises = exercisesFromTable;
+                        },
+                      );
                     });
+                    exercises = [];
                   },
                   style: TextButton.styleFrom(foregroundColor: colorAccent),
                   child: const Text(
@@ -78,7 +99,7 @@ class _AddFirstWeekPlanViewState extends State<AddFirstWeekPlanView> {
                     child: Text(
                       'Dodaj trening w $dayOfWeek',
                       style: const TextStyle(
-                          fontSize: 26, fontWeight: FontWeight.bold),
+                          fontSize: 24, fontWeight: FontWeight.bold),
                       textAlign: TextAlign.center,
                     ),
                   ),

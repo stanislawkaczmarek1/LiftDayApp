@@ -23,50 +23,58 @@ class _PlanDurationViewState extends State<PlanDurationView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Image.asset(
-          "assets/liftday_logo.png",
-          height: 25,
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) {
+        if (!didPop) {
+          context.read<AppBloc>().add(const AppEventGoBack());
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Image.asset(
+            "assets/liftday_logo.png",
+            height: 25,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () async {
+                if (_selectedDuration != null) {
+                  context
+                      .read<AppBloc>()
+                      .add(AppEventConfirmPlanDuration(_selectedDuration!));
+                } else {
+                  await showHaveToChoosePlanDuration(context);
+                }
+              },
+              style: TextButton.styleFrom(foregroundColor: colorAccent),
+              child: const Text(
+                "Dalej",
+                style: TextStyle(fontSize: 18.0),
+              ),
+            )
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () async {
-              if (_selectedDuration != null) {
-                context
-                    .read<AppBloc>()
-                    .add(AppEventConfirmPlanDuration(_selectedDuration!));
-              } else {
-                await showHaveToChoosePlanDuration(context);
-              }
-            },
-            style: TextButton.styleFrom(foregroundColor: colorAccent),
-            child: const Text(
-              "Dalej",
-              style: TextStyle(fontSize: 18.0),
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Text(
+                'Wybierz okres na jaki chcesz ustawić plan treningowy',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
             ),
-          )
-        ],
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          const Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Text(
-              'Wybierz okres na jaki chcesz ustawić plan treningowy',
-              style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
+            const SizedBox(
+              height: 30.0,
             ),
-          ),
-          const SizedBox(
-            height: 30.0,
-          ),
-          Dropdown(onDurationChanged: _onDurationChanged),
-          const SizedBox(
-            height: 60.0,
-          ),
-        ],
+            Dropdown(onDurationChanged: _onDurationChanged),
+            const SizedBox(
+              height: 60.0,
+            ),
+          ],
+        ),
       ),
     );
   }

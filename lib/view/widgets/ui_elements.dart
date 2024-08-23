@@ -18,7 +18,7 @@ TextButton normalButton(String text, OnPressedFunction onPressed) {
         text,
         textAlign: TextAlign.center,
         style: const TextStyle(
-          fontSize: 18,
+          fontSize: 16,
           fontWeight: FontWeight.normal,
         ),
       ),

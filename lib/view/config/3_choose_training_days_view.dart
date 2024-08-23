@@ -65,7 +65,7 @@ class _ChooseTrainingDaysViewState extends State<ChooseTrainingDaysView> {
               padding: EdgeInsets.all(8.0),
               child: Text(
                 'Wybierz swoje dni treningowe',
-                style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -128,7 +128,10 @@ class _ChooseTrainingDaysViewState extends State<ChooseTrainingDaysView> {
                   showHaveToChooseTrainingDays(context);
                 }
               },
-            )
+            ),
+            const SizedBox(
+              height: 30.0,
+            ),
           ],
         ),
       ),
