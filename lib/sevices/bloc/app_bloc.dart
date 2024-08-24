@@ -8,9 +8,9 @@ import 'package:liftday/sevices/crud/exercise_day.dart';
 class AppBloc extends Bloc<AppEvent, AppState> {
   final List<AppState> _stateHistory = [];
   final List<AppStateAddFirstWeekPlan> _firstWeekPlan = [];
+  late int _currentDayOfPlanConfig;
   final List<ExerciseDay> _exerciseDaysData = [];
-  late int durationOfPlan;
-  late int currentDayOfPlanConfig;
+  late int _durationOfPlan;
 
   AppBloc() : super(const AppStateStart()) {
     //
@@ -27,7 +27,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
           if (_stateHistory.last is AppStateChooseTrainingDays) {
             _firstWeekPlan.clear();
           } else if (_stateHistory.last is AppStateAddFirstWeekPlan) {
-            currentDayOfPlanConfig--;
+            _currentDayOfPlanConfig--;
             if (_exerciseDaysData.isNotEmpty) {
               _exerciseDaysData.removeLast();
               log("After removing: $_exerciseDaysData");
@@ -55,11 +55,11 @@ class AppBloc extends Bloc<AppEvent, AppState> {
               .add(AppStateAddFirstWeekPlan(event.selectedDays.elementAt(i)));
         }
 
-        currentDayOfPlanConfig = 0;
+        _currentDayOfPlanConfig = 0;
         if (_firstWeekPlan.isNotEmpty) {
-          emit(_firstWeekPlan.elementAt(currentDayOfPlanConfig));
+          emit(_firstWeekPlan.elementAt(_currentDayOfPlanConfig));
         }
-        currentDayOfPlanConfig++;
+        _currentDayOfPlanConfig++;
       },
     );
 
@@ -68,21 +68,21 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         _stateHistory.add(state);
         _exerciseDaysData.add(event.exerciseDay);
         log("After adding: $_exerciseDaysData");
-        if (currentDayOfPlanConfig < _firstWeekPlan.length) {
+        if (_currentDayOfPlanConfig < _firstWeekPlan.length) {
           if (_firstWeekPlan.isNotEmpty) {
-            emit(_firstWeekPlan.elementAt(currentDayOfPlanConfig));
+            emit(_firstWeekPlan.elementAt(_currentDayOfPlanConfig));
           }
         } else {
           emit(const AppStateChooseDurationOfPlan());
         }
-        currentDayOfPlanConfig++;
+        _currentDayOfPlanConfig++;
       },
     );
 
     on<AppEventConfirmPlanDuration>(
       (event, emit) {
         _stateHistory.add(state);
-        durationOfPlan = event.duration;
+        _durationOfPlan = event.duration;
         emit(const AppStateMainView());
       },
     );
