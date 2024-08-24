@@ -241,6 +241,30 @@ class ExerciseService {
     }
   }
 
+  Future<DatabaseDate?> getDateByDigitDate({required String digitDate}) async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+    final dates = await db.query(
+      datesTable,
+      where: "$digitDateColumn = ?",
+      whereArgs: [digitDate],
+    );
+    if (dates.isEmpty) return null;
+    return DatabaseDate.fromRow(dates.first);
+  }
+
+  Future<List<DatabaseExercise>> getExercisesForDate(
+      {required int dateId}) async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+    final exercises = await db.query(
+      exercisesTable,
+      where: "$dateIdColumn = ?",
+      whereArgs: [dateId],
+    );
+    return exercises.map((row) => DatabaseExercise.fromRow(row)).toList();
+  }
+
   Database _getDatabaseOrThrow() {
     final db = _db;
     if (db == null) {

@@ -92,6 +92,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
           exerciseDays: _exerciseDaysData,
           dates: dates,
         );
+
         emit(const AppStateMainView());
       },
     );

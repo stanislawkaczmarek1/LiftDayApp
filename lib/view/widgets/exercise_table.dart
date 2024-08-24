@@ -1,23 +1,61 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:liftday/dialogs/error_dialog.dart';
+import 'package:liftday/sevices/crud/exercise_service.dart';
 import 'package:liftday/ui_constants/colors.dart';
 import 'package:liftday/view/widgets/ui_elements.dart';
 
 class ExerciseTable extends StatefulWidget {
-  const ExerciseTable({super.key});
-
-  List<String> get exercises => _ExerciseTableState().exerciseNames;
+  final DateTime selectedDate;
+  const ExerciseTable({super.key, required this.selectedDate});
 
   @override
   State<ExerciseTable> createState() => _ExerciseTableState();
 }
 
 class _ExerciseTableState extends State<ExerciseTable> {
-  List<ExerciseCard> exercises = [];
-  List<String> get exerciseNames => exercises.map((e) => e.exercise).toList();
+  late final ExerciseService _exerciseService;
+  late Future<List<ExerciseCard>> _exercisesFuture;
 
-  void _addExercise(String name) {
+  @override
+  void initState() {
+    super.initState();
+    _exerciseService = ExerciseService();
+    _updateExercises();
+  }
+
+  Future<List<ExerciseCard>> _loadExercisesForSelectedDate() async {
+    final date = await _exerciseService.getDateByDigitDate(
+        digitDate: DateFormat('dd-MM-yyyy').format(widget.selectedDate));
+    if (date != null) {
+      final exercisesList =
+          await _exerciseService.getExercisesForDate(dateId: date.id);
+      return exercisesList
+          .map((exercise) => ExerciseCard(exercise: exercise.name))
+          .toList();
+    } else {
+      return [];
+    }
+  }
+
+  void _addExercise(String name) async {
+    final digitDate = DateFormat('dd-MM-yyyy').format(widget.selectedDate);
+    final date =
+        await _exerciseService.getDateByDigitDate(digitDate: digitDate);
+
+    if (date != null) {
+      await _exerciseService.createExercise(date: date, name: name);
+      _updateExercises();
+    } else {
+      if (mounted) {
+        showErrorDialog(context);
+      }
+    }
+  }
+
+  void _updateExercises() {
     setState(() {
-      exercises.add(ExerciseCard(exercise: name));
+      _exercisesFuture = _loadExercisesForSelectedDate();
     });
   }
 
@@ -61,19 +99,29 @@ class _ExerciseTableState extends State<ExerciseTable> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: exercises.length,
-          itemBuilder: (context, index) {
-            return exercises[index];
-          },
-        ),
+        FutureBuilder<List<ExerciseCard>>(
+            future: _exercisesFuture,
+            builder: (context, snapshot) {
+              switch (snapshot.connectionState) {
+                case ConnectionState.done:
+                  final exercises = snapshot.data!;
+                  return ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: exercises.length,
+                      itemBuilder: (context, index) {
+                        return exercises[index];
+                      });
+                default:
+                  return const Center(child: CircularProgressIndicator());
+              }
+            }),
         Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: normalButton("+ Dodaj ćwiczenie", () {
-              _showAddExerciseDialog();
-            })),
+          padding: const EdgeInsets.all(16.0),
+          child: normalButton("+ Dodaj ćwiczenie", () {
+            _showAddExerciseDialog();
+          }),
+        ),
       ],
     );
   }
