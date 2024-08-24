@@ -2,7 +2,7 @@ const dbName = 'app_datebase.db';
 const datesTable = 'dates';
 const exercisesTable = 'exercises';
 const idColumn = 'id';
-const dateColumn = 'date';
+const digitDateColumn = 'digit_date';
 const dayColumn = 'day';
 const dateIdColumn = 'date_id';
 const nameColumn = 'name';
@@ -12,7 +12,7 @@ const weightColumn = 'weight';
 const repsColumn = 'reps';
 const createDatesTable = """CREATE TABLE IF NOT EXISTS "dates" (
 	"id"	INTEGER NOT NULL,
-	"date"	TEXT NOT NULL UNIQUE,
+	"digit_date"	TEXT NOT NULL UNIQUE,
 	"day"	TEXT NOT NULL,
 	PRIMARY KEY("id" AUTOINCREMENT)
 );""";

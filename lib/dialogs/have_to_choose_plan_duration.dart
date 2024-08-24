@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:liftday/utilities/dialogs/generic_dialog.dart';
+import 'package:liftday/dialogs/generic_dialog.dart';
 
 Future<void> showHaveToChoosePlanDuration(BuildContext context) {
   return showGenericDialog<void>(

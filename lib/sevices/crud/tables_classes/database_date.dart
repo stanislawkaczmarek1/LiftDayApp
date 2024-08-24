@@ -1,23 +1,23 @@
-import 'package:liftday/sevices/crud/database_constans.dart';
+import 'package:liftday/sevices/crud/tables_classes/database_constans.dart';
 
 class DatabaseDate {
   final int id;
-  final String date;
+  final String digitDate;
   final String day;
 
   DatabaseDate({
     required this.id,
-    required this.date,
+    required this.digitDate,
     required this.day,
   });
 
   DatabaseDate.fromRow(Map<String, Object?> map)
       : id = map[idColumn] as int,
-        date = map[dateColumn] as String,
+        digitDate = map[digitDateColumn] as String,
         day = map[dayColumn] as String;
 
   @override
-  String toString() => "Date, ID = $id, date = $date, day = $day";
+  String toString() => "Date, ID = $id, date = $digitDate, day = $day";
 
   @override
   bool operator ==(covariant DatabaseDate other) => id == other.id;

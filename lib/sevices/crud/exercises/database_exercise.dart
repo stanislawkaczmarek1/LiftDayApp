@@ -1,4 +1,4 @@
-import 'package:liftday/sevices/crud/database_constans.dart';
+import 'package:liftday/sevices/crud/tables_classes/database_constans.dart';
 
 class DatabaseExercise {
   final int id;

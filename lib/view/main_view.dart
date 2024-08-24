@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:liftday/constants/colors.dart';
+import 'package:liftday/ui_constants/colors.dart';
 import 'package:liftday/sevices/provider/appbar_title_provider.dart';
 import 'package:liftday/view/pages/training_page.dart';
 import 'package:liftday/view/pages/plans_pages.dart';

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:liftday/constants/colors.dart';
+import 'package:liftday/ui_constants/colors.dart';
 import 'package:liftday/sevices/bloc/app_bloc.dart';
 import 'package:liftday/sevices/bloc/app_event.dart';
-import 'package:liftday/utilities/dialogs/have_to_choose_training_days.dart';
+import 'package:liftday/dialogs/have_to_choose_training_days.dart';
 import 'package:liftday/view/widgets/ui_elements.dart';
 
 class ChooseTrainingDaysView extends StatefulWidget {
@@ -15,13 +15,13 @@ class ChooseTrainingDaysView extends StatefulWidget {
 
 class _ChooseTrainingDaysViewState extends State<ChooseTrainingDaysView> {
   final List<String> daysOfWeek = [
-    'Pon',
-    'Wt',
-    'Śr',
-    'Czw',
-    'Pt',
-    'Sob',
-    'Nd',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday',
   ];
 
   final List<bool> selectedDays = List<bool>.filled(7, false);

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:liftday/constants/colors.dart';
+import 'package:liftday/ui_constants/colors.dart';
 
 typedef OnPressedFunction = void Function();
 

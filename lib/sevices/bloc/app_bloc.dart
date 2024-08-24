@@ -1,16 +1,16 @@
 import 'dart:developer';
-
 import 'package:bloc/bloc.dart';
 import 'package:liftday/sevices/bloc/app_event.dart';
 import 'package:liftday/sevices/bloc/app_state.dart';
 import 'package:liftday/sevices/crud/exercise_day.dart';
+import 'package:liftday/sevices/crud/exercise_service.dart';
 
 class AppBloc extends Bloc<AppEvent, AppState> {
   final List<AppState> _stateHistory = [];
   final List<AppStateAddFirstWeekPlan> _firstWeekPlan = [];
   late int _currentDayOfPlanConfig;
   final List<ExerciseDay> _exerciseDaysData = [];
-  late int _durationOfPlan;
+  late final ExerciseService _exerciseService;
 
   AppBloc() : super(const AppStateStart()) {
     //
@@ -80,9 +80,18 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     );
 
     on<AppEventConfirmPlanDuration>(
-      (event, emit) {
+      (event, emit) async {
         _stateHistory.add(state);
-        _durationOfPlan = event.duration;
+
+        _exerciseService = ExerciseService();
+        final dates = await _exerciseService.createRangeOfDatesConfig(
+          range: event.duration,
+        );
+
+        _exerciseService.createExercisesConfig(
+          exerciseDays: _exerciseDaysData,
+          dates: dates,
+        );
         emit(const AppStateMainView());
       },
     );

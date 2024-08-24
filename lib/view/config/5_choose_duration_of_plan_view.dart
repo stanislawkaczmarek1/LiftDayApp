@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:liftday/constants/colors.dart';
+import 'package:liftday/ui_constants/colors.dart';
 import 'package:liftday/sevices/bloc/app_bloc.dart';
 import 'package:liftday/sevices/bloc/app_event.dart';
-import 'package:liftday/utilities/dialogs/have_to_choose_plan_duration.dart';
+import 'package:liftday/dialogs/have_to_choose_plan_duration.dart';
 
 class PlanDurationView extends StatefulWidget {
   const PlanDurationView({super.key});
@@ -93,10 +93,10 @@ class _DropdownState extends State<Dropdown> {
   String? _selectedOption;
 
   final Map<String, int> _optionsMap = {
-    '1 tydzień': 1,
-    '2 tygodnie': 2,
-    '4 tygodnie': 4,
-    '8 tygodni': 8,
+    '1 tydzień': 7,
+    '2 tygodnie': 14,
+    '4 tygodnie': 28,
+    '8 tygodni': 56,
   };
 
   @override
