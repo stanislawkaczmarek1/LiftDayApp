@@ -5,6 +5,10 @@ abstract class AppState {
   const AppState();
 }
 
+class AppStateInit extends AppState {
+  const AppStateInit();
+}
+
 class AppStateStart extends AppState {
   const AppStateStart();
 }

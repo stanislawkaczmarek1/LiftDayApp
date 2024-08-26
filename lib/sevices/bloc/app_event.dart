@@ -6,6 +6,10 @@ abstract class AppEvent {
   const AppEvent();
 }
 
+class AppEventChceckAppConfigured extends AppEvent {
+  const AppEventChceckAppConfigured();
+}
+
 class AppEventStartButton extends AppEvent {
   const AppEventStartButton();
 }

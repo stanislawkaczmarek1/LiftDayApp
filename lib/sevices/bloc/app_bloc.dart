@@ -4,6 +4,7 @@ import 'package:liftday/sevices/bloc/app_event.dart';
 import 'package:liftday/sevices/bloc/app_state.dart';
 import 'package:liftday/sevices/crud/exercise_day.dart';
 import 'package:liftday/sevices/crud/exercise_service.dart';
+import 'package:liftday/sevices/settings/settings_service.dart';
 
 class AppBloc extends Bloc<AppEvent, AppState> {
   final List<AppState> _stateHistory = [];
@@ -11,9 +12,22 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   late int _currentDayOfPlanConfig;
   final List<ExerciseDay> _exerciseDaysData = [];
   late final ExerciseService _exerciseService;
+  late final SettingsService _settingsService;
 
-  AppBloc() : super(const AppStateStart()) {
+  AppBloc() : super(const AppStateInit()) {
     //
+    on<AppEventChceckAppConfigured>(
+      (event, emit) async {
+        _settingsService = SettingsService();
+        await _settingsService.init();
+        if (_settingsService.isAppConfiguredFlag()) {
+          emit(const AppStateMainView());
+        } else {
+          emit(const AppStateStart());
+        }
+      },
+    );
+
     on<AppEventStartButton>(
       (event, emit) {
         _stateHistory.add(const AppStateStart());
@@ -83,17 +97,18 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       (event, emit) async {
         _stateHistory.add(state);
 
-        _exerciseService = ExerciseService();
-        final dates = await _exerciseService.createRangeOfDatesConfig(
-          range: event.duration,
-        );
-
-        _exerciseService.createExercisesConfig(
-          exerciseDays: _exerciseDaysData,
-          dates: dates,
-        );
-
-        emit(const AppStateMainView());
+        if (!_settingsService.isAppConfiguredFlag()) {
+          _exerciseService = ExerciseService();
+          final dates = await _exerciseService.createRangeOfDatesConfig(
+            range: event.duration,
+          );
+          _exerciseService.createExercisesConfig(
+            exerciseDays: _exerciseDaysData,
+            dates: dates,
+          );
+          _settingsService.setAppConfiguredFlag(true);
+          emit(const AppStateMainView());
+        }
       },
     );
   }
