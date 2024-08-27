@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:liftday/sevices/crud/exercise_service.dart';
 import 'package:liftday/ui_constants/colors.dart';
 import 'package:liftday/sevices/provider/appbar_title_provider.dart';
 import 'package:liftday/view/widgets/exercise_table.dart';
@@ -15,7 +14,7 @@ class TrainingPage extends StatefulWidget {
 }
 
 class _TrainingPageState extends State<TrainingPage> {
-  late final ExerciseService _exerciseService;
+  //late final ExerciseService _exerciseService;
   DateTime _focusedDay = DateTime.now();
   CalendarFormat _calendarFormat = CalendarFormat.week;
   DateTime? _selectedDay;
@@ -60,7 +59,7 @@ class _TrainingPageState extends State<TrainingPage> {
 
   @override
   void initState() {
-    _exerciseService = ExerciseService();
+    //_exerciseService = ExerciseService();
     _selectedDay ??= _focusedDay;
     super.initState();
   }

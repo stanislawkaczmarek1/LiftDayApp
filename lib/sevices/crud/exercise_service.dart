@@ -3,8 +3,8 @@ import 'package:liftday/sevices/crud/crud_exceptions.dart';
 import 'package:liftday/sevices/crud/tables_classes/database_constans.dart';
 import 'package:liftday/sevices/crud/tables_classes/database_date.dart';
 import 'package:liftday/sevices/crud/exercise_day.dart';
-//import 'package:liftday/sevices/crud/database_set.dart';
-import 'package:liftday/sevices/crud/exercises/database_exercise.dart';
+import 'package:liftday/sevices/crud/tables_classes/database_exercise.dart';
+import 'package:liftday/sevices/crud/tables_classes/database_set.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' show join;
@@ -13,7 +13,7 @@ class ExerciseService {
   Database? _db;
   List<DatabaseDate> _dates = [];
   List<DatabaseExercise> _exercises = [];
-  //List<DatabaseSet> _sets = [];
+  List<DatabaseSet> _sets = [];
 
   static final ExerciseService _shared = ExerciseService._sharedInstance();
   ExerciseService._sharedInstance();
@@ -141,18 +141,18 @@ class ExerciseService {
   }
 
   Future<DatabaseExercise> createExercise(
-      {required DatabaseDate date, required String name}) async {
+      {required int dateId, required String name}) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
 
     final exerciseId = await db.insert(exercisesTable, {
-      dateIdColumn: date.id,
+      dateIdColumn: dateId,
       nameColumn: name,
     });
 
     final exercise = DatabaseExercise(
       id: exerciseId,
-      dateId: date.id,
+      dateId: dateId,
       name: name,
     );
 
@@ -263,6 +263,155 @@ class ExerciseService {
       whereArgs: [dateId],
     );
     return exercises.map((row) => DatabaseExercise.fromRow(row)).toList();
+  }
+
+  Future<DatabaseExercise?> getExerciseByDateAndName(
+      {required int dateId, required String name}) async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+
+    final results = await db.query(
+      exercisesTable,
+      limit: 1,
+      where: "$dateIdColumn = ? AND $nameColumn = ?",
+      whereArgs: [dateId, name],
+    );
+    if (results.isEmpty) {
+      return null;
+    } else {
+      return DatabaseExercise.fromRow(results.first);
+    }
+  }
+
+  Future<DatabaseSet> createSet(
+      {required int exerciseId,
+      required int setIndex,
+      required int weight,
+      required int reps}) async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+
+    final setId = await db.insert(setsTable, {
+      exerciseIdColumn: exerciseId,
+      setIndexColumn: setIndex,
+      weightColumn: weight,
+      repsColumn: reps,
+    });
+    final newSet = DatabaseSet(
+      id: setId,
+      exerciseId: exerciseId,
+      setIndex: setIndex,
+      weight: weight,
+      reps: reps,
+    );
+
+    _sets.add(newSet);
+    //_notesStreamController.add(_notes);
+    return newSet;
+  }
+
+  Future<DatabaseSet> getSet({required int id}) async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+    final results = await db.query(
+      setsTable,
+      limit: 1,
+      where: "id = ?",
+      whereArgs: [id],
+    );
+    if (results.isEmpty) {
+      throw CouldNotFindUser();
+    } else {
+      return DatabaseSet.fromRow(results.first);
+    }
+  }
+
+  Future<List<DatabaseSet>> getSetsForExercise(
+      {required int exerciseId}) async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+
+    final sets = await db.query(
+      setsTable,
+      where: "$exerciseIdColumn = ?",
+      whereArgs: [exerciseId],
+    );
+
+    if (sets.isEmpty) {
+      return [];
+    } else {
+      return sets.map((row) {
+        final set = DatabaseSet.fromRow(row);
+        return set;
+      }).toList();
+    }
+  }
+
+  Future<DatabaseSet?> getSetByExerciseAndIndex(
+      {required int exerciseId, required int setIndex}) async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+    final sets = await db.query(
+      setsTable,
+      limit: 1,
+      where: "$exerciseIdColumn = ? AND $setIndexColumn = ?",
+      whereArgs: [exerciseId, setIndex],
+    );
+    if (sets.isEmpty) {
+      return null;
+    } else {
+      final existingSet = DatabaseSet.fromRow(sets.first);
+      //_notesStreamController.add(_notes);
+      return existingSet;
+    }
+  }
+
+  Future<DatabaseSet?> updateSet(
+      {required DatabaseSet setToUpdate,
+      required int? weight,
+      required int? reps}) async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+
+    final updates = <String, Object?>{};
+    if (weight != null) {
+      updates[weightColumn] = weight;
+    }
+    if (reps != null) {
+      updates[repsColumn] = reps;
+    }
+    if (updates.isEmpty) {
+      return null;
+    }
+    final updatesCount = await db.update(
+      setsTable,
+      updates,
+      where: "$idColumn = ?",
+      whereArgs: [setToUpdate.id],
+    );
+    if (updatesCount == 0) {
+      return null;
+    }
+
+    final updatedSet = await getSet(id: setToUpdate.id);
+    _sets.removeWhere((oldSet) => oldSet.id == updatedSet.id);
+    _sets.add(updatedSet);
+    return updatedSet;
+  }
+
+  Future<void> deleteSet({required int id}) async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+    final deletedCount = await db.delete(
+      setsTable,
+      where: "id = ?",
+      whereArgs: [id],
+    );
+    if (deletedCount == 0) {
+      throw CouldNotDeleteNote();
+    } else {
+      _sets.removeWhere((existingSet) => existingSet.id == id);
+    }
   }
 
   Database _getDatabaseOrThrow() {

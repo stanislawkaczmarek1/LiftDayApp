@@ -17,8 +17,8 @@ class DatabaseSet {
 
   DatabaseSet.fromRow(Map<String, Object?> map)
       : id = map[idColumn] as int,
-        exerciseId = map[dateIdColumn] as int,
-        setIndex = map[setColumn] as int,
+        exerciseId = map[exerciseIdColumn] as int,
+        setIndex = map[setIndexColumn] as int,
         weight = map[weightColumn] as int,
         reps = map[repsColumn] as int;
 

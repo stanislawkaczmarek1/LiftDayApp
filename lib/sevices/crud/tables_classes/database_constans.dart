@@ -1,13 +1,14 @@
 const dbName = 'app_datebase.db';
 const datesTable = 'dates';
 const exercisesTable = 'exercises';
+const setsTable = 'sets';
 const idColumn = 'id';
 const digitDateColumn = 'digit_date';
 const dayColumn = 'day';
 const dateIdColumn = 'date_id';
 const nameColumn = 'name';
 const exerciseIdColumn = 'exercise_id';
-const setColumn = 'set';
+const setIndexColumn = 'set_index';
 const weightColumn = 'weight';
 const repsColumn = 'reps';
 const createDatesTable = """CREATE TABLE IF NOT EXISTS "dates" (
