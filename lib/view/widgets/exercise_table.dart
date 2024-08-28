@@ -22,31 +22,7 @@ class _ExerciseTableState extends State<ExerciseTable> {
   late DatabaseDate? _date;
   late final ExerciseService _exerciseService;
   late Future<List<ExerciseCard>> _exercisesFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    _exerciseService = ExerciseService();
-    _updateExercises();
-  }
-
-  Future<List<ExerciseCard>> _loadExercisesForSelectedDate() async {
-    final digitDate = DateFormat('dd-MM-yyyy').format(widget.selectedDate);
-    _date = await _exerciseService.getDateByDigitDate(digitDate: digitDate);
-
-    if (_date != null) {
-      final exercisesList =
-          await _exerciseService.getExercisesForDate(dateId: _date!.id);
-      return exercisesList
-          .map((exercise) => ExerciseCard(
-                exerciseName: exercise.name,
-                selectedDate: _date!,
-              ))
-          .toList();
-    } else {
-      return [];
-    }
-  }
+  bool _isLoaded = false;
 
   void _addExercise(String name) async {
     if (_date != null) {
@@ -54,6 +30,7 @@ class _ExerciseTableState extends State<ExerciseTable> {
       _updateExercises();
     } else {
       if (mounted) {
+        //w razie gdy jestesmy na polu kalendarza do ktorego nie ma daty w bazie danych
         showErrorDialog(context);
       }
     }
@@ -100,40 +77,81 @@ class _ExerciseTableState extends State<ExerciseTable> {
     );
   }
 
+  Future<List<ExerciseCard>> _loadExercisesForSelectedDate() async {
+    final digitDate = DateFormat('dd-MM-yyyy').format(widget.selectedDate);
+    _date = await _exerciseService.getDateByDigitDate(digitDate: digitDate);
+
+    if (_date != null) {
+      final exercisesList =
+          await _exerciseService.getExercisesForDate(dateId: _date!.id);
+      return exercisesList
+          .map((exercise) => ExerciseCard(
+                exerciseName: exercise.name,
+                selectedDate: _date!,
+              ))
+          .toList();
+    } else {
+      return [];
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _exerciseService = ExerciseService();
+    _updateExercises();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        FutureBuilder<List<ExerciseCard>>(
-            future: _exercisesFuture,
-            builder: (context, snapshot) {
-              switch (snapshot.connectionState) {
-                case ConnectionState.done:
-                  if (snapshot.hasData && snapshot.data != null) {
-                    final exercises = snapshot.data!;
-                    return ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: exercises.length,
-                        itemBuilder: (context, index) {
-                          return exercises[index];
-                        });
-                  } else {
-                    return Container();
-                  }
-                default:
-                  return const Center(child: CircularProgressIndicator());
+    return FutureBuilder<List<ExerciseCard>>(
+        future: _exercisesFuture,
+        builder: (context, snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.done:
+              if (snapshot.hasData && snapshot.data != null) {
+                final exercises = snapshot.data!;
+                return AnimatedOpacity(
+                  opacity: _isLoaded ? 1.0 : 0.0,
+                  duration: const Duration(milliseconds: 300),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Builder(
+                        builder: (context) {
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            if (!_isLoaded) {
+                              setState(() {
+                                _isLoaded = true;
+                              });
+                            }
+                          });
+                          return ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: exercises.length,
+                            itemBuilder: (context, index) {
+                              return exercises[index];
+                            },
+                          );
+                        },
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: normalButton("+ Dodaj ćwiczenie", () {
+                          _showAddExerciseDialog();
+                        }),
+                      ),
+                    ],
+                  ),
+                );
+              } else {
+                return const SizedBox(height: 0);
               }
-            }),
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: normalButton("+ Dodaj ćwiczenie", () {
-            _showAddExerciseDialog();
-          }),
-        ),
-      ],
-    );
+            default:
+              return const SizedBox(height: 0);
+          }
+        });
   }
 }
 
@@ -153,43 +171,41 @@ class ExerciseCard extends StatefulWidget {
 }
 
 class _ExerciseCardState extends State<ExerciseCard> {
-  int _setNumber = 1;
+  late int _setNumber;
   late Future<List<ExerciseRow>> _setsFuture;
   late final ExerciseService _exerciseService;
   late DatabaseExercise? _exercise;
 
-  @override
-  void initState() {
-    super.initState();
-    _exerciseService = ExerciseService();
-    _updateSets();
-  }
+  late bool _isLoaded;
 
-  Future<List<ExerciseRow>> _loadSetsForExercise() async {
-    DatabaseExercise? exercise =
-        await _exerciseService.getExerciseByDateAndName(
-            dateId: widget.selectedDate.id, name: widget.exerciseName);
-    _exercise = exercise;
-    if (_exercise != null) {
-      final sets =
-          await _exerciseService.getSetsForExercise(exerciseId: _exercise!.id);
-      return sets
-          .map((dbSet) =>
-              ExerciseRow(exercise: _exercise!, setIndex: dbSet.setIndex))
-          .toList();
-    } else {
-      return [];
+  final List<_ExerciseRowState> _exerciseRowStates =
+      []; //potrzebne do usuwania pustych setow
+
+  void _registerRowState(_ExerciseRowState rowState) {
+    final existingIndex = _exerciseRowStates.indexWhere(
+      (state) => state.setIndex == rowState.setIndex,
+    );
+
+    if (existingIndex != -1) {
+      _exerciseRowStates.removeAt(existingIndex);
+      log("Removed existing state with setIndex ${rowState.setIndex}");
     }
+
+    _exerciseRowStates.add(rowState);
+    log("Registered new state with setIndex ${rowState.setIndex}");
   }
 
   void _addSet(int setIndex) async {
     if (_exercise != null) {
+      _isLoaded = false;
       await _exerciseService.createSet(
         exerciseId: _exercise!.id,
         setIndex: setIndex,
         weight: 0,
         reps: 0,
       );
+      log("created set with index $setIndex");
+
       _updateSets();
     } else {
       if (mounted) {
@@ -202,6 +218,51 @@ class _ExerciseCardState extends State<ExerciseCard> {
     setState(() {
       _setsFuture = _loadSetsForExercise();
     });
+  }
+
+  Future<List<ExerciseRow>> _loadSetsForExercise() async {
+    DatabaseExercise? exercise =
+        await _exerciseService.getExerciseByDateAndName(
+            dateId: widget.selectedDate.id, name: widget.exerciseName);
+    _exercise = exercise;
+    if (_exercise != null) {
+      final sets =
+          await _exerciseService.getSetsForExercise(exerciseId: _exercise!.id);
+      sets.sort((a, b) => a.setIndex.compareTo(b.setIndex));
+      if (sets.isEmpty) {
+        _setNumber = 1;
+      } else {
+        _setNumber = sets.last.setIndex;
+      }
+      return sets
+          .map((dbSet) => ExerciseRow(
+                exercise: _exercise!,
+                setIndex: dbSet.setIndex,
+                registerRowState: _registerRowState,
+              ))
+          .toList();
+    } else {
+      return [];
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _isLoaded = false;
+    _exerciseService = ExerciseService();
+    _updateSets();
+  }
+
+  @override
+  void dispose() {
+    log("dispose card");
+    for (var rowState in _exerciseRowStates) {
+      rowState._saveSetIfTextNotEmpty();
+      rowState._deleteSetIfTextIsEmpty();
+    }
+    _exerciseRowStates.clear();
+    super.dispose();
   }
 
   @override
@@ -221,12 +282,16 @@ class _ExerciseCardState extends State<ExerciseCard> {
                 showErrorDialog(context);
               }
             }
-            return _buildExerciseCard(sets);
+            return AnimatedOpacity(
+              opacity: _isLoaded ? 1.0 : 0.0,
+              duration: const Duration(milliseconds: 300),
+              child: _buildExerciseCard(sets),
+            );
           } else {
-            return Container();
+            return const SizedBox(height: 0);
           }
         } else {
-          return const Center(child: CircularProgressIndicator());
+          return const SizedBox(height: 0);
         }
       },
     );
@@ -277,7 +342,25 @@ class _ExerciseCardState extends State<ExerciseCard> {
               ],
             ),
             const SizedBox(height: 8.0),
-            ...sets, // Rozpakowanie listy sets do widoku
+            Builder(
+              builder: (context) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (!_isLoaded) {
+                    setState(() {
+                      _isLoaded = true;
+                    });
+                  }
+                });
+                return ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: sets.length,
+                  itemBuilder: (context, index) {
+                    return sets[index];
+                  },
+                );
+              },
+            ),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: TextButton(
@@ -307,13 +390,17 @@ class _ExerciseCardState extends State<ExerciseCard> {
   }
 }
 
+typedef SetsCallback = void Function(_ExerciseRowState state);
+
 class ExerciseRow extends StatefulWidget {
   final DatabaseExercise exercise;
   final int setIndex;
+  final SetsCallback registerRowState;
   const ExerciseRow({
     super.key,
     required this.exercise,
     required this.setIndex,
+    required this.registerRowState,
   });
 
   @override
@@ -326,32 +413,17 @@ class _ExerciseRowState extends State<ExerciseRow> {
 
   late final FocusNode _weightFocusNode;
   late final FocusNode _repsFocusNode;
-  late final int setIndex;
+  late int setIndex;
 
   late final ExerciseService _exerciseService;
 
   DatabaseSet? _set;
 
-  @override
-  void initState() {
-    super.initState();
-    _exerciseService = ExerciseService();
-    _weightController = TextEditingController();
-    _repsController = TextEditingController();
-    _weightFocusNode = FocusNode();
-    _repsFocusNode = FocusNode();
-    setIndex = widget.setIndex;
-  }
-
-  @override
-  void dispose() {
-    _deleteSetIfTextIsEmpty();
-    _saveSetIfTextNotEmpty();
-    _weightController.dispose();
-    _repsController.dispose();
-    _weightFocusNode.dispose();
-    _repsFocusNode.dispose();
-    super.dispose();
+  void _setupTextControllerListener() {
+    _weightController.removeListener(_kgAndRepsControllerListner);
+    _weightController.addListener(_kgAndRepsControllerListner);
+    _repsController.removeListener(_kgAndRepsControllerListner);
+    _repsController.addListener(_kgAndRepsControllerListner);
   }
 
   int? _convertToInt(String text) {
@@ -370,7 +442,6 @@ class _ExerciseRowState extends State<ExerciseRow> {
     }
     final weight = _convertToInt(_weightController.text);
     final reps = _convertToInt(_repsController.text);
-
     if (weight == null && reps == null) {
       return;
     }
@@ -379,14 +450,48 @@ class _ExerciseRowState extends State<ExerciseRow> {
       weight: weight,
       reps: reps,
     );
-    log("updated");
+    log("saved by controller => id: ${mySet.id}, weight: $weight, reps: $reps");
   }
 
-  void _setupTextControllerListener() {
-    _weightController.removeListener(_kgAndRepsControllerListner);
-    _weightController.addListener(_kgAndRepsControllerListner);
-    _repsController.removeListener(_kgAndRepsControllerListner);
-    _repsController.addListener(_kgAndRepsControllerListner);
+  void _deleteSetIfTextIsEmpty() {
+    final mySet = _set;
+    log(_weightController.text);
+    if ((_weightController.text.isEmpty &&
+        _repsController.text.isEmpty &&
+        mySet != null)) {
+      _exerciseService.deleteSet(id: mySet.id);
+      log("deleted in card dispose");
+    }
+  }
+
+  void _saveSetIfTextNotEmpty() async {
+    final mySet = _set;
+    final weightText = _weightController.text;
+    final repsText = _repsController.text;
+
+    if (mySet != null && (weightText.isNotEmpty || repsText.isNotEmpty)) {
+      final weight = _convertToInt(weightText);
+      final reps = _convertToInt(repsText);
+
+      if (weight == null && reps == null) {
+        return;
+      }
+
+      await _exerciseService.updateSet(
+        setToUpdate: mySet,
+        weight: weight,
+        reps: reps,
+      );
+      log("saved in card dispose");
+    }
+  }
+
+  void _onRepsSubmitted() {
+    //to do
+  }
+
+  void _onKgSubmitted() {
+    FocusScope.of(context).requestFocus(_repsFocusNode);
   }
 
   Future<DatabaseSet> createOrGetExistingsSet() async {
@@ -395,6 +500,7 @@ class _ExerciseRowState extends State<ExerciseRow> {
       setIndex: setIndex,
     );
     if (dbSet == null) {
+      //logika programu jest skonstruowana tak ze dbSet nigdy nie powinien byc null
       final newSet = await _exerciseService.createSet(
         exerciseId: widget.exercise.id,
         setIndex: setIndex,
@@ -415,41 +521,26 @@ class _ExerciseRowState extends State<ExerciseRow> {
     }
   }
 
-  void _deleteSetIfTextIsEmpty() {
-    final mySet = _set;
-    if (_weightController.text.isEmpty &&
-        _repsController.text.isEmpty &&
-        mySet != null) {
-      _exerciseService.deleteSet(id: mySet.id);
-      log("deletedSet");
-    }
+  @override
+  void initState() {
+    super.initState();
+    _exerciseService = ExerciseService();
+    _weightController = TextEditingController();
+    _repsController = TextEditingController();
+    _weightFocusNode = FocusNode();
+    _repsFocusNode = FocusNode();
+    setIndex = widget.setIndex;
+    widget.registerRowState(this);
   }
 
-  void _saveSetIfTextNotEmpty() async {
-    final mySet = _set;
-    final weightText = _weightController.text;
-    final weight = _convertToInt(weightText);
-    final repsText = _repsController.text;
-    final reps = _convertToInt(repsText);
-    if (weight == null && reps == null) {
-      return;
-    }
-    if (mySet != null && (weightText.isNotEmpty || repsText.isNotEmpty)) {
-      await _exerciseService.updateSet(
-        setToUpdate: mySet,
-        weight: weight,
-        reps: reps,
-      );
-      log("sevedFinalSet");
-    }
-  }
-
-  void _onRepsSubmitted() {
-    //to do
-  }
-
-  void _onKgSubmitted() {
-    FocusScope.of(context).requestFocus(_repsFocusNode);
+  @override
+  void dispose() {
+    log("dispose row");
+    _weightController.dispose();
+    _repsController.dispose();
+    _weightFocusNode.dispose();
+    _repsFocusNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -519,7 +610,7 @@ class _ExerciseRowState extends State<ExerciseRow> {
               ),
             );
           default:
-            return const Center(child: CircularProgressIndicator());
+            return const SizedBox(height: 0);
         }
       },
     );

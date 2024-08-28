@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:intl/intl.dart';
 import 'package:liftday/sevices/crud/crud_exceptions.dart';
 import 'package:liftday/sevices/crud/tables_classes/database_constans.dart';
@@ -402,6 +404,7 @@ class ExerciseService {
   Future<void> deleteSet({required int id}) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
+    log('Attempting to delete entry with id: $id');
     final deletedCount = await db.delete(
       setsTable,
       where: "id = ?",
