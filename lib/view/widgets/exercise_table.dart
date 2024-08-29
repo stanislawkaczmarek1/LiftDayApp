@@ -197,7 +197,6 @@ class _ExerciseCardState extends State<ExerciseCard> {
 
   void _addSet(int setIndex) async {
     if (_exercise != null) {
-      _isLoaded = false;
       await _exerciseService.createSet(
         exerciseId: _exercise!.id,
         setIndex: setIndex,
@@ -390,12 +389,10 @@ class _ExerciseCardState extends State<ExerciseCard> {
   }
 }
 
-typedef SetsCallback = void Function(_ExerciseRowState state);
-
 class ExerciseRow extends StatefulWidget {
   final DatabaseExercise exercise;
   final int setIndex;
-  final SetsCallback registerRowState;
+  final Function(_ExerciseRowState) registerRowState;
   const ExerciseRow({
     super.key,
     required this.exercise,
