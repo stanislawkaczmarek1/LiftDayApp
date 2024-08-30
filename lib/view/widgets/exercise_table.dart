@@ -178,23 +178,6 @@ class _ExerciseCardState extends State<ExerciseCard> {
 
   late bool _isLoaded;
 
-  final List<_ExerciseRowState> _exerciseRowStates =
-      []; //potrzebne do usuwania pustych setow
-
-  void _registerRowState(_ExerciseRowState rowState) {
-    final existingIndex = _exerciseRowStates.indexWhere(
-      (state) => state.setIndex == rowState.setIndex,
-    );
-
-    if (existingIndex != -1) {
-      _exerciseRowStates.removeAt(existingIndex);
-      log("Removed existing state with setIndex ${rowState.setIndex}");
-    }
-
-    _exerciseRowStates.add(rowState);
-    log("Registered new state with setIndex ${rowState.setIndex}");
-  }
-
   void _addSet(int setIndex) async {
     if (_exercise != null) {
       await _exerciseService.createSet(
@@ -219,6 +202,27 @@ class _ExerciseCardState extends State<ExerciseCard> {
     });
   }
 
+  void _checkAndDeleteEmptySets() async {
+    DatabaseExercise? exercise =
+        await _exerciseService.getExerciseByDateAndName(
+            dateId: widget.selectedDate.id, name: widget.exerciseName);
+    _exercise = exercise;
+    if (_exercise != null) {
+      final sets =
+          await _exerciseService.getSetsForExercise(exerciseId: _exercise!.id);
+      sets.sort((a, b) => a.setIndex.compareTo(b.setIndex));
+      for (var oneSet in sets) {
+        final weight = oneSet.weight;
+        final reps = oneSet.reps;
+        if (weight == 0 && reps == 0) {
+          log("Prep to deleted set with index: ${oneSet.setIndex}");
+          await _exerciseService.deleteSet(id: oneSet.id);
+          log("delated");
+        }
+      }
+    }
+  }
+
   Future<List<ExerciseRow>> _loadSetsForExercise() async {
     DatabaseExercise? exercise =
         await _exerciseService.getExerciseByDateAndName(
@@ -237,7 +241,6 @@ class _ExerciseCardState extends State<ExerciseCard> {
           .map((dbSet) => ExerciseRow(
                 exercise: _exercise!,
                 setIndex: dbSet.setIndex,
-                registerRowState: _registerRowState,
               ))
           .toList();
     } else {
@@ -256,11 +259,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
   @override
   void dispose() {
     log("dispose card");
-    for (var rowState in _exerciseRowStates) {
-      rowState._saveSetIfTextNotEmpty();
-      rowState._deleteSetIfTextIsEmpty();
-    }
-    _exerciseRowStates.clear();
+    _checkAndDeleteEmptySets();
     super.dispose();
   }
 
@@ -392,12 +391,10 @@ class _ExerciseCardState extends State<ExerciseCard> {
 class ExerciseRow extends StatefulWidget {
   final DatabaseExercise exercise;
   final int setIndex;
-  final Function(_ExerciseRowState) registerRowState;
   const ExerciseRow({
     super.key,
     required this.exercise,
     required this.setIndex,
-    required this.registerRowState,
   });
 
   @override
@@ -450,39 +447,6 @@ class _ExerciseRowState extends State<ExerciseRow> {
     log("saved by controller => id: ${mySet.id}, weight: $weight, reps: $reps");
   }
 
-  void _deleteSetIfTextIsEmpty() {
-    final mySet = _set;
-    log(_weightController.text);
-    if ((_weightController.text.isEmpty &&
-        _repsController.text.isEmpty &&
-        mySet != null)) {
-      _exerciseService.deleteSet(id: mySet.id);
-      log("deleted in card dispose");
-    }
-  }
-
-  void _saveSetIfTextNotEmpty() async {
-    final mySet = _set;
-    final weightText = _weightController.text;
-    final repsText = _repsController.text;
-
-    if (mySet != null && (weightText.isNotEmpty || repsText.isNotEmpty)) {
-      final weight = _convertToInt(weightText);
-      final reps = _convertToInt(repsText);
-
-      if (weight == null && reps == null) {
-        return;
-      }
-
-      await _exerciseService.updateSet(
-        setToUpdate: mySet,
-        weight: weight,
-        reps: reps,
-      );
-      log("saved in card dispose");
-    }
-  }
-
   void _onRepsSubmitted() {
     //to do
   }
@@ -514,6 +478,7 @@ class _ExerciseRowState extends State<ExerciseRow> {
       if (dbSet.reps != 0) {
         _repsController.text = dbSet.reps.toString();
       }
+
       return dbSet;
     }
   }
@@ -527,7 +492,6 @@ class _ExerciseRowState extends State<ExerciseRow> {
     _weightFocusNode = FocusNode();
     _repsFocusNode = FocusNode();
     setIndex = widget.setIndex;
-    widget.registerRowState(this);
   }
 
   @override
