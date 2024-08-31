@@ -14,7 +14,47 @@ class TrainingPage extends StatefulWidget {
 }
 
 class _TrainingPageState extends State<TrainingPage> {
+  DateTime? _selectedDay = DateTime.now();
   //late final ExerciseService _exerciseService;
+
+  void _onDaySelected(DateTime selectedDay) {
+    setState(() {
+      _selectedDay = selectedDay;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          AppCalendar(onDaySelected: _onDaySelected),
+          const SizedBox(height: 20),
+          if (_selectedDay != null)
+            ExerciseTable(
+              key: ValueKey(_selectedDay),
+              selectedDate: _selectedDay!,
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class AppCalendar extends StatefulWidget {
+  final Function(DateTime) onDaySelected;
+
+  const AppCalendar({
+    super.key,
+    required this.onDaySelected,
+  });
+
+  @override
+  State<AppCalendar> createState() => _AppCalendarState();
+}
+
+class _AppCalendarState extends State<AppCalendar> {
   DateTime _focusedDay = DateTime.now();
   CalendarFormat _calendarFormat = CalendarFormat.week;
   DateTime? _selectedDay;
@@ -75,95 +115,83 @@ class _TrainingPageState extends State<TrainingPage> {
     DateTime firstDay = DateTime.utc(2024, 1, 1);
     DateTime lastDay = _focusedDay.add(const Duration(days: 365));
 
-    return SingleChildScrollView(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          TableCalendar(
-            locale: 'pl_PL',
-            firstDay: firstDay,
-            lastDay: lastDay,
-            focusedDay: _focusedDay,
-            calendarFormat: _calendarFormat,
-            startingDayOfWeek: StartingDayOfWeek.monday,
-            selectedDayPredicate: (day) {
-              return isSameDay(_selectedDay, day);
-            },
-            onDaySelected: (selectedDay, focusedDay) {
-              if (!isSameDay(_selectedDay, selectedDay)) {
-                setState(() {
-                  _selectedDay = selectedDay;
-                  _focusedDay = focusedDay;
-                });
-              }
-            },
-            onFormatChanged: (format) {
-              if (_calendarFormat != format) {
-                setState(() {
-                  _calendarFormat = format;
-                });
-              }
-            },
-            onPageChanged: (focusedDay) async {
-              setState(() {
-                _focusedDay = focusedDay;
-                context.read<AppBarTitleProvider>().updateTitle(
-                      _getMonthText(focusedDay),
-                    );
-                _resetTitleTimer?.cancel();
-                _resetTitleTimer = Timer(const Duration(seconds: 1), () {
-                  if (mounted) {
-                    context.read<AppBarTitleProvider>().setDefaultTitle();
-                  }
-                });
-              });
-            },
-            availableCalendarFormats: const {
-              CalendarFormat.month: 'Miesiąc',
-              CalendarFormat.week: 'Tydzień',
-            },
-            headerStyle: const HeaderStyle(
-              titleCentered: true,
-              formatButtonVisible: false,
-              leftChevronVisible: false,
-              rightChevronVisible: false,
-              headerPadding: EdgeInsets.zero,
-              titleTextStyle: TextStyle(
-                fontSize: 0.0, // Ukrycie domyślnego tytułu
-              ),
-            ),
-            daysOfWeekStyle: DaysOfWeekStyle(
-              weekdayStyle: const TextStyle(fontSize: 12.0),
-              weekendStyle: const TextStyle(fontSize: 12.0),
-              dowTextFormatter: (date, locale) {
-                return _customDayNames[date.weekday % 7];
-              },
-            ),
-            rowHeight: 60.0,
-            calendarStyle: const CalendarStyle(
-              selectedDecoration: BoxDecoration(
-                color: colorAccent,
-                shape: BoxShape.circle,
-              ),
-              selectedTextStyle: TextStyle(
-                color: colorMainBackgroud,
-              ),
-              todayDecoration: BoxDecoration(
-                color: colorInactiveButton,
-                shape: BoxShape.circle,
-              ),
-              todayTextStyle: TextStyle(
-                color: colorMainBackgroud,
-              ),
-            ),
-          ),
-          const SizedBox(height: 20),
-          if (_selectedDay != null)
-            ExerciseTable(
-              key: ValueKey(_selectedDay),
-              selectedDate: _selectedDay!,
-            ),
-        ],
+    return TableCalendar(
+      locale: 'pl_PL',
+      firstDay: firstDay,
+      lastDay: lastDay,
+      focusedDay: _focusedDay,
+      calendarFormat: _calendarFormat,
+      startingDayOfWeek: StartingDayOfWeek.monday,
+      selectedDayPredicate: (day) {
+        return isSameDay(_selectedDay, day);
+      },
+      onDaySelected: (selectedDay, focusedDay) {
+        if (!isSameDay(_selectedDay, selectedDay)) {
+          setState(() {
+            _selectedDay = selectedDay;
+            _focusedDay = focusedDay;
+          });
+          widget.onDaySelected(selectedDay);
+        }
+      },
+      onFormatChanged: (format) {
+        if (_calendarFormat != format) {
+          setState(() {
+            _calendarFormat = format;
+          });
+        }
+      },
+      onPageChanged: (focusedDay) async {
+        setState(() {
+          _focusedDay = focusedDay;
+          context.read<AppBarTitleProvider>().updateTitle(
+                _getMonthText(focusedDay),
+              );
+          _resetTitleTimer?.cancel();
+          _resetTitleTimer = Timer(const Duration(seconds: 1), () {
+            if (mounted) {
+              context.read<AppBarTitleProvider>().setDefaultTitle();
+            }
+          });
+        });
+      },
+      availableCalendarFormats: const {
+        CalendarFormat.month: 'Miesiąc',
+        CalendarFormat.week: 'Tydzień',
+      },
+      headerStyle: const HeaderStyle(
+        titleCentered: true,
+        formatButtonVisible: false,
+        leftChevronVisible: false,
+        rightChevronVisible: false,
+        headerPadding: EdgeInsets.zero,
+        titleTextStyle: TextStyle(
+          fontSize: 0.0, // Ukrycie domyślnego tytułu
+        ),
+      ),
+      daysOfWeekStyle: DaysOfWeekStyle(
+        weekdayStyle: const TextStyle(fontSize: 12.0),
+        weekendStyle: const TextStyle(fontSize: 12.0),
+        dowTextFormatter: (date, locale) {
+          return _customDayNames[date.weekday % 7];
+        },
+      ),
+      rowHeight: 60.0,
+      calendarStyle: const CalendarStyle(
+        selectedDecoration: BoxDecoration(
+          color: colorAccent,
+          shape: BoxShape.circle,
+        ),
+        selectedTextStyle: TextStyle(
+          color: colorMainBackgroud,
+        ),
+        todayDecoration: BoxDecoration(
+          color: colorInactiveButton,
+          shape: BoxShape.circle,
+        ),
+        todayTextStyle: TextStyle(
+          color: colorMainBackgroud,
+        ),
       ),
     );
   }

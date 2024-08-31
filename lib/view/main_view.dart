@@ -36,6 +36,7 @@ class _MainViewState extends State<MainView> {
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
+        scrolledUnderElevation: 0.0,
       ),
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(

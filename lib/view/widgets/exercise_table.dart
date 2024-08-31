@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -21,13 +22,33 @@ class ExerciseTable extends StatefulWidget {
 class _ExerciseTableState extends State<ExerciseTable> {
   late DatabaseDate? _date;
   late final ExerciseService _exerciseService;
-  late Future<List<ExerciseCard>> _exercisesFuture;
-  bool _isLoaded = false;
+
+  late StreamController<List<ExerciseCard>> _exercisesStreamController;
+  List<ExerciseCard> _exerciseCards = [];
 
   void _addExercise(String name) async {
     if (_date != null) {
+      final existingExercise = await _exerciseService.getExerciseByDateAndName(
+          dateId: _date!.id, name: name);
+      if (existingExercise != null) {
+        if (mounted) {
+          showErrorDialog(context);
+          return;
+        }
+      }
+      if (_exerciseCards.length >= 10) {
+        if (mounted) {
+          showErrorDialog(context);
+          return;
+        }
+      }
       await _exerciseService.createExercise(dateId: _date!.id, name: name);
-      _updateExercises();
+      _exerciseCards.add(ExerciseCard(
+        exerciseName: name,
+        selectedDate: _date!,
+        onDeleteCard: _deleteExercise,
+      ));
+      _exercisesStreamController.add(_exerciseCards);
     } else {
       if (mounted) {
         //w razie gdy jestesmy na polu kalendarza do ktorego nie ma daty w bazie danych
@@ -36,10 +57,18 @@ class _ExerciseTableState extends State<ExerciseTable> {
     }
   }
 
-  void _updateExercises() async {
+  Future<void> _deleteExercise(int exerciseId, String name) async {
+    await _exerciseService.deleteSetsForExercise(exerciseid: exerciseId);
+    await _exerciseService.deleteExercise(id: exerciseId);
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Ćwiczenie usunięte')),
+      );
+    }
     setState(() {
-      _exercisesFuture = _loadExercisesForSelectedDate();
+      _exerciseCards.removeWhere((card) => card.exerciseName == name);
     });
+    _exercisesStreamController.add(_exerciseCards);
   }
 
   void _showAddExerciseDialog() {
@@ -77,21 +106,22 @@ class _ExerciseTableState extends State<ExerciseTable> {
     );
   }
 
-  Future<List<ExerciseCard>> _loadExercisesForSelectedDate() async {
+  Future<void> _loadExercisesForSelectedDate() async {
     final digitDate = DateFormat('dd-MM-yyyy').format(widget.selectedDate);
     _date = await _exerciseService.getDateByDigitDate(digitDate: digitDate);
 
     if (_date != null) {
-      final exercisesList =
+      final dbExercises =
           await _exerciseService.getExercisesForDate(dateId: _date!.id);
-      return exercisesList
+      final dbExercisesCards = dbExercises
           .map((exercise) => ExerciseCard(
                 exerciseName: exercise.name,
                 selectedDate: _date!,
+                onDeleteCard: _deleteExercise,
               ))
           .toList();
-    } else {
-      return [];
+      _exerciseCards = dbExercisesCards;
+      _exercisesStreamController.add(_exerciseCards);
     }
   }
 
@@ -99,55 +129,59 @@ class _ExerciseTableState extends State<ExerciseTable> {
   void initState() {
     super.initState();
     _exerciseService = ExerciseService();
-    _updateExercises();
+    _exercisesStreamController = StreamController<List<ExerciseCard>>.broadcast(
+      onListen: () {
+        _exercisesStreamController.sink.add(_exerciseCards);
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _exercisesStreamController.close();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<ExerciseCard>>(
-        future: _exercisesFuture,
+    return FutureBuilder<void>(
+        future: _loadExercisesForSelectedDate(),
         builder: (context, snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.done:
-              if (snapshot.hasData && snapshot.data != null) {
-                final exercises = snapshot.data!;
-                return AnimatedOpacity(
-                  opacity: _isLoaded ? 1.0 : 0.0,
-                  duration: const Duration(milliseconds: 300),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Builder(
-                        builder: (context) {
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            if (!_isLoaded) {
-                              setState(() {
-                                _isLoaded = true;
-                              });
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  StreamBuilder<List<ExerciseCard>>(
+                      stream: _exercisesStreamController.stream,
+                      builder: (context, snapshot) {
+                        switch (snapshot.connectionState) {
+                          case ConnectionState.active:
+                            if (snapshot.hasData && snapshot.data != null) {
+                              final exercises = snapshot.data!;
+                              return ListView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount: exercises.length,
+                                itemBuilder: (context, index) {
+                                  return exercises[index];
+                                },
+                              );
+                            } else {
+                              return const SizedBox(height: 0.0);
                             }
-                          });
-                          return ListView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: exercises.length,
-                            itemBuilder: (context, index) {
-                              return exercises[index];
-                            },
-                          );
-                        },
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: normalButton("+ Dodaj ćwiczenie", () {
-                          _showAddExerciseDialog();
-                        }),
-                      ),
-                    ],
+                          default:
+                            return const SizedBox(height: 0.0);
+                        }
+                      }),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: normalButton("+ Dodaj ćwiczenie", () {
+                      _showAddExerciseDialog();
+                    }),
                   ),
-                );
-              } else {
-                return const SizedBox(height: 0);
-              }
+                ],
+              );
             default:
               return const SizedBox(height: 0);
           }
@@ -155,15 +189,17 @@ class _ExerciseTableState extends State<ExerciseTable> {
   }
 }
 
-//exercise card moze byc stworzony tylko gdy dane cwiczenie istnieje w dany dzien (patrz metoda _loadExercisesForSelectedDays)
+//exercise card moze byc stworzony tylko gdy dane cwiczenie istnieje w dany dzien (patrz metoda _loadExercises)
 class ExerciseCard extends StatefulWidget {
   final DatabaseDate selectedDate;
   final String exerciseName;
+  final Function(int exerciseId, String name) onDeleteCard;
 
   const ExerciseCard({
     super.key,
     required this.selectedDate,
     required this.exerciseName,
+    required this.onDeleteCard,
   });
 
   @override
@@ -171,24 +207,33 @@ class ExerciseCard extends StatefulWidget {
 }
 
 class _ExerciseCardState extends State<ExerciseCard> {
-  late int _setNumber;
-  late Future<List<ExerciseRow>> _setsFuture;
+  late int _setCounter = 0;
   late final ExerciseService _exerciseService;
   late DatabaseExercise? _exercise;
 
-  late bool _isLoaded;
+  late StreamController<List<ExerciseRow>> _setsStreamController;
+  List<ExerciseRow> _setRows = [];
 
-  void _addSet(int setIndex) async {
+  Future<void> _addSet(int setIndex) async {
     if (_exercise != null) {
+      if (_setRows.length >= 10) {
+        if (mounted) {
+          showErrorDialog(context);
+        }
+      }
       await _exerciseService.createSet(
         exerciseId: _exercise!.id,
         setIndex: setIndex,
         weight: 0,
         reps: 0,
       );
+      _setRows.add(ExerciseRow(
+        exercise: _exercise!,
+        setIndex: setIndex,
+        onDeleteSet: _deleteSet,
+      ));
+      _setsStreamController.add(_setRows);
       log("created set with index $setIndex");
-
-      _updateSets();
     } else {
       if (mounted) {
         showErrorDialog(context);
@@ -196,194 +241,211 @@ class _ExerciseCardState extends State<ExerciseCard> {
     }
   }
 
-  void _updateSets() async {
-    setState(() {
-      _setsFuture = _loadSetsForExercise();
-    });
-  }
-
-  void _checkAndDeleteEmptySets() async {
-    DatabaseExercise? exercise =
-        await _exerciseService.getExerciseByDateAndName(
-            dateId: widget.selectedDate.id, name: widget.exerciseName);
-    _exercise = exercise;
+  Future<void> _deleteSet(int setIndex) async {
     if (_exercise != null) {
-      final sets =
-          await _exerciseService.getSetsForExercise(exerciseId: _exercise!.id);
-      sets.sort((a, b) => a.setIndex.compareTo(b.setIndex));
-      for (var oneSet in sets) {
-        final weight = oneSet.weight;
-        final reps = oneSet.reps;
-        if (weight == 0 && reps == 0) {
-          log("Prep to deleted set with index: ${oneSet.setIndex}");
-          await _exerciseService.deleteSet(id: oneSet.id);
-          log("delated");
-        }
-      }
+      await _exerciseService.deleteSetByIndexForExercise(
+        exerciseId: _exercise!.id,
+        setIndex: setIndex,
+      );
+      setState(() {
+        _setRows.removeWhere((row) => row.setIndex == setIndex);
+      });
+      _setsStreamController.add(_setRows);
     }
   }
 
-  Future<List<ExerciseRow>> _loadSetsForExercise() async {
+  Future<void> _loadSetsForExercise() async {
     DatabaseExercise? exercise =
         await _exerciseService.getExerciseByDateAndName(
             dateId: widget.selectedDate.id, name: widget.exerciseName);
     _exercise = exercise;
-    if (_exercise != null) {
-      final sets =
-          await _exerciseService.getSetsForExercise(exerciseId: _exercise!.id);
-      sets.sort((a, b) => a.setIndex.compareTo(b.setIndex));
-      if (sets.isEmpty) {
-        _setNumber = 1;
+
+    if (exercise != null) {
+      final dbSets =
+          await _exerciseService.getSetsForExercise(exerciseId: exercise.id);
+      if (dbSets.isEmpty) {
+        _setCounter = 0;
+        _addSet(++_setCounter);
       } else {
-        _setNumber = sets.last.setIndex;
+        _setCounter = dbSets.last.setIndex;
+        final rowDbSets = dbSets
+            .map((dbSet) => ExerciseRow(
+                  exercise: exercise,
+                  setIndex: dbSet.setIndex,
+                  onDeleteSet: _deleteSet,
+                ))
+            .toList();
+        _setRows = rowDbSets;
+        _setsStreamController.add(_setRows);
       }
-      return sets
-          .map((dbSet) => ExerciseRow(
-                exercise: _exercise!,
-                setIndex: dbSet.setIndex,
-              ))
-          .toList();
-    } else {
-      return [];
     }
   }
 
   @override
   void initState() {
     super.initState();
-    _isLoaded = false;
     _exerciseService = ExerciseService();
-    _updateSets();
+    _setsStreamController = StreamController<List<ExerciseRow>>.broadcast(
+      onListen: () {
+        _setsStreamController.sink.add(_setRows);
+      },
+    );
   }
 
   @override
   void dispose() {
     log("dispose card");
-    _checkAndDeleteEmptySets();
+    _setsStreamController.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<ExerciseRow>>(
-      future: _setsFuture,
+    return FutureBuilder<void>(
+      future: _loadSetsForExercise(),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          if (snapshot.hasData && snapshot.data != null) {
-            final sets = snapshot.data!;
-            if (_exercise != null) {
-              if (sets.isEmpty) {
-                _addSet(_setNumber);
-              }
-            } else {
-              if (mounted) {
-                showErrorDialog(context);
-              }
-            }
-            return AnimatedOpacity(
-              opacity: _isLoaded ? 1.0 : 0.0,
-              duration: const Duration(milliseconds: 300),
-              child: _buildExerciseCard(sets),
-            );
-          } else {
-            return const SizedBox(height: 0);
-          }
-        } else {
-          return const SizedBox(height: 0);
-        }
-      },
-    );
-  }
-
-  Widget _buildExerciseCard(List<ExerciseRow> sets) {
-    return Card(
-      margin: const EdgeInsets.all(8.0),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const SizedBox(width: 15),
-                Text(
-                  widget.exerciseName,
-                  style: const TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16.0),
-            const Row(
-              children: [
-                Expanded(
-                  child: Center(
-                    child: Text('Seria',
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold)),
-                  ),
-                ),
-                Expanded(
-                  child: Center(
-                    child: Text('kg',
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold)),
-                  ),
-                ),
-                Expanded(
-                  child: Center(
-                    child: Text('x',
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold)),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8.0),
-            Builder(
-              builder: (context) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  if (!_isLoaded) {
-                    setState(() {
-                      _isLoaded = true;
-                    });
-                  }
-                });
-                return ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: sets.length,
-                  itemBuilder: (context, index) {
-                    return sets[index];
-                  },
-                );
-              },
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: TextButton(
-                onPressed: () => _addSet(++_setNumber),
-                style: TextButton.styleFrom(
-                  elevation: 3.0,
-                  backgroundColor: colorPrimaryButton,
-                  foregroundColor: colorSecondaryButton,
-                ),
-                child: const Padding(
-                  padding: EdgeInsets.all(5.0),
-                  child: Text(
-                    "+ Dodaj serię",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.normal,
+        switch (snapshot.connectionState) {
+          case ConnectionState.done:
+            return Card(
+              margin: const EdgeInsets.all(8.0),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          widget.exerciseName,
+                          style: const TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        PopupMenuButton<String>(
+                          onSelected: (value) async {
+                            if (value == 'delete') {
+                              final confirm = await showDialog<bool>(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: const Text('Usuń ćwiczenie'),
+                                  content: const Text(
+                                      'Czy na pewno chcesz usunąć to ćwiczenie?'),
+                                  actions: [
+                                    TextButton(
+                                      child: const Text('Anuluj'),
+                                      onPressed: () {
+                                        Navigator.of(context).pop(false);
+                                      },
+                                    ),
+                                    TextButton(
+                                      child: const Text('Usuń'),
+                                      onPressed: () {
+                                        Navigator.of(context).pop(true);
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              );
+                              if (confirm == true && _exercise != null) {
+                                widget.onDeleteCard(
+                                    _exercise!.id, _exercise!.name);
+                                // Informowanie o usunięciu ćwiczenia
+                                // Zaktualizuj widok po usunięciu
+                              }
+                            }
+                          },
+                          itemBuilder: (BuildContext context) {
+                            return [
+                              const PopupMenuItem<String>(
+                                value: 'delete',
+                                child: Text('Usuń'),
+                              ),
+                            ];
+                          },
+                          icon: const Icon(Icons.more_vert),
+                        ),
+                      ],
                     ),
-                  ),
+                    const SizedBox(height: 16.0),
+                    const Row(
+                      children: [
+                        Expanded(
+                          child: Center(
+                            child: Text('Seria',
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold)),
+                          ),
+                        ),
+                        Expanded(
+                          child: Center(
+                            child: Text('kg',
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold)),
+                          ),
+                        ),
+                        Expanded(
+                          child: Center(
+                            child: Text('x',
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold)),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8.0),
+                    StreamBuilder<List<ExerciseRow>>(
+                        stream: _setsStreamController.stream,
+                        builder: (context, snapshot) {
+                          switch (snapshot.connectionState) {
+                            case ConnectionState.active:
+                              if (snapshot.hasData && snapshot.data != null) {
+                                final sets = snapshot.data!;
+                                return ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: sets.length,
+                                  itemBuilder: (context, index) {
+                                    return sets[index];
+                                  },
+                                );
+                              } else {
+                                return const SizedBox(height: 0.0);
+                              }
+                            default:
+                              return const SizedBox(height: 0.0);
+                          }
+                        }),
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: TextButton(
+                        onPressed: () => _addSet(++_setCounter),
+                        style: TextButton.styleFrom(
+                          elevation: 3.0,
+                          backgroundColor: colorPrimaryButton,
+                          foregroundColor: colorSecondaryButton,
+                        ),
+                        child: const Padding(
+                          padding: EdgeInsets.all(5.0),
+                          child: Text(
+                            "+ Dodaj serię",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
-          ],
-        ),
-      ),
+            );
+          default:
+            return const SizedBox(height: 0);
+        }
+      },
     );
   }
 }
@@ -391,10 +453,13 @@ class _ExerciseCardState extends State<ExerciseCard> {
 class ExerciseRow extends StatefulWidget {
   final DatabaseExercise exercise;
   final int setIndex;
+  final Function(int setIndex) onDeleteSet;
+
   const ExerciseRow({
     super.key,
     required this.exercise,
     required this.setIndex,
+    required this.onDeleteSet,
   });
 
   @override
@@ -455,31 +520,19 @@ class _ExerciseRowState extends State<ExerciseRow> {
     FocusScope.of(context).requestFocus(_repsFocusNode);
   }
 
-  Future<DatabaseSet> createOrGetExistingsSet() async {
+  Future<void> createOrGetExistingsSet() async {
     final dbSet = await _exerciseService.getSetByExerciseAndIndex(
       exerciseId: widget.exercise.id,
       setIndex: setIndex,
     );
-    if (dbSet == null) {
-      //logika programu jest skonstruowana tak ze dbSet nigdy nie powinien byc null
-      final newSet = await _exerciseService.createSet(
-        exerciseId: widget.exercise.id,
-        setIndex: setIndex,
-        weight: 0,
-        reps: 0,
-      );
-      _set = newSet;
-      return newSet;
-    } else {
-      _set = dbSet;
+    _set = dbSet;
+    if (dbSet != null) {
       if (dbSet.weight != 0) {
         _weightController.text = dbSet.weight.toString();
       }
       if (dbSet.reps != 0) {
         _repsController.text = dbSet.reps.toString();
       }
-
-      return dbSet;
     }
   }
 
@@ -506,68 +559,84 @@ class _ExerciseRowState extends State<ExerciseRow> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
+    log("building row");
+    return FutureBuilder<void>(
       future: createOrGetExistingsSet(),
       builder: (context, snapshot) {
         switch (snapshot.connectionState) {
           case ConnectionState.done:
             _setupTextControllerListener();
-            return Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 0.0, vertical: 0.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Center(
-                      child: Text(
-                        '$setIndex',
+            return Dismissible(
+              key: Key(widget.setIndex.toString()),
+              direction: DismissDirection.endToStart,
+              onDismissed: (direction) {
+                widget.onDeleteSet(widget.setIndex);
+              },
+              background: Container(
+                color: Colors.red,
+                alignment: Alignment.centerRight,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: const Icon(Icons.delete, color: Colors.white),
+              ),
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 0.0, vertical: 0.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Center(
+                        child: Text(
+                          '$setIndex',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: TextField(
+                        controller: _weightController,
+                        focusNode: _weightFocusNode,
+                        decoration: const InputDecoration(
+                          hintText: '',
+                          border: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide:
+                                BorderSide(width: 2, color: colorAccent),
+                          ),
+                        ),
+                        keyboardType: TextInputType.number,
+                        textAlign: TextAlign.center,
                         style: const TextStyle(fontSize: 16),
+                        textInputAction: TextInputAction.next,
+                        onSubmitted: (value) {
+                          _onKgSubmitted();
+                        },
                       ),
                     ),
-                  ),
-                  Expanded(
-                    child: TextField(
-                      controller: _weightController,
-                      focusNode: _weightFocusNode,
-                      decoration: const InputDecoration(
-                        hintText: '',
-                        border: InputBorder.none,
-                        enabledBorder: InputBorder.none,
-                        focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(width: 2, color: colorAccent),
+                    Expanded(
+                      child: TextField(
+                        controller: _repsController,
+                        focusNode: _repsFocusNode,
+                        decoration: const InputDecoration(
+                          hintText: '',
+                          border: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide:
+                                BorderSide(width: 2, color: colorAccent),
+                          ),
                         ),
+                        keyboardType: TextInputType.number,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(fontSize: 16),
+                        textInputAction: TextInputAction.next,
+                        onSubmitted: (value) {
+                          _onRepsSubmitted();
+                        },
                       ),
-                      keyboardType: TextInputType.number,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 16),
-                      textInputAction: TextInputAction.next,
-                      onSubmitted: (value) {
-                        _onKgSubmitted();
-                      },
                     ),
-                  ),
-                  Expanded(
-                    child: TextField(
-                      controller: _repsController,
-                      focusNode: _repsFocusNode,
-                      decoration: const InputDecoration(
-                        hintText: '',
-                        border: InputBorder.none,
-                        enabledBorder: InputBorder.none,
-                        focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(width: 2, color: colorAccent),
-                        ),
-                      ),
-                      keyboardType: TextInputType.number,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 16),
-                      textInputAction: TextInputAction.next,
-                      onSubmitted: (value) {
-                        _onRepsSubmitted();
-                      },
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             );
           default:

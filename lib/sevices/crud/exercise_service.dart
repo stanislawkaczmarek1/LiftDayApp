@@ -1,5 +1,4 @@
-import 'dart:developer';
-
+import 'dart:async';
 import 'package:intl/intl.dart';
 import 'package:liftday/sevices/crud/crud_exceptions.dart';
 import 'package:liftday/sevices/crud/tables_classes/database_constans.dart';
@@ -39,7 +38,6 @@ class ExerciseService {
     );
 
     _dates.add(date);
-    //_notesStreamController.add(_notes);
     return date;
   }
 
@@ -58,7 +56,6 @@ class ExerciseService {
       final date = DatabaseDate.fromRow(dates.first);
       _dates.removeWhere((date) => date.id == id);
       _dates.add(date);
-      //_notesStreamController.add(_notes);
       return date;
     }
   }
@@ -85,7 +82,6 @@ class ExerciseService {
       throw CouldNotDeleteNote();
     } else {
       _dates.removeWhere((note) => note.id == id);
-      //_notesStreamController.add(_notes);
     }
   }
 
@@ -159,7 +155,6 @@ class ExerciseService {
     );
 
     _exercises.add(exercise);
-    //_notesStreamController.add(_notes);
     return exercise;
   }
 
@@ -239,7 +234,6 @@ class ExerciseService {
       throw CouldNotDeleteNote();
     } else {
       _exercises.removeWhere((exercise) => exercise.id == id);
-      //_notesStreamController.add(_notes);
     }
   }
 
@@ -308,7 +302,6 @@ class ExerciseService {
     );
 
     _sets.add(newSet);
-    //_notesStreamController.add(_notes);
     return newSet;
   }
 
@@ -338,7 +331,6 @@ class ExerciseService {
       where: "$exerciseIdColumn = ?",
       whereArgs: [exerciseId],
     );
-
     if (sets.isEmpty) {
       return [];
     } else {
@@ -363,7 +355,6 @@ class ExerciseService {
       return null;
     } else {
       final existingSet = DatabaseSet.fromRow(sets.first);
-      //_notesStreamController.add(_notes);
       return existingSet;
     }
   }
@@ -404,7 +395,6 @@ class ExerciseService {
   Future<void> deleteSet({required int id}) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
-    log('Attempting to delete entry with id: $id');
     final deletedCount = await db.delete(
       setsTable,
       where: "id = ?",
@@ -414,6 +404,38 @@ class ExerciseService {
       throw CouldNotDeleteNote();
     } else {
       _sets.removeWhere((existingSet) => existingSet.id == id);
+    }
+  }
+
+  Future<void> deleteSetByIndexForExercise(
+      {required int setIndex, required int exerciseId}) async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+    final deletedCount = await db.delete(
+      setsTable,
+      where: "$exerciseIdColumn = ? AND $setIndexColumn = ?",
+      whereArgs: [exerciseId, setIndex],
+    );
+    if (deletedCount == 0) {
+      throw CouldNotDeleteNote();
+    } else {
+      _sets.removeWhere((existingSet) => ((existingSet.setIndex == setIndex) &&
+          (existingSet.exerciseId == exerciseId)));
+    }
+  }
+
+  Future<void> deleteSetsForExercise({required int exerciseid}) async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+    final deletedCount = await db.delete(
+      setsTable,
+      where: "$exerciseIdColumn = ?",
+      whereArgs: [exerciseid],
+    );
+    if (deletedCount == 0) {
+      throw CouldNotDeleteNote();
+    } else {
+      _sets.removeWhere((existingSet) => existingSet.exerciseId == exerciseid);
     }
   }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:liftday/dialogs/error_dialog.dart';
 import 'package:liftday/ui_constants/colors.dart';
 import 'package:liftday/view/widgets/ui_elements.dart';
 
@@ -22,10 +23,17 @@ class _SimpleExerciseTableState extends State<SimpleExerciseTable> {
     });
   }
 
-  void _addExercise(String name) {
+  bool _addExercise(String name) {
+    bool added = false;
     setState(() {
-      exercises.add(name);
+      if (exercises.contains(name)) {
+        added = false;
+      } else {
+        exercises.add(name);
+        added = true;
+      }
     });
+    return added;
   }
 
   void _showAddExerciseDialog() {
@@ -52,10 +60,14 @@ class _SimpleExerciseTableState extends State<SimpleExerciseTable> {
               child: const Text('Dodaj'),
               onPressed: () {
                 if (exerciseName.isNotEmpty) {
-                  _addExercise(exerciseName);
-                  _getExercises();
+                  if (_addExercise(exerciseName)) {
+                    _getExercises();
+                    Navigator.of(context).pop();
+                  } else {
+                    Navigator.of(context).pop();
+                    showErrorDialog(context);
+                  }
                 }
-                Navigator.of(context).pop();
               },
             ),
           ],
