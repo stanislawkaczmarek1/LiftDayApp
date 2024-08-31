@@ -24,6 +24,16 @@ class _ChooseTrainingDaysViewState extends State<ChooseTrainingDaysView> {
     'Sunday',
   ];
 
+  final List<String> daysOfWeekToDisplay = [
+    'Pon',
+    'Wt',
+    'Śr',
+    'Czw',
+    'Pt',
+    'Sob',
+    'Nd',
+  ];
+
   final List<bool> selectedDays = List<bool>.filled(7, false);
 
   List<String> _convertDaysBoolToString() {
@@ -98,7 +108,7 @@ class _ChooseTrainingDaysViewState extends State<ChooseTrainingDaysView> {
                       ),
                       child: Center(
                         child: Text(
-                          daysOfWeek[index],
+                          daysOfWeekToDisplay[index],
                           style: TextStyle(
                             color: selectedDays[index]
                                 ? Colors.white

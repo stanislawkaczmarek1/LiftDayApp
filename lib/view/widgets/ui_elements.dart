@@ -7,11 +7,13 @@ TextButton normalButton(String text, OnPressedFunction onPressed) {
   return TextButton(
     onPressed: onPressed,
     style: TextButton.styleFrom(
-        elevation: 3.0,
-        backgroundColor: colorPrimaryButton,
-        foregroundColor: colorSecondaryButton,
-        side: const BorderSide(width: 2.0, color: colorSecondaryButton),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))),
+      elevation: 3.0,
+      backgroundColor: colorPrimaryButton,
+      foregroundColor: colorSecondaryButton,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+    ),
     child: Padding(
       padding: const EdgeInsets.all(5.0),
       child: Text(

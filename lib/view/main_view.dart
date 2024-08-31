@@ -3,7 +3,6 @@ import 'package:liftday/ui_constants/colors.dart';
 import 'package:liftday/sevices/provider/appbar_title_provider.dart';
 import 'package:liftday/view/pages/training_page.dart';
 import 'package:liftday/view/pages/plans_pages.dart';
-import 'package:liftday/view/pages/settings_page.dart';
 import 'package:provider/provider.dart';
 
 class MainView extends StatefulWidget {
@@ -15,12 +14,11 @@ class MainView extends StatefulWidget {
 
 class _MainViewState extends State<MainView> {
   final List<Widget> _pages = [
-    const PlansPage(),
     const TrainingPage(),
-    const SettingsPage(),
+    const PlansPage(),
   ];
 
-  int _selectedIndex = 1;
+  int _selectedIndex = 0;
 
   void _onItemTapped(int index) {
     setState(() {
@@ -42,16 +40,12 @@ class _MainViewState extends State<MainView> {
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.description),
-            label: 'Plans',
-          ),
-          BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
+            icon: Icon(Icons.description),
+            label: 'Plans',
           ),
         ],
         currentIndex: _selectedIndex,

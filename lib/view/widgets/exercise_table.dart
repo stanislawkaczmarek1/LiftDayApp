@@ -422,8 +422,11 @@ class _ExerciseCardState extends State<ExerciseCard> {
                         onPressed: () => _addSet(++_setCounter),
                         style: TextButton.styleFrom(
                           elevation: 3.0,
-                          backgroundColor: colorPrimaryButton,
+                          backgroundColor: colorMainBackgroud,
                           foregroundColor: colorSecondaryButton,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
                         child: const Padding(
                           padding: EdgeInsets.all(5.0),

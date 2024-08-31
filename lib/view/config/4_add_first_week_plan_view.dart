@@ -20,6 +20,27 @@ class _AddFirstWeekPlanViewState extends State<AddFirstWeekPlanView> {
   late SimpleExerciseTable _exerciseTable;
   List<String> exercises = [];
 
+  String _getPolishDayAbbreviation(String dayOfWeek) {
+    switch (dayOfWeek) {
+      case 'Monday':
+        return 'Pon';
+      case 'Tuesday':
+        return 'Wt';
+      case 'Wednesday':
+        return 'Śr';
+      case 'Thursday':
+        return 'Czw';
+      case 'Friday':
+        return 'Pt';
+      case 'Saturday':
+        return 'Sob';
+      case 'Sunday':
+        return 'Ndz';
+      default:
+        return dayOfWeek;
+    }
+  }
+
   @override
   void initState() {
     _exerciseTable = SimpleExerciseTable(
@@ -97,7 +118,7 @@ class _AddFirstWeekPlanViewState extends State<AddFirstWeekPlanView> {
                   Padding(
                     padding: const EdgeInsets.all(20.0),
                     child: Text(
-                      'Dodaj trening w $dayOfWeek',
+                      'Dodaj trening w ${_getPolishDayAbbreviation(dayOfWeek)}',
                       style: const TextStyle(
                           fontSize: 24, fontWeight: FontWeight.bold),
                       textAlign: TextAlign.center,
