@@ -25,18 +25,32 @@ class _TrainingPageState extends State<TrainingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          AppCalendar(onDaySelected: _onDaySelected),
-          const SizedBox(height: 20),
-          if (_selectedDay != null)
-            ExerciseTable(
-              key: ValueKey(_selectedDay),
-              selectedDate: _selectedDay!,
-            ),
-        ],
+    return SizedBox.expand(
+      child: Container(
+        color: colorPrimaryButton,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Container(
+                decoration: const BoxDecoration(
+                  color: colorMainBackgroud,
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(20.0),
+                    bottomRight: Radius.circular(20.0),
+                  ),
+                ),
+                child: AppCalendar(onDaySelected: _onDaySelected),
+              ),
+              const SizedBox(height: 20),
+              if (_selectedDay != null)
+                ExerciseTable(
+                  key: ValueKey(_selectedDay),
+                  selectedDate: _selectedDay!,
+                ),
+            ],
+          ),
+        ),
       ),
     );
   }

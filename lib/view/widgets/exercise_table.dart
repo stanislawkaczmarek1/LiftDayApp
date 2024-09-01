@@ -9,7 +9,6 @@ import 'package:liftday/sevices/crud/tables_classes/database_date.dart';
 import 'package:liftday/sevices/crud/tables_classes/database_exercise.dart';
 import 'package:liftday/sevices/crud/tables_classes/database_set.dart';
 import 'package:liftday/ui_constants/colors.dart';
-import 'package:liftday/view/widgets/ui_elements.dart';
 
 class ExerciseTable extends StatefulWidget {
   final DateTime selectedDate;
@@ -175,11 +174,28 @@ class _ExerciseTableState extends State<ExerciseTable> {
                         }
                       }),
                   Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: normalButton("+ Dodaj ćwiczenie", () {
-                      _showAddExerciseDialog();
-                    }),
-                  ),
+                      padding: const EdgeInsets.all(16.0),
+                      child: TextButton(
+                          onPressed: _showAddExerciseDialog,
+                          style: TextButton.styleFrom(
+                            elevation: 3.0,
+                            backgroundColor: colorMainBackgroud,
+                            foregroundColor: colorSecondaryButton,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Padding(
+                            padding: EdgeInsets.all(5.0),
+                            child: Text(
+                              "+ Dodaj ćwiczenie",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                          ))),
                 ],
               );
             default:
@@ -307,6 +323,8 @@ class _ExerciseCardState extends State<ExerciseCard> {
         switch (snapshot.connectionState) {
           case ConnectionState.done:
             return Card(
+              color: colorMainBackgroud,
+              surfaceTintColor: colorMainBackgroud,
               margin: const EdgeInsets.all(8.0),
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -372,7 +390,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
                       children: [
                         Expanded(
                           child: Center(
-                            child: Text('Seria',
+                            child: Text('seria',
                                 style: TextStyle(
                                     fontSize: 16, fontWeight: FontWeight.bold)),
                           ),
@@ -422,7 +440,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
                         onPressed: () => _addSet(++_setCounter),
                         style: TextButton.styleFrom(
                           elevation: 3.0,
-                          backgroundColor: colorMainBackgroud,
+                          backgroundColor: colorPrimaryButton,
                           foregroundColor: colorSecondaryButton,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
