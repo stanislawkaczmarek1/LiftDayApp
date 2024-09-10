@@ -195,6 +195,31 @@ class ExerciseService {
     });
   }
 
+  Future<void> saveTrainingDay(ExerciseDay exerciseDay) async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+    await db.insert(
+      trainingDaysTable,
+      {
+        dayColumn: exerciseDay.day,
+        exercisesColumn: exerciseDay.exercises.join(','),
+      },
+    );
+  }
+
+  Future<List<ExerciseDay>> getTrainingDays() async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+    final List<Map<String, dynamic>> maps = await db.query(trainingDaysTable);
+
+    return List.generate(maps.length, (i) {
+      return ExerciseDay(
+        day: maps[i][dayColumn],
+        exercises: (maps[i][exercisesColumn] as String).split(','),
+      );
+    });
+  }
+
   Future<DatabaseExercise> getExercise({required int id}) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
@@ -469,6 +494,7 @@ class ExerciseService {
       await db.execute(createDatesTable);
       await db.execute(createExerciseTable);
       await db.execute(createSetsTable);
+      await db.execute(createTrainingDaysTable);
 
       //await _cacheNotes();
     } on MissingPlatformDirectoryException {

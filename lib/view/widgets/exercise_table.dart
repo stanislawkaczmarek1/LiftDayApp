@@ -237,11 +237,25 @@ class _ExerciseCardState extends State<ExerciseCard> {
           showErrorDialog(context);
         }
       }
+
+      int lastSetWeight = 0;
+      int lastSetReps = 0;
+
+      if (_setRows.isNotEmpty) {
+        final lastSet = _setRows.last;
+        final dbLastSet = await _exerciseService.getSetByExerciseAndIndex(
+            exerciseId: _exercise!.id, setIndex: lastSet.setIndex);
+        if (dbLastSet != null) {
+          lastSetWeight = dbLastSet.weight;
+          lastSetReps = dbLastSet.reps;
+        }
+      }
+
       await _exerciseService.createSet(
         exerciseId: _exercise!.id,
         setIndex: setIndex,
-        weight: 0,
-        reps: 0,
+        weight: lastSetWeight,
+        reps: lastSetReps,
       );
       _setRows.add(ExerciseRow(
         exercise: _exercise!,

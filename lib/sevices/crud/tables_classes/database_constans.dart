@@ -1,7 +1,8 @@
-const dbName = 'app_datebase.db';
+const dbName = 'app_database.db';
 const datesTable = 'dates';
 const exercisesTable = 'exercises';
 const setsTable = 'sets';
+const trainingDaysTable = 'training_days';
 const idColumn = 'id';
 const digitDateColumn = 'digit_date';
 const dayColumn = 'day';
@@ -11,6 +12,8 @@ const exerciseIdColumn = 'exercise_id';
 const setIndexColumn = 'set_index';
 const weightColumn = 'weight';
 const repsColumn = 'reps';
+const exercisesColumn = 'exercises';
+const isFromPlanColumn = 'is_from_plan';
 const createDatesTable = """CREATE TABLE IF NOT EXISTS "dates" (
 	"id"	INTEGER NOT NULL,
 	"digit_date"	TEXT NOT NULL UNIQUE,
@@ -31,5 +34,12 @@ const createSetsTable = """CREATE TABLE IF NOT EXISTS "sets" (
 	"weight"	INTEGER NOT NULL,
 	"reps"	INTEGER NOT NULL,
 	FOREIGN KEY("exercise_id") REFERENCES "exercises"("id"),
+	PRIMARY KEY("id" AUTOINCREMENT)
+);""";
+const createTrainingDaysTable = """CREATE TABLE IF NOT EXISTS "training_days" (
+	"id"	INTEGER NOT NULL,
+	"day"	TEXT NOT NULL UNIQUE,
+	"exercises"	TEXT NOT NULL,
+  "is_from_plan"	INTEGER NOT NULL DEFAULT 1,
 	PRIMARY KEY("id" AUTOINCREMENT)
 );""";

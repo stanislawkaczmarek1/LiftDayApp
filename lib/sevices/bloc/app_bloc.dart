@@ -106,6 +106,11 @@ class AppBloc extends Bloc<AppEvent, AppState> {
             exerciseDays: _exerciseDaysData,
             dates: dates,
           );
+
+          for (ExerciseDay exerciseDay in _exerciseDaysData) {
+            await _exerciseService.saveTrainingDay(exerciseDay);
+          }
+
           _settingsService.setAppConfiguredFlag(true);
           emit(const AppStateMainView());
         }
