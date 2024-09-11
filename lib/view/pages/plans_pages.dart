@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:liftday/dialogs/are_you_sure_to_delate_plan.dart';
+import 'package:liftday/sevices/crud/exercise_day.dart';
+import 'package:liftday/sevices/crud/exercise_service.dart';
 import 'package:liftday/ui_constants/colors.dart';
 import 'package:liftday/view/widgets/ui_elements.dart';
 
@@ -10,71 +13,158 @@ class PlansPage extends StatefulWidget {
 }
 
 class _PlansPageState extends State<PlansPage> {
+  bool isTrainingPlanExpanded = true;
+  bool isOtherDaysExpanded = true;
+
+  final GlobalKey _repaintKey = GlobalKey();
+
+  Future<List<ExerciseDay>> _fetchTrainingDays() async {
+    final exerciseService = ExerciseService();
+    return await exerciseService.getTrainingDays();
+  }
+
+/*
+  Future<void> _captureAndSharePng() async {
+    try {
+      // Renderowanie obszaru RepaintBoundary jako obrazu
+      RenderRepaintBoundary boundary = _repaintKey.currentContext!
+          .findRenderObject() as RenderRepaintBoundary;
+      var image = await boundary.toImage(pixelRatio: 3.0);
+      ByteData? byteData = await image.toByteData(format: ImageByteFormat.png);
+      Uint8List pngBytes = byteData!.buffer.asUint8List();
+
+      // Zapis do pliku tymczasowego
+      final directory = (await getTemporaryDirectory()).path;
+      final imgFile = File('$directory/training_plan.png');
+      await imgFile.writeAsBytes(pngBytes);
+
+      // Udostępnienie pliku
+      await Share.shareXFiles([XFile(imgFile.path)],
+          text: 'Mój Plan Treningowy');
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
+  */
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: colorPrimaryButton,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(16.0),
-              decoration: BoxDecoration(
-                color: colorMainBackgroud,
-                borderRadius: BorderRadius.circular(12.0),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Mój plan",
-                    style: TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                    ),
+    return SizedBox.expand(
+      child: Container(
+        color: colorPrimaryButton,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    color: colorMainBackgroud,
+                    borderRadius: BorderRadius.circular(12.0),
                   ),
-                  const SizedBox(height: 16.0),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildTextButton("Zobacz", Icons.remove_red_eye),
-                      _buildTextButton("Zastąp", Icons.autorenew),
-                      _buildTextButton("Usuń", Icons.delete),
+                      const Text(
+                        "Mój plan",
+                        style: TextStyle(
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 24.0),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          _buildTextButton("Zastąp", Icons.autorenew, () {}),
+                          _buildTextButton("Usuń", Icons.delete, () {
+                            showAreYouSureToDeletePlan(context);
+                          }),
+                          _buildTextButton("Udostępnij", Icons.share, () {
+                            //_captureAndSharePng();
+                          }),
+                        ],
+                      ),
                     ],
                   ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-            // Container for "Dni treningowe" and related widgets
-            Container(
-              padding: const EdgeInsets.all(16.0),
-              decoration: BoxDecoration(
-                color: colorMainBackgroud,
-                borderRadius: BorderRadius.circular(12.0),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Dni treningowe",
-                    style: TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                    ),
+                ),
+                const SizedBox(height: 20),
+                Container(
+                  padding: const EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    color: colorMainBackgroud,
+                    borderRadius: BorderRadius.circular(12.0),
                   ),
-                  const SizedBox(height: 16.0),
-                  _buildDropdownTile(
-                      title: "Dni z planu treningowego", main: false),
-                  _buildDropdownTile(title: "Inne dni", main: false),
-                  const SizedBox(height: 10),
-                  normalButton("+ Dodaj dzień", () {})
-                ],
-              ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Dni treningowe",
+                        style: TextStyle(
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 24.0),
+                      FutureBuilder<List<ExerciseDay>>(
+                          future: _fetchTrainingDays(),
+                          builder: (context, snapshot) {
+                            switch (snapshot.connectionState) {
+                              case ConnectionState.done:
+                                final trainingPlanDays = snapshot.data!
+                                    .where((day) => day.isFromPlan == 1)
+                                    .toList();
+                                return RepaintBoundary(
+                                  key: _repaintKey,
+                                  child: _buildDropdownTile(
+                                    title: "Dni z planu treningowego",
+                                    isExpanded: isTrainingPlanExpanded,
+                                    days: trainingPlanDays,
+                                    onExpand: () {
+                                      setState(() {
+                                        isTrainingPlanExpanded =
+                                            !isTrainingPlanExpanded;
+                                      });
+                                    },
+                                  ),
+                                );
+                              default:
+                                return const SizedBox(height: 0);
+                            }
+                          }),
+                      FutureBuilder<List<ExerciseDay>>(
+                          future: _fetchTrainingDays(),
+                          builder: (context, snapshot) {
+                            switch (snapshot.connectionState) {
+                              case ConnectionState.done:
+                                final otherDays = snapshot.data!
+                                    .where((day) => day.isFromPlan == 0)
+                                    .toList();
+                                return _buildDropdownTile(
+                                  title: "Inne dni",
+                                  isExpanded: isOtherDaysExpanded,
+                                  days: otherDays,
+                                  onExpand: () {
+                                    setState(() {
+                                      isOtherDaysExpanded =
+                                          !isOtherDaysExpanded;
+                                    });
+                                  },
+                                );
+                              default:
+                                return const SizedBox(height: 0);
+                            }
+                          }),
+                      const SizedBox(height: 10),
+                      normalButton("+ Dodaj inny dzień", () {}),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -82,33 +172,41 @@ class _PlansPageState extends State<PlansPage> {
 
   Widget _buildDropdownTile({
     required String title,
-    bool isExpanded = false,
+    required bool isExpanded,
+    required List<ExerciseDay> days,
     VoidCallback? onExpand,
-    required bool main,
   }) {
-    return ListTile(
-      title: Text(
-        title,
-        style: TextStyle(
-          fontSize: main ? 18.0 : 16.0,
-          fontWeight: main ? FontWeight.bold : FontWeight.normal,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ListTile(
+          title: Text(
+            title,
+            style: const TextStyle(
+              fontSize: 16.0,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          trailing: Icon(
+            isExpanded ? Icons.expand_less : Icons.expand_more,
+          ),
+          onTap: onExpand,
         ),
-      ),
-      trailing: Icon(
-        isExpanded ? Icons.expand_less : Icons.expand_more,
-      ),
-      onTap: onExpand,
+        if (isExpanded)
+          Column(
+            children: days.map((day) => _buildExerciseDayTile(day)).toList(),
+          ),
+      ],
     );
   }
 
-  Widget _buildTextButton(String title, IconData icon) {
+  Widget _buildTextButton(
+      String title, IconData icon, void Function() onPressed) {
     return Expanded(
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 5),
         child: TextButton(
-          onPressed: () {
-            // Dodaj swoje akcje
-          },
+          onPressed: onPressed,
           style: TextButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 16),
               backgroundColor: colorPrimaryButton,
@@ -131,5 +229,71 @@ class _PlansPageState extends State<PlansPage> {
         ),
       ),
     );
+  }
+}
+
+Widget _buildExerciseDayTile(ExerciseDay day) {
+  return Container(
+    margin: const EdgeInsets.symmetric(vertical: 8.0),
+    padding: const EdgeInsets.all(16.0),
+    decoration: BoxDecoration(
+      color: colorPrimaryButton,
+      borderRadius: BorderRadius.circular(12.0),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              _getPolishDayAbbreviation(day.day),
+              style: const TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            IconButton(
+              onPressed: () {
+                // Dodaj akcję edycji
+              },
+              icon: const Icon(
+                Icons.edit,
+                size: 20.0,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8.0),
+        Text(
+          day.exercises.join(', '),
+          style: const TextStyle(
+            fontSize: 14.0,
+            color: Colors.grey,
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+String _getPolishDayAbbreviation(String dayOfWeek) {
+  switch (dayOfWeek) {
+    case 'Monday':
+      return 'Poniedziałek';
+    case 'Tuesday':
+      return 'Wtorek';
+    case 'Wednesday':
+      return 'Środa';
+    case 'Thursday':
+      return 'Czwartek';
+    case 'Friday':
+      return 'Piątek';
+    case 'Saturday':
+      return 'Sobota';
+    case 'Sunday':
+      return 'Niedziela';
+    default:
+      return dayOfWeek;
   }
 }
