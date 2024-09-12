@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:liftday/ui_constants/colors.dart';
-import 'package:liftday/sevices/bloc/app_bloc.dart';
+import 'package:liftday/constants/colors.dart';
+import 'package:liftday/sevices/bloc/config_bloc.dart';
 import 'package:liftday/sevices/bloc/app_event.dart';
 import 'package:liftday/dialogs/have_to_choose_training_days.dart';
 import 'package:liftday/view/widgets/ui_elements.dart';
@@ -63,7 +63,7 @@ class _ChooseTrainingDaysViewState extends State<ChooseTrainingDaysView> {
       canPop: false,
       onPopInvoked: (didPop) {
         if (!didPop) {
-          context.read<AppBloc>().add(const AppEventGoBack());
+          context.read<ConfigBloc>().add(const ConfigEventGoBack());
         }
       },
       child: Scaffold(
@@ -98,11 +98,12 @@ class _ChooseTrainingDaysViewState extends State<ChooseTrainingDaysView> {
                       width: squareSize,
                       height: 1.5 * squareSize,
                       decoration: BoxDecoration(
-                        color: selectedDays[index] ? colorAccent : Colors.grey,
+                        color:
+                            selectedDays[index] ? colorBabyBlue : Colors.grey,
                         borderRadius: BorderRadius.circular(8.0),
                         border: Border.all(
                           color:
-                              selectedDays[index] ? colorAccent : Colors.grey,
+                              selectedDays[index] ? colorBabyBlue : Colors.grey,
                           width: 2,
                         ),
                       ),
@@ -132,8 +133,8 @@ class _ChooseTrainingDaysViewState extends State<ChooseTrainingDaysView> {
                 final List<String> confirmedDays = _convertDaysBoolToString();
                 if (confirmedDays.isNotEmpty) {
                   context
-                      .read<AppBloc>()
-                      .add(AppEventConfirmTrainingDays(confirmedDays));
+                      .read<ConfigBloc>()
+                      .add(ConfigEventConfirmTrainingDays(confirmedDays));
                 } else {
                   showHaveToChooseTrainingDays(context);
                 }

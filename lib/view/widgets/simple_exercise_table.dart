@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:liftday/dialogs/error_dialog.dart';
-import 'package:liftday/ui_constants/colors.dart';
+import 'package:liftday/constants/colors.dart';
 import 'package:liftday/view/widgets/ui_elements.dart';
 
 typedef ExercisesCallback = void Function(List<String> exercisesFromTable);
 
 class SimpleExerciseTable extends StatefulWidget {
+  final List<String>? exercises;
   final ExercisesCallback callback;
-  const SimpleExerciseTable({super.key, required this.callback});
+  const SimpleExerciseTable(
+      {super.key, required this.callback, this.exercises});
 
   @override
   State<SimpleExerciseTable> createState() => _SimpleExerciseTableState();
@@ -77,6 +79,12 @@ class _SimpleExerciseTableState extends State<SimpleExerciseTable> {
   }
 
   @override
+  void initState() {
+    exercises = widget.exercises ?? [];
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -121,7 +129,7 @@ class SimpleExerciseCard extends StatelessWidget {
       margin: const EdgeInsets.all(8.0),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: colorAccent,
+          backgroundColor: colorBabyBlue,
           child: Text(
             '$index',
             style: const TextStyle(fontWeight: FontWeight.w900),

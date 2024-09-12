@@ -1,35 +1,55 @@
 import 'package:flutter/foundation.dart';
+import 'package:liftday/sevices/crud/training_day.dart';
 
 @immutable
 abstract class AppState {
   const AppState();
 }
 
-class AppStateInit extends AppState {
-  const AppStateInit();
+@immutable
+abstract class ConfigState extends AppState {
+  const ConfigState();
 }
 
-class AppStateStart extends AppState {
-  const AppStateStart();
+class ConfigStateInit extends ConfigState {
+  const ConfigStateInit();
 }
 
-class AppStateCreatePlanOrSkip extends AppState {
-  const AppStateCreatePlanOrSkip();
+class ConfigStateStart extends ConfigState {
+  const ConfigStateStart();
 }
 
-class AppStateChooseTrainingDays extends AppState {
-  const AppStateChooseTrainingDays();
+class ConfigStateCreatePlanOrSkip extends ConfigState {
+  const ConfigStateCreatePlanOrSkip();
 }
 
-class AppStateAddFirstWeekPlan extends AppState {
+class ConfigStateChooseTrainingDays extends ConfigState {
+  const ConfigStateChooseTrainingDays();
+}
+
+class ConfigStateAddFirstWeekPlan extends ConfigState {
   final String dayOfWeek;
-  const AppStateAddFirstWeekPlan(this.dayOfWeek);
+  const ConfigStateAddFirstWeekPlan(this.dayOfWeek);
 }
 
-class AppStateChooseDurationOfPlan extends AppState {
-  const AppStateChooseDurationOfPlan();
+class ConfigStateChooseDurationOfPlan extends ConfigState {
+  const ConfigStateChooseDurationOfPlan();
 }
 
-class AppStateMainView extends AppState {
-  const AppStateMainView();
+class ConfigStateMainView extends ConfigState {
+  const ConfigStateMainView();
+}
+
+@immutable
+abstract class EditState extends AppState {
+  const EditState();
+}
+
+class EditStateInit extends EditState {
+  const EditStateInit();
+}
+
+class EditStateTrainingDayEdition extends EditState {
+  final TrainingDay trainingDay;
+  const EditStateTrainingDayEdition(this.trainingDay);
 }

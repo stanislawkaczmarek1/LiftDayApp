@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:liftday/constants/routes.dart';
 import 'package:liftday/sevices/bloc/app_event.dart';
-import 'package:liftday/ui_constants/colors.dart';
-import 'package:liftday/sevices/bloc/app_bloc.dart';
+import 'package:liftday/sevices/bloc/edit_bloc.dart';
+import 'package:liftday/constants/colors.dart';
+import 'package:liftday/sevices/bloc/config_bloc.dart';
 import 'package:liftday/sevices/bloc/app_state.dart';
 import 'package:liftday/sevices/provider/appbar_title_provider.dart';
 import 'package:liftday/view/config/4_add_first_week_plan_view.dart';
@@ -12,6 +14,7 @@ import 'package:liftday/view/config/2_create_plan_or_skip_view.dart';
 import 'package:liftday/view/config/1_start_view.dart';
 import 'package:liftday/view/config/5_choose_duration_of_plan_view.dart';
 import 'package:liftday/view/main_view.dart';
+import 'package:liftday/view/pages/plans_views/edit_training_day_view.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -20,11 +23,16 @@ void main() {
     runApp(
       MultiProvider(
         providers: [
-          BlocProvider<AppBloc>(
+          BlocProvider<ConfigBloc>(
             create: (context) {
-              final bloc = AppBloc();
-              bloc.add(const AppEventChceckAppConfigured());
+              final bloc = ConfigBloc();
+              bloc.add(const ConfigEventChceckAppConfigured());
               return bloc;
+            },
+          ),
+          BlocProvider<EditBloc>(
+            create: (context) {
+              return EditBloc();
             },
           ),
           ChangeNotifierProvider<AppBarTitleProvider>(
@@ -35,13 +43,16 @@ void main() {
           title: 'Lift Day',
           theme: ThemeData(
             colorScheme: const ColorScheme.light(
-              background: colorMainBackgroud,
-              onBackground: colorElements,
-              primary: colorElements,
-              onPrimary: colorMainBackgroud,
+              background: colorWhite,
+              onBackground: colorBlack,
+              primary: colorBlack,
+              onPrimary: colorWhite,
             ),
           ),
           home: const HomePage(),
+          routes: {
+            editTrainingDayRoute: (context) => const EditTrainingDaysView(),
+          },
         ),
       ),
     );
@@ -53,7 +64,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<AppBloc, AppState>(
+    return BlocConsumer<ConfigBloc, AppState>(
       listener: (context, state) {
         /*
         if (state.isLoading) {
@@ -66,17 +77,17 @@ class HomePage extends StatelessWidget {
         */
       },
       builder: (context, state) {
-        if (state is AppStateStart) {
+        if (state is ConfigStateStart) {
           return const StartView();
-        } else if (state is AppStateCreatePlanOrSkip) {
+        } else if (state is ConfigStateCreatePlanOrSkip) {
           return const CreatePlanOrSkipView();
-        } else if (state is AppStateChooseTrainingDays) {
+        } else if (state is ConfigStateChooseTrainingDays) {
           return const ChooseTrainingDaysView();
-        } else if (state is AppStateAddFirstWeekPlan) {
+        } else if (state is ConfigStateAddFirstWeekPlan) {
           return const AddFirstWeekPlanView();
-        } else if (state is AppStateChooseDurationOfPlan) {
+        } else if (state is ConfigStateChooseDurationOfPlan) {
           return const PlanDurationView();
-        } else if (state is AppStateMainView) {
+        } else if (state is ConfigStateMainView) {
           return const MainView();
         } else {
           return const Scaffold(

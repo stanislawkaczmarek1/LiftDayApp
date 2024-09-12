@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:liftday/ui_constants/colors.dart';
+import 'package:liftday/constants/colors.dart';
 
 typedef OnPressedFunction = void Function();
 
@@ -8,8 +8,8 @@ TextButton normalButton(String text, OnPressedFunction onPressed) {
     onPressed: onPressed,
     style: TextButton.styleFrom(
       elevation: 3.0,
-      backgroundColor: colorPrimaryButton,
-      foregroundColor: colorSecondaryButton,
+      backgroundColor: colorLightGrey,
+      foregroundColor: colorBlack,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
@@ -34,5 +34,24 @@ AppBar appBar() {
       "assets/liftday_logo.png",
       height: 25,
     ),
+  );
+}
+
+AppBar appBarWithButton(String text, void Function() onPressed) {
+  return AppBar(
+    title: Image.asset(
+      "assets/liftday_logo.png",
+      height: 25,
+    ),
+    actions: [
+      TextButton(
+        onPressed: onPressed,
+        style: TextButton.styleFrom(foregroundColor: colorBabyBlue),
+        child: Text(
+          text,
+          style: const TextStyle(fontSize: 18.0),
+        ),
+      )
+    ],
   );
 }

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:liftday/ui_constants/colors.dart';
+import 'package:liftday/constants/colors.dart';
 import 'package:liftday/sevices/provider/appbar_title_provider.dart';
 import 'package:liftday/view/widgets/exercise_table.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -27,14 +27,14 @@ class _TrainingPageState extends State<TrainingPage> {
   Widget build(BuildContext context) {
     return SizedBox.expand(
       child: Container(
-        color: colorPrimaryButton,
+        color: colorLightGrey,
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Container(
                 decoration: const BoxDecoration(
-                  color: colorMainBackgroud,
+                  color: colorWhite,
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(20.0),
                     bottomRight: Radius.circular(20.0),
@@ -193,18 +193,18 @@ class _AppCalendarState extends State<AppCalendar> {
       rowHeight: 60.0,
       calendarStyle: const CalendarStyle(
         selectedDecoration: BoxDecoration(
-          color: colorAccent,
+          color: colorBabyBlue,
           shape: BoxShape.circle,
         ),
         selectedTextStyle: TextStyle(
-          color: colorMainBackgroud,
+          color: colorWhite,
         ),
         todayDecoration: BoxDecoration(
-          color: colorInactiveButton,
+          color: colorGray,
           shape: BoxShape.circle,
         ),
         todayTextStyle: TextStyle(
-          color: colorMainBackgroud,
+          color: colorWhite,
         ),
       ),
     );

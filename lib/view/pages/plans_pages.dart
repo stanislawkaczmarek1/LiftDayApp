@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:liftday/dialogs/are_you_sure_to_delate_plan.dart';
-import 'package:liftday/sevices/crud/exercise_day.dart';
+import 'package:liftday/sevices/bloc/app_event.dart';
+import 'package:liftday/sevices/bloc/edit_bloc.dart';
+import 'package:liftday/sevices/crud/training_day.dart';
 import 'package:liftday/sevices/crud/exercise_service.dart';
-import 'package:liftday/ui_constants/colors.dart';
+import 'package:liftday/constants/colors.dart';
 import 'package:liftday/view/widgets/ui_elements.dart';
 
 class PlansPage extends StatefulWidget {
@@ -16,42 +19,16 @@ class _PlansPageState extends State<PlansPage> {
   bool isTrainingPlanExpanded = true;
   bool isOtherDaysExpanded = true;
 
-  final GlobalKey _repaintKey = GlobalKey();
-
-  Future<List<ExerciseDay>> _fetchTrainingDays() async {
+  Future<List<TrainingDay>> _fetchTrainingDays() async {
     final exerciseService = ExerciseService();
     return await exerciseService.getTrainingDays();
   }
-
-/*
-  Future<void> _captureAndSharePng() async {
-    try {
-      // Renderowanie obszaru RepaintBoundary jako obrazu
-      RenderRepaintBoundary boundary = _repaintKey.currentContext!
-          .findRenderObject() as RenderRepaintBoundary;
-      var image = await boundary.toImage(pixelRatio: 3.0);
-      ByteData? byteData = await image.toByteData(format: ImageByteFormat.png);
-      Uint8List pngBytes = byteData!.buffer.asUint8List();
-
-      // Zapis do pliku tymczasowego
-      final directory = (await getTemporaryDirectory()).path;
-      final imgFile = File('$directory/training_plan.png');
-      await imgFile.writeAsBytes(pngBytes);
-
-      // Udostępnienie pliku
-      await Share.shareXFiles([XFile(imgFile.path)],
-          text: 'Mój Plan Treningowy');
-    } catch (e) {
-      debugPrint(e.toString());
-    }
-  }
-  */
 
   @override
   Widget build(BuildContext context) {
     return SizedBox.expand(
       child: Container(
-        color: colorPrimaryButton,
+        color: colorLightGrey,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: SingleChildScrollView(
@@ -61,7 +38,7 @@ class _PlansPageState extends State<PlansPage> {
                 Container(
                   padding: const EdgeInsets.all(16.0),
                   decoration: BoxDecoration(
-                    color: colorMainBackgroud,
+                    color: colorWhite,
                     borderRadius: BorderRadius.circular(12.0),
                   ),
                   child: Column(
@@ -94,7 +71,7 @@ class _PlansPageState extends State<PlansPage> {
                 Container(
                   padding: const EdgeInsets.all(16.0),
                   decoration: BoxDecoration(
-                    color: colorMainBackgroud,
+                    color: colorWhite,
                     borderRadius: BorderRadius.circular(12.0),
                   ),
                   child: Column(
@@ -108,7 +85,7 @@ class _PlansPageState extends State<PlansPage> {
                         ),
                       ),
                       const SizedBox(height: 24.0),
-                      FutureBuilder<List<ExerciseDay>>(
+                      FutureBuilder<List<TrainingDay>>(
                           future: _fetchTrainingDays(),
                           builder: (context, snapshot) {
                             switch (snapshot.connectionState) {
@@ -116,25 +93,22 @@ class _PlansPageState extends State<PlansPage> {
                                 final trainingPlanDays = snapshot.data!
                                     .where((day) => day.isFromPlan == 1)
                                     .toList();
-                                return RepaintBoundary(
-                                  key: _repaintKey,
-                                  child: _buildDropdownTile(
-                                    title: "Dni z planu treningowego",
-                                    isExpanded: isTrainingPlanExpanded,
-                                    days: trainingPlanDays,
-                                    onExpand: () {
-                                      setState(() {
-                                        isTrainingPlanExpanded =
-                                            !isTrainingPlanExpanded;
-                                      });
-                                    },
-                                  ),
+                                return _buildDropdownTile(
+                                  title: "Dni z planu treningowego",
+                                  isExpanded: isTrainingPlanExpanded,
+                                  days: trainingPlanDays,
+                                  onExpand: () {
+                                    setState(() {
+                                      isTrainingPlanExpanded =
+                                          !isTrainingPlanExpanded;
+                                    });
+                                  },
                                 );
                               default:
                                 return const SizedBox(height: 0);
                             }
                           }),
-                      FutureBuilder<List<ExerciseDay>>(
+                      FutureBuilder<List<TrainingDay>>(
                           future: _fetchTrainingDays(),
                           builder: (context, snapshot) {
                             switch (snapshot.connectionState) {
@@ -173,7 +147,7 @@ class _PlansPageState extends State<PlansPage> {
   Widget _buildDropdownTile({
     required String title,
     required bool isExpanded,
-    required List<ExerciseDay> days,
+    required List<TrainingDay> days,
     VoidCallback? onExpand,
   }) {
     return Column(
@@ -194,7 +168,8 @@ class _PlansPageState extends State<PlansPage> {
         ),
         if (isExpanded)
           Column(
-            children: days.map((day) => _buildExerciseDayTile(day)).toList(),
+            children:
+                days.map((day) => _buildExerciseDayTile(day, context)).toList(),
           ),
       ],
     );
@@ -209,7 +184,7 @@ class _PlansPageState extends State<PlansPage> {
           onPressed: onPressed,
           style: TextButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 16),
-              backgroundColor: colorPrimaryButton,
+              backgroundColor: colorLightGrey,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -232,12 +207,12 @@ class _PlansPageState extends State<PlansPage> {
   }
 }
 
-Widget _buildExerciseDayTile(ExerciseDay day) {
+Widget _buildExerciseDayTile(TrainingDay day, BuildContext context) {
   return Container(
     margin: const EdgeInsets.symmetric(vertical: 8.0),
     padding: const EdgeInsets.all(16.0),
     decoration: BoxDecoration(
-      color: colorPrimaryButton,
+      color: colorLightGrey,
       borderRadius: BorderRadius.circular(12.0),
     ),
     child: Column(
@@ -255,7 +230,9 @@ Widget _buildExerciseDayTile(ExerciseDay day) {
             ),
             IconButton(
               onPressed: () {
-                // Dodaj akcję edycji
+                context
+                    .read<EditBloc>()
+                    .add(EditEventPushEditIconOnPlansPage(context, day));
               },
               icon: const Icon(
                 Icons.edit,

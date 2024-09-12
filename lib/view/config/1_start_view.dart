@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:liftday/sevices/bloc/app_bloc.dart';
+import 'package:liftday/sevices/bloc/config_bloc.dart';
 import 'package:liftday/sevices/bloc/app_event.dart';
 import 'package:liftday/view/widgets/ui_elements.dart';
 
@@ -32,7 +32,7 @@ class _StartViewState extends State<StartView> {
             mainAxisSize: MainAxisSize.min,
             children: [
               normalButton("Rozpocznij", () {
-                context.read<AppBloc>().add(const AppEventStartButton());
+                context.read<ConfigBloc>().add(const ConfigEventStartButton());
               }),
               const SizedBox(
                 height: 20.0,

@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:liftday/sevices/crud/crud_exceptions.dart';
 import 'package:liftday/sevices/crud/tables_classes/database_constans.dart';
 import 'package:liftday/sevices/crud/tables_classes/database_date.dart';
-import 'package:liftday/sevices/crud/exercise_day.dart';
+import 'package:liftday/sevices/crud/training_day.dart';
 import 'package:liftday/sevices/crud/tables_classes/database_exercise.dart';
 import 'package:liftday/sevices/crud/tables_classes/database_set.dart';
 import 'package:sqflite/sqflite.dart';
@@ -159,7 +159,7 @@ class ExerciseService {
   }
 
   Future<void> createExercisesConfig({
-    required List<ExerciseDay> exerciseDays,
+    required List<TrainingDay> exerciseDays,
     required List<DatabaseDate> dates,
   }) async {
     await _ensureDbIsOpen();
@@ -195,7 +195,7 @@ class ExerciseService {
     });
   }
 
-  Future<void> saveTrainingDay(ExerciseDay exerciseDay) async {
+  Future<void> saveTrainingDay(TrainingDay exerciseDay) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
     await db.insert(
@@ -207,13 +207,13 @@ class ExerciseService {
     );
   }
 
-  Future<List<ExerciseDay>> getTrainingDays() async {
+  Future<List<TrainingDay>> getTrainingDays() async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
     final List<Map<String, dynamic>> maps = await db.query(trainingDaysTable);
 
     return List.generate(maps.length, (i) {
-      return ExerciseDay(
+      return TrainingDay(
         day: maps[i][dayColumn],
         exercises: (maps[i][exercisesColumn] as String).split(','),
       );

@@ -1,39 +1,56 @@
 import 'package:flutter/foundation.dart';
-import 'package:liftday/sevices/crud/exercise_day.dart';
+import 'package:flutter/material.dart';
+import 'package:liftday/sevices/crud/training_day.dart';
 
 @immutable
 abstract class AppEvent {
   const AppEvent();
 }
 
-class AppEventChceckAppConfigured extends AppEvent {
-  const AppEventChceckAppConfigured();
+@immutable
+abstract class ConfigEvent extends AppEvent {
+  const ConfigEvent();
 }
 
-class AppEventStartButton extends AppEvent {
-  const AppEventStartButton();
+class ConfigEventChceckAppConfigured extends ConfigEvent {
+  const ConfigEventChceckAppConfigured();
 }
 
-class AppEventGoBack extends AppEvent {
-  const AppEventGoBack();
+class ConfigEventStartButton extends ConfigEvent {
+  const ConfigEventStartButton();
 }
 
-class AppEventConfirmWeekAutomation extends AppEvent {
-  const AppEventConfirmWeekAutomation();
+class ConfigEventGoBack extends ConfigEvent {
+  const ConfigEventGoBack();
 }
 
-class AppEventConfirmTrainingDays extends AppEvent {
+class ConfigEventConfirmWeekAutomation extends ConfigEvent {
+  const ConfigEventConfirmWeekAutomation();
+}
+
+class ConfigEventConfirmTrainingDays extends ConfigEvent {
   final List<String> selectedDays;
 
-  const AppEventConfirmTrainingDays(this.selectedDays);
+  const ConfigEventConfirmTrainingDays(this.selectedDays);
 }
 
-class AppEventConfirmExercisesInDay extends AppEvent {
-  final ExerciseDay exerciseDay;
-  const AppEventConfirmExercisesInDay(this.exerciseDay);
+class ConfigEventConfirmExercisesInDay extends ConfigEvent {
+  final TrainingDay trainingDay;
+  const ConfigEventConfirmExercisesInDay(this.trainingDay);
 }
 
-class AppEventConfirmPlanDuration extends AppEvent {
+class ConfigEventConfirmPlanDuration extends ConfigEvent {
   final int duration;
-  const AppEventConfirmPlanDuration(this.duration);
+  const ConfigEventConfirmPlanDuration(this.duration);
+}
+
+@immutable
+abstract class EditEvent extends AppEvent {
+  const EditEvent();
+}
+
+class EditEventPushEditIconOnPlansPage extends EditEvent {
+  final BuildContext context;
+  final TrainingDay trainingDay;
+  const EditEventPushEditIconOnPlansPage(this.context, this.trainingDay);
 }

@@ -8,7 +8,7 @@ import 'package:liftday/sevices/crud/exercise_service.dart';
 import 'package:liftday/sevices/crud/tables_classes/database_date.dart';
 import 'package:liftday/sevices/crud/tables_classes/database_exercise.dart';
 import 'package:liftday/sevices/crud/tables_classes/database_set.dart';
-import 'package:liftday/ui_constants/colors.dart';
+import 'package:liftday/constants/colors.dart';
 
 class ExerciseTable extends StatefulWidget {
   final DateTime selectedDate;
@@ -179,8 +179,8 @@ class _ExerciseTableState extends State<ExerciseTable> {
                           onPressed: _showAddExerciseDialog,
                           style: TextButton.styleFrom(
                             elevation: 3.0,
-                            backgroundColor: colorMainBackgroud,
-                            foregroundColor: colorSecondaryButton,
+                            backgroundColor: colorWhite,
+                            foregroundColor: colorBlack,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -337,8 +337,8 @@ class _ExerciseCardState extends State<ExerciseCard> {
         switch (snapshot.connectionState) {
           case ConnectionState.done:
             return Card(
-              color: colorMainBackgroud,
-              surfaceTintColor: colorMainBackgroud,
+              color: colorWhite,
+              surfaceTintColor: colorWhite,
               margin: const EdgeInsets.all(8.0),
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -454,8 +454,8 @@ class _ExerciseCardState extends State<ExerciseCard> {
                         onPressed: () => _addSet(++_setCounter),
                         style: TextButton.styleFrom(
                           elevation: 3.0,
-                          backgroundColor: colorPrimaryButton,
-                          foregroundColor: colorSecondaryButton,
+                          backgroundColor: colorLightGrey,
+                          foregroundColor: colorBlack,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -636,7 +636,7 @@ class _ExerciseRowState extends State<ExerciseRow> {
                           enabledBorder: InputBorder.none,
                           focusedBorder: UnderlineInputBorder(
                             borderSide:
-                                BorderSide(width: 2, color: colorAccent),
+                                BorderSide(width: 2, color: colorBabyBlue),
                           ),
                         ),
                         keyboardType: TextInputType.number,
@@ -658,7 +658,7 @@ class _ExerciseRowState extends State<ExerciseRow> {
                           enabledBorder: InputBorder.none,
                           focusedBorder: UnderlineInputBorder(
                             borderSide:
-                                BorderSide(width: 2, color: colorAccent),
+                                BorderSide(width: 2, color: colorBabyBlue),
                           ),
                         ),
                         keyboardType: TextInputType.number,

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:liftday/ui_constants/colors.dart';
-import 'package:liftday/sevices/bloc/app_bloc.dart';
+import 'package:liftday/sevices/bloc/config_bloc.dart';
 import 'package:liftday/sevices/bloc/app_event.dart';
 import 'package:liftday/sevices/bloc/app_state.dart';
-import 'package:liftday/sevices/crud/exercise_day.dart';
+import 'package:liftday/sevices/crud/training_day.dart';
 import 'package:liftday/view/widgets/simple_exercise_table.dart';
+import 'package:liftday/view/widgets/ui_elements.dart';
 
 class AddFirstWeekPlanView extends StatefulWidget {
   const AddFirstWeekPlanView({super.key});
@@ -54,16 +54,16 @@ class _AddFirstWeekPlanViewState extends State<AddFirstWeekPlanView> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AppBloc, AppState>(
+    return BlocBuilder<ConfigBloc, ConfigState>(
       builder: (context, state) {
-        if (state is AppStateAddFirstWeekPlan) {
+        if (state is ConfigStateAddFirstWeekPlan) {
           dayOfWeek = state.dayOfWeek;
         }
         return PopScope(
           canPop: false,
           onPopInvoked: (didPop) {
             if (!didPop) {
-              context.read<AppBloc>().add(const AppEventGoBack());
+              context.read<ConfigBloc>().add(const ConfigEventGoBack());
               exercises = [];
               setState(() {
                 _exerciseTableKey =
@@ -78,47 +78,36 @@ class _AddFirstWeekPlanViewState extends State<AddFirstWeekPlanView> {
             }
           },
           child: Scaffold(
-            appBar: AppBar(
-              title: Image.asset(
-                "assets/liftday_logo.png",
-                height: 25,
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    String day = dayOfWeek;
-                    context.read<AppBloc>().add(
-                          AppEventConfirmExercisesInDay(
-                            ExerciseDay(day: day, exercises: exercises),
-                          ),
-                        );
-                    setState(() {
-                      _exerciseTableKey =
-                          UniqueKey(); // Wymusza przebudowę ExerciseTable
-                      _exerciseTable = SimpleExerciseTable(
-                        key: _exerciseTableKey,
-                        callback: (List<String> exercisesFromTable) {
-                          exercises = exercisesFromTable;
-                        },
-                      );
-                    });
-                    exercises = [];
-                  },
-                  style: TextButton.styleFrom(foregroundColor: colorAccent),
-                  child: const Text(
-                    "Dalej",
-                    style: TextStyle(fontSize: 18.0),
-                  ),
-                )
-              ],
+            appBar: appBarWithButton(
+              "Dalej",
+              () {
+                String day = dayOfWeek;
+                context.read<ConfigBloc>().add(
+                      ConfigEventConfirmExercisesInDay(
+                        TrainingDay(day: day, exercises: exercises),
+                      ),
+                    );
+                setState(() {
+                  _exerciseTableKey =
+                      UniqueKey(); // Wymusza przebudowę ExerciseTable
+                  _exerciseTable = SimpleExerciseTable(
+                    key: _exerciseTableKey,
+                    callback: (List<String> exercisesFromTable) {
+                      exercises = exercisesFromTable;
+                    },
+                  );
+                });
+                exercises = [];
+              },
             ),
             body: SingleChildScrollView(
               child: Column(
                 children: [
+                  const SizedBox(height: 24.0),
                   Padding(
                     padding: const EdgeInsets.all(20.0),
                     child: Text(
-                      'Dodaj trening w ${_getPolishDayAbbreviation(dayOfWeek)}',
+                      'Trening w ${_getPolishDayAbbreviation(dayOfWeek)}',
                       style: const TextStyle(
                           fontSize: 24, fontWeight: FontWeight.bold),
                       textAlign: TextAlign.center,

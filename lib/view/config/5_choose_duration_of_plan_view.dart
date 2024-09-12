@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:liftday/ui_constants/colors.dart';
-import 'package:liftday/sevices/bloc/app_bloc.dart';
+import 'package:liftday/constants/colors.dart';
+import 'package:liftday/sevices/bloc/config_bloc.dart';
 import 'package:liftday/sevices/bloc/app_event.dart';
 import 'package:liftday/dialogs/have_to_choose_plan_duration.dart';
 
@@ -27,7 +27,7 @@ class _PlanDurationViewState extends State<PlanDurationView> {
       canPop: false,
       onPopInvoked: (didPop) {
         if (!didPop) {
-          context.read<AppBloc>().add(const AppEventGoBack());
+          context.read<ConfigBloc>().add(const ConfigEventGoBack());
         }
       },
       child: Scaffold(
@@ -41,13 +41,13 @@ class _PlanDurationViewState extends State<PlanDurationView> {
               onPressed: () async {
                 if (_selectedDuration != null) {
                   context
-                      .read<AppBloc>()
-                      .add(AppEventConfirmPlanDuration(_selectedDuration!));
+                      .read<ConfigBloc>()
+                      .add(ConfigEventConfirmPlanDuration(_selectedDuration!));
                 } else {
                   await showHaveToChoosePlanDuration(context);
                 }
               },
-              style: TextButton.styleFrom(foregroundColor: colorAccent),
+              style: TextButton.styleFrom(foregroundColor: colorBabyBlue),
               child: const Text(
                 "Dalej",
                 style: TextStyle(fontSize: 18.0),
