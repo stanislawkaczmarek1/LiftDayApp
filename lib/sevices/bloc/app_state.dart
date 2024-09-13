@@ -53,3 +53,7 @@ class EditStateTrainingDayEdition extends EditState {
   final TrainingDay trainingDay;
   const EditStateTrainingDayEdition(this.trainingDay);
 }
+
+class EditStateDayUpdated extends EditState {
+  const EditStateDayUpdated();
+}

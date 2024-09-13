@@ -54,3 +54,13 @@ class EditEventPushEditIconOnPlansPage extends EditEvent {
   final TrainingDay trainingDay;
   const EditEventPushEditIconOnPlansPage(this.context, this.trainingDay);
 }
+
+class EditEventPushSaveButton extends EditEvent {
+  final BuildContext context;
+  final TrainingDay trainingDay;
+  const EditEventPushSaveButton(this.context, this.trainingDay);
+}
+
+class EditEventEndedEdition extends EditEvent {
+  const EditEventEndedEdition();
+}

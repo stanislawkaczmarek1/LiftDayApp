@@ -12,9 +12,6 @@ import 'package:path/path.dart' show join;
 
 class ExerciseService {
   Database? _db;
-  List<DatabaseDate> _dates = [];
-  List<DatabaseExercise> _exercises = [];
-  List<DatabaseSet> _sets = [];
 
   static final ExerciseService _shared = ExerciseService._sharedInstance();
   ExerciseService._sharedInstance();
@@ -37,7 +34,6 @@ class ExerciseService {
       day: day,
     );
 
-    _dates.add(date);
     return date;
   }
 
@@ -54,8 +50,6 @@ class ExerciseService {
       throw CouldNotFindNote();
     } else {
       final date = DatabaseDate.fromRow(dates.first);
-      _dates.removeWhere((date) => date.id == id);
-      _dates.add(date);
       return date;
     }
   }
@@ -80,8 +74,6 @@ class ExerciseService {
     );
     if (deletedCount == 0) {
       throw CouldNotDeleteNote();
-    } else {
-      _dates.removeWhere((note) => note.id == id);
     }
   }
 
@@ -94,7 +86,7 @@ class ExerciseService {
     List<String> digitDates = [];
     List<String> days = [];
     DateTime currentDate = DateTime.now();
-    DateFormat dateFormatter = DateFormat('dd-MM-yyyy');
+    DateFormat dateFormatter = DateFormat('yyyy-MM-dd');
     DateFormat dayFormatter = DateFormat('EEEE');
 
     for (int i = 0; i < range; i++) {
@@ -131,7 +123,6 @@ class ExerciseService {
         );
 
         createdDates.add(newDate);
-        _dates.add(newDate);
       }
     });
 
@@ -154,7 +145,6 @@ class ExerciseService {
       name: name,
     );
 
-    _exercises.add(exercise);
     return exercise;
   }
 
@@ -195,16 +185,32 @@ class ExerciseService {
     });
   }
 
-  Future<void> saveTrainingDay(TrainingDay exerciseDay) async {
+  Future<void> saveTrainingDay(TrainingDay trainingDay) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
     await db.insert(
       trainingDaysTable,
       {
-        dayColumn: exerciseDay.day,
-        exercisesColumn: exerciseDay.exercises.join(','),
+        dayColumn: trainingDay.day,
+        exercisesColumn: trainingDay.exercises.join(','),
       },
     );
+  }
+
+  Future<void> editTrainingDay(TrainingDay trainingDay) async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+    final updatesCount = await db.update(
+      trainingDaysTable,
+      {
+        exercisesColumn: trainingDay.exercises.join(','),
+      },
+      where: "day = ?",
+      whereArgs: [trainingDay.day],
+    );
+    if (updatesCount == 0) {
+      throw CouldNotUpdateNote();
+    }
   }
 
   Future<List<TrainingDay>> getTrainingDays() async {
@@ -217,6 +223,68 @@ class ExerciseService {
         day: maps[i][dayColumn],
         exercises: (maps[i][exercisesColumn] as String).split(','),
       );
+    });
+  }
+
+  Future<void> updateTrainingDayFromTomorrowToEndOfDates(
+      TrainingDay trainingDay) async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+
+    final tomorrow = DateTime.now().add(const Duration(days: 1));
+    final tomorrowString = tomorrow.toIso8601String().split('T')[0];
+
+    await db.transaction((txn) async {
+      // 1. Pobierz wszystkie daty od jutra do końca z tabeli `dates`
+      final datesToRemove = await txn.query(
+        datesTable,
+        where: "$digitDateColumn >= ? AND $dayColumn = ?",
+        whereArgs: [
+          tomorrowString,
+          trainingDay.day
+        ], // Porównujemy na podstawie stringa ISO8601
+      );
+
+      // Jeśli nie ma dat do usunięcia, zakończ operację
+      if (datesToRemove.isEmpty) {
+        return;
+      }
+
+      // 2. Dla każdej daty usuń wszystkie ćwiczenia i powiązane zestawy
+      for (var date in datesToRemove) {
+        final dateId = date[idColumn];
+
+        // Usuń zestawy powiązane z ćwiczeniami
+        await txn.delete(
+          setsTable,
+          where:
+              "$exerciseIdColumn IN (SELECT $idColumn FROM $exercisesTable WHERE $dateIdColumn = ?)",
+          whereArgs: [dateId],
+        );
+
+        // Usuń ćwiczenia dla danej daty
+        await txn.delete(
+          exercisesTable,
+          where: "$dateIdColumn = ?",
+          whereArgs: [dateId],
+        );
+      }
+
+      // 3. Dodaj nowe ćwiczenia dla każdej daty z tego samego zakresu
+      for (var date in datesToRemove) {
+        final dateId = date[idColumn];
+
+        for (var exercise in trainingDay.exercises) {
+          // Dodaj ćwiczenie dla danej daty
+          await txn.insert(
+            exercisesTable,
+            {
+              dateIdColumn: dateId,
+              nameColumn: exercise,
+            },
+          );
+        }
+      }
     });
   }
 
@@ -257,8 +325,6 @@ class ExerciseService {
     );
     if (deletedCount == 0) {
       throw CouldNotDeleteNote();
-    } else {
-      _exercises.removeWhere((exercise) => exercise.id == id);
     }
   }
 
@@ -326,7 +392,6 @@ class ExerciseService {
       reps: reps,
     );
 
-    _sets.add(newSet);
     return newSet;
   }
 
@@ -412,8 +477,6 @@ class ExerciseService {
     }
 
     final updatedSet = await getSet(id: setToUpdate.id);
-    _sets.removeWhere((oldSet) => oldSet.id == updatedSet.id);
-    _sets.add(updatedSet);
     return updatedSet;
   }
 
@@ -427,8 +490,6 @@ class ExerciseService {
     );
     if (deletedCount == 0) {
       throw CouldNotDeleteNote();
-    } else {
-      _sets.removeWhere((existingSet) => existingSet.id == id);
     }
   }
 
@@ -443,9 +504,6 @@ class ExerciseService {
     );
     if (deletedCount == 0) {
       throw CouldNotDeleteNote();
-    } else {
-      _sets.removeWhere((existingSet) => ((existingSet.setIndex == setIndex) &&
-          (existingSet.exerciseId == exerciseId)));
     }
   }
 
@@ -459,8 +517,6 @@ class ExerciseService {
     );
     if (deletedCount == 0) {
       throw CouldNotDeleteNote();
-    } else {
-      _sets.removeWhere((existingSet) => existingSet.exerciseId == exerciseid);
     }
   }
 

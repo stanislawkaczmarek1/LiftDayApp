@@ -1,8 +1,9 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:liftday/sevices/bloc/app_event.dart';
 import 'package:liftday/sevices/bloc/app_state.dart';
 import 'package:liftday/sevices/bloc/edit_bloc.dart';
+import 'package:liftday/sevices/crud/training_day.dart';
 import 'package:liftday/view/widgets/simple_exercise_table.dart';
 import 'package:liftday/view/widgets/ui_elements.dart';
 
@@ -46,7 +47,12 @@ class _EditTrainingDaysViewState extends State<EditTrainingDaysView> {
             appBar: appBarWithButton(
               "Zapisz",
               () {
-                log(exercises.toString());
+                context.read<EditBloc>().add(EditEventPushSaveButton(
+                    context,
+                    TrainingDay(
+                      day: state.trainingDay.day,
+                      exercises: exercises,
+                    )));
               },
             ),
             body: SingleChildScrollView(

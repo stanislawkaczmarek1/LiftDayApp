@@ -106,7 +106,7 @@ class _ExerciseTableState extends State<ExerciseTable> {
   }
 
   Future<void> _loadExercisesForSelectedDate() async {
-    final digitDate = DateFormat('dd-MM-yyyy').format(widget.selectedDate);
+    final digitDate = DateFormat('yyyy-MM-dd').format(widget.selectedDate);
     _date = await _exerciseService.getDateByDigitDate(digitDate: digitDate);
 
     if (_date != null) {

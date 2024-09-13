@@ -38,6 +38,20 @@ class _SimpleExerciseTableState extends State<SimpleExerciseTable> {
     return added;
   }
 
+  void _editExercise(int index, String newName) {
+    setState(() {
+      exercises[index] = newName;
+      _getExercises();
+    });
+  }
+
+  void _removeExercise(int index) {
+    setState(() {
+      exercises.removeAt(index);
+      _getExercises();
+    });
+  }
+
   void _showAddExerciseDialog() {
     String exerciseName = '';
     showDialog(
@@ -78,6 +92,42 @@ class _SimpleExerciseTableState extends State<SimpleExerciseTable> {
     );
   }
 
+  void _showEditExerciseDialog(int index) {
+    String updatedExerciseName = exercises[index];
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          content: TextField(
+            autofocus: true,
+            onChanged: (value) {
+              updatedExerciseName = value;
+            },
+            decoration: const InputDecoration(hintText: "Edytuj ćwiczenie"),
+            controller: TextEditingController(text: exercises[index]),
+          ),
+          actions: [
+            TextButton(
+              child: const Text('Anuluj'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Zapisz'),
+              onPressed: () {
+                if (updatedExerciseName.isNotEmpty) {
+                  _editExercise(index, updatedExerciseName);
+                  Navigator.of(context).pop();
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   void initState() {
     exercises = widget.exercises ?? [];
@@ -97,6 +147,8 @@ class _SimpleExerciseTableState extends State<SimpleExerciseTable> {
             return SimpleExerciseCard(
               index: index + 1,
               exercise: exercises[index],
+              onEdit: () => _showEditExerciseDialog(index),
+              onDelete: () => _removeExercise(index),
             );
           },
         ),
@@ -116,11 +168,15 @@ class _SimpleExerciseTableState extends State<SimpleExerciseTable> {
 class SimpleExerciseCard extends StatelessWidget {
   final int index;
   final String exercise;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
 
   const SimpleExerciseCard({
     super.key,
     required this.index,
     required this.exercise,
+    required this.onEdit,
+    required this.onDelete,
   });
 
   @override
@@ -138,6 +194,25 @@ class SimpleExerciseCard extends StatelessWidget {
         title: Text(
           exercise,
           style: const TextStyle(fontSize: 18),
+        ),
+        trailing: PopupMenuButton<String>(
+          onSelected: (value) {
+            if (value == 'edit') {
+              onEdit();
+            } else if (value == 'delete') {
+              onDelete();
+            }
+          },
+          itemBuilder: (BuildContext context) => [
+            const PopupMenuItem(
+              value: 'edit',
+              child: Text('Edytuj'),
+            ),
+            const PopupMenuItem(
+              value: 'delete',
+              child: Text('Usuń'),
+            ),
+          ],
         ),
       ),
     );
