@@ -213,6 +213,19 @@ class ExerciseService {
     }
   }
 
+  Future<void> deleteTrainingDaysFromPlan() async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+    final deletesCount = await db.delete(
+      trainingDaysTable,
+      where: "$isFromPlanColumn = ?",
+      whereArgs: [1],
+    );
+    if (deletesCount == 0) {
+      throw CouldNotUpdateNote();
+    }
+  }
+
   Future<List<TrainingDay>> getTrainingDays() async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
@@ -284,6 +297,48 @@ class ExerciseService {
             },
           );
         }
+      }
+    });
+  }
+
+  Future<void> deleteTrainingDayFromTomorrowToEndOfDates() async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+
+    final tomorrow = DateTime.now().add(const Duration(days: 1));
+    final tomorrowString = tomorrow.toIso8601String().split('T')[0];
+
+    await db.transaction((txn) async {
+      // 1. Pobierz wszystkie daty od jutra do końca z tabeli `dates`
+      final datesToRemove = await txn.query(
+        datesTable,
+        where: "$digitDateColumn >= ?",
+        whereArgs: [tomorrowString], // Porównujemy na podstawie stringa ISO8601
+      );
+
+      // Jeśli nie ma dat do usunięcia, zakończ operację
+      if (datesToRemove.isEmpty) {
+        return;
+      }
+
+      // 2. Dla każdej daty usuń wszystkie ćwiczenia i powiązane zestawy
+      for (var date in datesToRemove) {
+        final dateId = date[idColumn];
+
+        // Usuń zestawy powiązane z ćwiczeniami
+        await txn.delete(
+          setsTable,
+          where:
+              "$exerciseIdColumn IN (SELECT $idColumn FROM $exercisesTable WHERE $dateIdColumn = ?)",
+          whereArgs: [dateId],
+        );
+
+        // Usuń ćwiczenia dla danej daty
+        await txn.delete(
+          exercisesTable,
+          where: "$dateIdColumn = ?",
+          whereArgs: [dateId],
+        );
       }
     });
   }

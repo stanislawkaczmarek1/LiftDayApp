@@ -4,6 +4,7 @@ import 'package:liftday/constants/routes.dart';
 import 'package:liftday/sevices/bloc/app_event.dart';
 import 'package:liftday/sevices/bloc/app_state.dart';
 import 'package:liftday/sevices/crud/exercise_service.dart';
+import 'package:liftday/sevices/settings/settings_service.dart';
 
 class EditBloc extends Bloc<EditEvent, EditState> {
   EditBloc() : super(const EditStateInit()) {
@@ -30,6 +31,17 @@ class EditBloc extends Bloc<EditEvent, EditState> {
     on<EditEventEndedEdition>(
       (event, emit) {
         emit(const EditStateInit());
+      },
+    );
+
+    on<EditEventPushDeletePlanButton>(
+      (event, emit) async {
+        final exerciseService = ExerciseService();
+        await exerciseService.deleteTrainingDaysFromPlan();
+        await exerciseService.deleteTrainingDayFromTomorrowToEndOfDates();
+        final settingsService = SettingsService();
+        settingsService.setHasPlanFlag(false);
+        emit(const EditStatePlanDeleted());
       },
     );
   }

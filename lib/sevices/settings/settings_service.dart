@@ -8,6 +8,7 @@ class SettingsService {
   bool _isInitialized = false;
 
   static const String _isConfiguredKey = 'isConfigured';
+  static const String _hasPlanKey = 'hasPlan';
 
   Future<void> init() async {
     _preferences = await SharedPreferences.getInstance();
@@ -29,5 +30,15 @@ class SettingsService {
   bool isAppConfiguredFlag() {
     _ensureInitialized();
     return _preferences.getBool(_isConfiguredKey) ?? false;
+  }
+
+  Future<void> setHasPlanFlag(bool value) async {
+    _ensureInitialized();
+    await _preferences.setBool(_hasPlanKey, value);
+  }
+
+  bool hasPlanFlag() {
+    _ensureInitialized();
+    return _preferences.getBool(_hasPlanKey) ?? false;
   }
 }

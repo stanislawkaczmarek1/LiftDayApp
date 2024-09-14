@@ -64,3 +64,7 @@ class EditEventPushSaveButton extends EditEvent {
 class EditEventEndedEdition extends EditEvent {
   const EditEventEndedEdition();
 }
+
+class EditEventPushDeletePlanButton extends EditEvent {
+  const EditEventPushDeletePlanButton();
+}

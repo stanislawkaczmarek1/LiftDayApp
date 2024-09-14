@@ -57,3 +57,7 @@ class EditStateTrainingDayEdition extends EditState {
 class EditStateDayUpdated extends EditState {
   const EditStateDayUpdated();
 }
+
+class EditStatePlanDeleted extends EditState {
+  const EditStatePlanDeleted();
+}

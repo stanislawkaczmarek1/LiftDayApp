@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:liftday/dialogs/are_you_sure_to_delate_plan.dart';
 import 'package:liftday/sevices/bloc/app_event.dart';
@@ -7,6 +8,7 @@ import 'package:liftday/sevices/bloc/edit_bloc.dart';
 import 'package:liftday/sevices/crud/training_day.dart';
 import 'package:liftday/sevices/crud/exercise_service.dart';
 import 'package:liftday/constants/colors.dart';
+import 'package:liftday/sevices/settings/settings_service.dart';
 import 'package:liftday/view/widgets/ui_elements.dart';
 
 class PlansPage extends StatefulWidget {
@@ -19,10 +21,18 @@ class PlansPage extends StatefulWidget {
 class _PlansPageState extends State<PlansPage> {
   bool isTrainingPlanExpanded = true;
   bool isOtherDaysExpanded = true;
+  late bool hasPlan;
 
   Future<List<TrainingDay>> _fetchTrainingDays() async {
     final exerciseService = ExerciseService();
     return await exerciseService.getTrainingDays();
+  }
+
+  @override
+  void initState() {
+    final settingsService = SettingsService();
+    hasPlan = settingsService.hasPlanFlag();
+    super.initState();
   }
 
   @override
@@ -38,6 +48,18 @@ class _PlansPageState extends State<PlansPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                   content: Text('Zapisno i zaktulizowano kalendarz')),
+            );
+          }
+        }
+        if (state is EditStatePlanDeleted) {
+          setState(() {
+            hasPlan = false;
+            _fetchTrainingDays();
+          });
+          context.read<EditBloc>().add(const EditEventEndedEdition());
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Usunięto plan')),
             );
           }
         }
@@ -68,18 +90,37 @@ class _PlansPageState extends State<PlansPage> {
                           ),
                         ),
                         const SizedBox(height: 24.0),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            _buildTextButton("Zastąp", Icons.autorenew, () {}),
-                            _buildTextButton("Usuń", Icons.delete, () {
-                              showAreYouSureToDeletePlan(context);
-                            }),
-                            _buildTextButton("Udostępnij", Icons.share, () {
-                              //_captureAndSharePng();
-                            }),
-                          ],
-                        ),
+                        hasPlan
+                            ? Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  _buildTextButton(
+                                      "Zastąp", Icons.autorenew, () {}),
+                                  _buildTextButton("Usuń", Icons.delete,
+                                      () async {
+                                    final delete =
+                                        await showAreYouSureToDeletePlan(
+                                            context);
+                                    if (delete && context.mounted) {
+                                      context.read<EditBloc>().add(
+                                          const EditEventPushDeletePlanButton());
+                                    }
+                                  }),
+                                  _buildTextButton("Udostępnij", Icons.share,
+                                      () {
+                                    //_captureAndSharePng();
+                                  }),
+                                ],
+                              )
+                            : Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  _buildTextButton(
+                                      "Dodaj plan", Icons.add, () {}),
+                                ],
+                              ),
                       ],
                     ),
                   ),

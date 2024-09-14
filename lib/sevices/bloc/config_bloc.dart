@@ -110,7 +110,7 @@ class ConfigBloc extends Bloc<ConfigEvent, ConfigState> {
           for (TrainingDay exerciseDay in _exerciseDaysData) {
             await _exerciseService.saveTrainingDay(exerciseDay);
           }
-
+          _settingsService.setHasPlanFlag(true);
           _settingsService.setAppConfiguredFlag(true);
           emit(const ConfigStateMainView());
         }

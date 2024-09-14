@@ -13,7 +13,11 @@ Future<T?> showGenericTitleDialog<T>({
     context: context,
     builder: (context) {
       return AlertDialog(
-        title: Text(title),
+        title: Text(
+          title,
+          textAlign: TextAlign.center,
+          style: const TextStyle(fontSize: 18.0),
+        ),
         content: Text(content),
         actions: options.keys.map((optionTitle) {
           final T value = options[optionTitle];
