@@ -9,16 +9,18 @@ import 'package:liftday/sevices/settings/settings_service.dart';
 class ConfigBloc extends Bloc<ConfigEvent, ConfigState> {
   final List<ConfigState> _stateHistory = [];
   final List<ConfigStateAddFirstWeekPlan> _firstWeekPlan = [];
-  late int _currentDayOfPlanConfig;
+  int _currentDayOfPlanConfig = 0;
   final List<TrainingDay> _exerciseDaysData = [];
   late final ExerciseService _exerciseService;
   late final SettingsService _settingsService;
+  bool isThatReplacementOfPlans = false;
 
   ConfigBloc() : super(const ConfigStateInit()) {
     //
     on<ConfigEventChceckAppConfigured>(
       (event, emit) async {
         _settingsService = SettingsService();
+        _exerciseService = ExerciseService();
         await _settingsService.init();
         if (_settingsService.isAppConfiguredFlag()) {
           emit(const ConfigStateMainView());
@@ -30,7 +32,7 @@ class ConfigBloc extends Bloc<ConfigEvent, ConfigState> {
 
     on<ConfigEventStartButton>(
       (event, emit) {
-        _stateHistory.add(const ConfigStateStart());
+        _stateHistory.add(state);
         emit(const ConfigStateCreatePlanOrSkip());
       },
     );
@@ -68,8 +70,6 @@ class ConfigBloc extends Bloc<ConfigEvent, ConfigState> {
           _firstWeekPlan.add(
               ConfigStateAddFirstWeekPlan(event.selectedDays.elementAt(i)));
         }
-
-        _currentDayOfPlanConfig = 0;
         if (_firstWeekPlan.isNotEmpty) {
           emit(_firstWeekPlan.elementAt(_currentDayOfPlanConfig));
         }
@@ -97,23 +97,51 @@ class ConfigBloc extends Bloc<ConfigEvent, ConfigState> {
       (event, emit) async {
         _stateHistory.add(state);
 
-        if (!_settingsService.isAppConfiguredFlag()) {
-          _exerciseService = ExerciseService();
-          final dates = await _exerciseService.createRangeOfDatesConfig(
-            range: event.duration,
-          );
-          _exerciseService.createExercisesConfig(
-            exerciseDays: _exerciseDaysData,
-            dates: dates,
-          );
-
-          for (TrainingDay exerciseDay in _exerciseDaysData) {
-            await _exerciseService.saveTrainingDay(exerciseDay);
-          }
-          _settingsService.setHasPlanFlag(true);
-          _settingsService.setAppConfiguredFlag(true);
-          emit(const ConfigStateMainView());
+        if (isThatReplacementOfPlans) {
+          _exerciseService.deleteTrainingDaysFromPlan();
+          _exerciseService.deleteExercisesAndSetsFromTomorrowToEndOfDates();
         }
+
+        final dates = await _exerciseService.createRangeOfDatesConfig(
+          range: event.duration,
+          fromDate: DateTime.now(),
+        );
+        final lastDate = dates.last;
+        _exerciseService.createExercisesConfig(
+          exerciseDays: _exerciseDaysData,
+          dates: dates,
+        );
+
+        for (TrainingDay exerciseDay in _exerciseDaysData) {
+          await _exerciseService.saveTrainingDay(exerciseDay);
+        }
+
+        _settingsService.setPlanEndingDigitDate(lastDate.digitDate);
+        _settingsService.setHasPlanFlag(true);
+        _settingsService.setAppConfiguredFlag(true);
+
+        _stateHistory.clear();
+        _firstWeekPlan.clear();
+        _currentDayOfPlanConfig = 0;
+        _exerciseDaysData.clear();
+
+        emit(const ConfigStateMainView());
+      },
+    );
+
+    on<ConfigEventChangePlanFromMainView>(
+      (event, emit) {
+        _stateHistory.add(state);
+        isThatReplacementOfPlans = true;
+        emit(const ConfigStateChooseTrainingDays());
+      },
+    );
+
+    on<ConfigEventAddPlanFromMainView>(
+      (event, emit) {
+        _stateHistory.add(state);
+        isThatReplacementOfPlans = false;
+        emit(const ConfigStateChooseTrainingDays());
       },
     );
   }

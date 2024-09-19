@@ -34,6 +34,9 @@ AppBar appBar() {
       "assets/liftday_logo.png",
       height: 25,
     ),
+    backgroundColor: Colors.white,
+    elevation: 0,
+    scrolledUnderElevation: 0.0,
   );
 }
 
@@ -43,6 +46,9 @@ AppBar appBarWithButton(String text, void Function() onPressed) {
       "assets/liftday_logo.png",
       height: 25,
     ),
+    backgroundColor: Colors.white,
+    elevation: 0,
+    scrolledUnderElevation: 0.0,
     actions: [
       TextButton(
         onPressed: onPressed,

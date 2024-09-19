@@ -18,10 +18,12 @@ class ExerciseService {
   factory ExerciseService() => _shared;
   //singleton
 
-  Future<DatabaseDate> createDate(
-      {required String digitDate, required String day}) async {
+  Future<DatabaseDate> createDate({required DateTime dateTime}) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
+
+    String digitDate = DateFormat('yyyy-MM-dd').format(dateTime);
+    String day = DateFormat('EEEE').format(dateTime);
 
     final dateId = await db.insert(datesTable, {
       digitDateColumn: digitDate,
@@ -37,14 +39,14 @@ class ExerciseService {
     return date;
   }
 
-  Future<DatabaseDate> getDate({required int id}) async {
+  Future<DatabaseDate> getDate({required String digitDate}) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
     final dates = await db.query(
       datesTable,
       limit: 1,
-      where: "id = ?",
-      whereArgs: [id],
+      where: "$digitDateColumn = ?",
+      whereArgs: [digitDate],
     );
     if (dates.isEmpty) {
       throw CouldNotFindNote();
@@ -78,19 +80,18 @@ class ExerciseService {
   }
 
   Future<List<DatabaseDate>> createRangeOfDatesConfig(
-      {required int range}) async {
+      {required int range, required DateTime fromDate}) async {
     //conversion
     if (range > 56) {
       throw Exception('Too big range');
     }
     List<String> digitDates = [];
     List<String> days = [];
-    DateTime currentDate = DateTime.now();
     DateFormat dateFormatter = DateFormat('yyyy-MM-dd');
     DateFormat dayFormatter = DateFormat('EEEE');
 
     for (int i = 0; i < range; i++) {
-      DateTime date = currentDate.add(Duration(days: i));
+      DateTime date = fromDate.add(Duration(days: i));
 
       String formattedDate = dateFormatter.format(date);
       String dayOfWeek = dayFormatter.format(date);
@@ -107,26 +108,26 @@ class ExerciseService {
       throw Exception('Length of digitDates and days must match the range.');
     }
 
-    List<DatabaseDate> createdDates = [];
+    List<DatabaseDate> dates = [];
 
-    await db.transaction((txn) async {
-      for (int i = 0; i < range; i++) {
-        final dateId = await txn.insert(datesTable, {
-          digitDateColumn: digitDates[i],
-          dayColumn: days[i],
-        });
-
+    for (int i = 0; i < range; i++) {
+      final dateId = await db.rawInsert(
+        'INSERT OR IGNORE INTO $datesTable ($digitDateColumn, $dayColumn) VALUES (?, ?)',
+        [digitDates[i], days[i]],
+      );
+      if (dateId != 0) {
         final newDate = DatabaseDate(
           id: dateId,
           digitDate: digitDates[i],
           day: days[i],
         );
-
-        createdDates.add(newDate);
+        dates.add(newDate);
+      } else {
+        dates.add(await getDate(digitDate: digitDates[i]));
       }
-    });
+    }
 
-    return createdDates;
+    return dates;
   }
 
   Future<DatabaseExercise> createExercise(
@@ -301,7 +302,7 @@ class ExerciseService {
     });
   }
 
-  Future<void> deleteTrainingDayFromTomorrowToEndOfDates() async {
+  Future<void> deleteExercisesAndSetsFromTomorrowToEndOfDates() async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
 

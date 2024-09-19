@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:liftday/dialogs/are_you_sure_to_delate_plan.dart';
 import 'package:liftday/sevices/bloc/app_event.dart';
 import 'package:liftday/sevices/bloc/app_state.dart';
+import 'package:liftday/sevices/bloc/config_bloc.dart';
 import 'package:liftday/sevices/bloc/edit_bloc.dart';
 import 'package:liftday/sevices/crud/training_day.dart';
 import 'package:liftday/sevices/crud/exercise_service.dart';
@@ -21,6 +22,7 @@ class PlansPage extends StatefulWidget {
 class _PlansPageState extends State<PlansPage> {
   bool isTrainingPlanExpanded = true;
   bool isOtherDaysExpanded = true;
+  late SettingsService _settingsService;
   late bool hasPlan;
 
   Future<List<TrainingDay>> _fetchTrainingDays() async {
@@ -28,10 +30,25 @@ class _PlansPageState extends State<PlansPage> {
     return await exerciseService.getTrainingDays();
   }
 
+  Future<int?> _getDaysUntilEnd() async {
+    final String? planEndingDigitDate = _settingsService.planEndingDigitDate();
+
+    if (planEndingDigitDate != null) {
+      final DateFormat formatter = DateFormat('yyyy-MM-dd');
+      final DateTime lastDate = formatter.parse(planEndingDigitDate);
+      final DateTime now = DateTime.now();
+      final DateTime currentDate = DateTime(now.year, now.month, now.day);
+
+      return lastDate.difference(currentDate).inDays;
+    } else {
+      return null;
+    }
+  }
+
   @override
   void initState() {
-    final settingsService = SettingsService();
-    hasPlan = settingsService.hasPlanFlag();
+    _settingsService = SettingsService();
+    hasPlan = _settingsService.hasPlanFlag();
     super.initState();
   }
 
@@ -64,137 +81,159 @@ class _PlansPageState extends State<PlansPage> {
           }
         }
       },
-      child: SizedBox.expand(
-        child: Container(
-          color: colorLightGrey,
+      child: Container(
+        color: colorLightGrey,
+        height: MediaQuery.of(context).size.height,
+        child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(16.0),
-                    decoration: BoxDecoration(
-                      color: colorWhite,
-                      borderRadius: BorderRadius.circular(12.0),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "Mój plan",
-                          style: TextStyle(
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 24.0),
-                        hasPlan
-                            ? Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  _buildTextButton(
-                                      "Zastąp", Icons.autorenew, () {}),
-                                  _buildTextButton("Usuń", Icons.delete,
-                                      () async {
-                                    final delete =
-                                        await showAreYouSureToDeletePlan(
-                                            context);
-                                    if (delete && context.mounted) {
-                                      context.read<EditBloc>().add(
-                                          const EditEventPushDeletePlanButton());
-                                    }
-                                  }),
-                                  _buildTextButton("Udostępnij", Icons.share,
-                                      () {
-                                    //_captureAndSharePng();
-                                  }),
-                                ],
-                              )
-                            : Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  _buildTextButton(
-                                      "Dodaj plan", Icons.add, () {}),
-                                ],
-                              ),
-                      ],
-                    ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    color: colorWhite,
+                    borderRadius: BorderRadius.circular(12.0),
                   ),
-                  const SizedBox(height: 20),
-                  Container(
-                    padding: const EdgeInsets.all(16.0),
-                    decoration: BoxDecoration(
-                      color: colorWhite,
-                      borderRadius: BorderRadius.circular(12.0),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "Dni treningowe",
-                          style: TextStyle(
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.bold,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            "Mój plan",
+                            style: TextStyle(
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 24.0),
-                        FutureBuilder<List<TrainingDay>>(
-                            future: _fetchTrainingDays(),
+                          FutureBuilder(
+                            future: _getDaysUntilEnd(),
                             builder: (context, snapshot) {
                               switch (snapshot.connectionState) {
                                 case ConnectionState.done:
-                                  final trainingPlanDays = snapshot.data!
-                                      .where((day) => day.isFromPlan == 1)
-                                      .toList();
-                                  return _buildDropdownTile(
-                                    title: "Dni z planu treningowego",
-                                    isExpanded: isTrainingPlanExpanded,
-                                    days: trainingPlanDays,
-                                    onExpand: () {
-                                      setState(() {
-                                        isTrainingPlanExpanded =
-                                            !isTrainingPlanExpanded;
-                                      });
-                                    },
+                                  final daysUntilEnd = snapshot.data;
+                                  return Text(
+                                    (daysUntilEnd != null && hasPlan)
+                                        ? '$daysUntilEnd dni do końca'
+                                        : 'Brak planu',
+                                    style: const TextStyle(fontSize: 14.0),
                                   );
+
                                 default:
                                   return const SizedBox(height: 0);
                               }
-                            }),
-                        FutureBuilder<List<TrainingDay>>(
-                            future: _fetchTrainingDays(),
-                            builder: (context, snapshot) {
-                              switch (snapshot.connectionState) {
-                                case ConnectionState.done:
-                                  final otherDays = snapshot.data!
-                                      .where((day) => day.isFromPlan == 0)
-                                      .toList();
-                                  return _buildDropdownTile(
-                                    title: "Inne dni",
-                                    isExpanded: isOtherDaysExpanded,
-                                    days: otherDays,
-                                    onExpand: () {
-                                      setState(() {
-                                        isOtherDaysExpanded =
-                                            !isOtherDaysExpanded;
-                                      });
-                                    },
-                                  );
-                                default:
-                                  return const SizedBox(height: 0);
-                              }
-                            }),
-                        const SizedBox(height: 10),
-                        normalButton("+ Dodaj inny dzień", () {}),
-                      ],
-                    ),
+                            },
+                          )
+                        ],
+                      ),
+                      const SizedBox(height: 24.0),
+                      hasPlan
+                          ? Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                _buildTextButton("Zastąp", Icons.autorenew, () {
+                                  context.read<ConfigBloc>().add(
+                                      const ConfigEventChangePlanFromMainView());
+                                }),
+                                _buildTextButton("Usuń", Icons.delete,
+                                    () async {
+                                  final delete =
+                                      await showAreYouSureToDeletePlan(context);
+                                  if (delete && context.mounted) {
+                                    context.read<EditBloc>().add(
+                                        const EditEventPushDeletePlanButton());
+                                  }
+                                }),
+                                _buildTextButton("Udostępnij", Icons.share, () {
+                                  //_captureAndSharePng();
+                                }),
+                              ],
+                            )
+                          : Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                _buildTextButton("Dodaj plan", Icons.add, () {
+                                  context.read<ConfigBloc>().add(
+                                      const ConfigEventAddPlanFromMainView());
+                                }),
+                              ],
+                            ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+                const SizedBox(height: 20),
+                Container(
+                  padding: const EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    color: colorWhite,
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Dni treningowe",
+                        style: TextStyle(
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 24.0),
+                      FutureBuilder<List<TrainingDay>>(
+                          future: _fetchTrainingDays(),
+                          builder: (context, snapshot) {
+                            switch (snapshot.connectionState) {
+                              case ConnectionState.done:
+                                final trainingPlanDays = snapshot.data!
+                                    .where((day) => day.isFromPlan == 1)
+                                    .toList();
+                                return _buildDropdownTile(
+                                  title: "Dni z planu treningowego",
+                                  isExpanded: isTrainingPlanExpanded,
+                                  days: trainingPlanDays,
+                                  onExpand: () {
+                                    setState(() {
+                                      isTrainingPlanExpanded =
+                                          !isTrainingPlanExpanded;
+                                    });
+                                  },
+                                );
+                              default:
+                                return const SizedBox(height: 0);
+                            }
+                          }),
+                      FutureBuilder<List<TrainingDay>>(
+                          future: _fetchTrainingDays(),
+                          builder: (context, snapshot) {
+                            switch (snapshot.connectionState) {
+                              case ConnectionState.done:
+                                final otherDays = snapshot.data!
+                                    .where((day) => day.isFromPlan == 0)
+                                    .toList();
+                                return _buildDropdownTile(
+                                  title: "Inne dni",
+                                  isExpanded: isOtherDaysExpanded,
+                                  days: otherDays,
+                                  onExpand: () {
+                                    setState(() {
+                                      isOtherDaysExpanded =
+                                          !isOtherDaysExpanded;
+                                    });
+                                  },
+                                );
+                              default:
+                                return const SizedBox(height: 0);
+                            }
+                          }),
+                      const SizedBox(height: 10),
+                      normalButton("+ Dodaj inny dzień", () {}),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
         ),

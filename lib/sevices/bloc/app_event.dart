@@ -68,3 +68,11 @@ class EditEventEndedEdition extends EditEvent {
 class EditEventPushDeletePlanButton extends EditEvent {
   const EditEventPushDeletePlanButton();
 }
+
+class ConfigEventAddPlanFromMainView extends ConfigEvent {
+  const ConfigEventAddPlanFromMainView();
+}
+
+class ConfigEventChangePlanFromMainView extends ConfigEvent {
+  const ConfigEventChangePlanFromMainView();
+}

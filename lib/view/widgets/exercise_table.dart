@@ -49,9 +49,24 @@ class _ExerciseTableState extends State<ExerciseTable> {
       ));
       _exercisesStreamController.add(_exerciseCards);
     } else {
-      if (mounted) {
-        //w razie gdy jestesmy na polu kalendarza do ktorego nie ma daty w bazie danych
-        showErrorDialog(context);
+      DateTime now = DateTime.now();
+      DateTime startDate = now.subtract(const Duration(days: 14));
+      DateTime endDate = now.add(const Duration(days: 14));
+
+      if (widget.selectedDate.isAfter(startDate) &&
+          widget.selectedDate.isBefore(endDate)) {
+        _exerciseService.createDate(dateTime: widget.selectedDate);
+        setState(() {
+          _loadExercisesForSelectedDate();
+        });
+        _addExercise(name);
+      } else {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text('Kalendarz treningowy nie obejmuje tej daty')),
+          );
+        }
       }
     }
   }

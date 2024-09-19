@@ -9,6 +9,7 @@ class SettingsService {
 
   static const String _isConfiguredKey = 'isConfigured';
   static const String _hasPlanKey = 'hasPlan';
+  static const String _planEndingDigitDateKey = 'planEndingDigitDate';
 
   Future<void> init() async {
     _preferences = await SharedPreferences.getInstance();
@@ -40,5 +41,15 @@ class SettingsService {
   bool hasPlanFlag() {
     _ensureInitialized();
     return _preferences.getBool(_hasPlanKey) ?? false;
+  }
+
+  Future<void> setPlanEndingDigitDate(String value) async {
+    _ensureInitialized();
+    await _preferences.setString(_planEndingDigitDateKey, value);
+  }
+
+  String? planEndingDigitDate() {
+    _ensureInitialized();
+    return _preferences.getString(_planEndingDigitDateKey);
   }
 }

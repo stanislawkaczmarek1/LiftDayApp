@@ -38,7 +38,7 @@ class EditBloc extends Bloc<EditEvent, EditState> {
       (event, emit) async {
         final exerciseService = ExerciseService();
         await exerciseService.deleteTrainingDaysFromPlan();
-        await exerciseService.deleteTrainingDayFromTomorrowToEndOfDates();
+        await exerciseService.deleteExercisesAndSetsFromTomorrowToEndOfDates();
         final settingsService = SettingsService();
         settingsService.setHasPlanFlag(false);
         emit(const EditStatePlanDeleted());
