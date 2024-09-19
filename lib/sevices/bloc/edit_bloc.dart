@@ -7,10 +7,21 @@ import 'package:liftday/sevices/crud/exercise_service.dart';
 import 'package:liftday/sevices/settings/settings_service.dart';
 
 class EditBloc extends Bloc<EditEvent, EditState> {
+  bool _isThatEddition = true;
+
   EditBloc() : super(const EditStateInit()) {
-    on<EditEventPushEditIconOnPlansPage>(
+    on<EditEventEditTrainingDay>(
       (event, emit) {
-        emit(EditStateTrainingDayEdition(event.trainingDay));
+        _isThatEddition = true;
+        emit(EditStateTrainingDayAddOrEdit(event.trainingDay));
+        Navigator.of(event.context).pushNamed(editTrainingDayRoute);
+      },
+    );
+
+    on<EditEventAddTrainingDay>(
+      (event, emit) {
+        _isThatEddition = false; //addition
+        emit(EditStateTrainingDayAddOrEdit(event.trainingDay));
         Navigator.of(event.context).pushNamed(editTrainingDayRoute);
       },
     );
@@ -18,9 +29,14 @@ class EditBloc extends Bloc<EditEvent, EditState> {
     on<EditEventPushSaveButton>(
       (event, emit) async {
         final exerciseService = ExerciseService();
-        await exerciseService.editTrainingDay(event.trainingDay);
-        await exerciseService
-            .updateTrainingDayFromTomorrowToEndOfDates(event.trainingDay);
+        if (_isThatEddition) {
+          await exerciseService.editTrainingDay(event.trainingDay);
+          await exerciseService
+              .updateTrainingDayFromTomorrowToEndOfDates(event.trainingDay);
+        } else {
+          //addition of other days
+          await exerciseService.saveTrainingDay(event.trainingDay, false);
+        }
         if (event.context.mounted) {
           Navigator.of(event.context).pop();
         }
@@ -42,6 +58,14 @@ class EditBloc extends Bloc<EditEvent, EditState> {
         final settingsService = SettingsService();
         settingsService.setHasPlanFlag(false);
         emit(const EditStatePlanDeleted());
+      },
+    );
+
+    on<EditEventDeleteTrainingDay>(
+      (event, emit) async {
+        final exerciseService = ExerciseService();
+        await exerciseService.deleteTrainingDay(event.trainingDay);
+        emit(const EditStateDayDeleted());
       },
     );
   }

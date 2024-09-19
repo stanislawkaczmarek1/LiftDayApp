@@ -25,6 +25,49 @@ class _PlansPageState extends State<PlansPage> {
   late SettingsService _settingsService;
   late bool hasPlan;
 
+  void _showAddDayDialog() {
+    String dayName = '';
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          content: TextField(
+            autofocus: true,
+            onChanged: (value) {
+              dayName = value;
+            },
+            decoration: const InputDecoration(hintText: "Nazwa dnia"),
+          ),
+          actions: [
+            TextButton(
+              child: const Text('Anuluj'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Dodaj'),
+              onPressed: () {
+                if (dayName.isNotEmpty &&
+                    dayName != 'Monday' &&
+                    dayName != 'Tuesday' &&
+                    dayName != 'Wednesday' &&
+                    dayName != 'Thursday' &&
+                    dayName != 'Friday' &&
+                    dayName != 'Saturday' &&
+                    dayName != 'Sunday') {
+                  context.read<EditBloc>().add(EditEventAddTrainingDay(
+                      context, TrainingDay(day: dayName, exercises: [])));
+                }
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Future<List<TrainingDay>> _fetchTrainingDays() async {
     final exerciseService = ExerciseService();
     return await exerciseService.getTrainingDays();
@@ -63,8 +106,7 @@ class _PlansPageState extends State<PlansPage> {
           context.read<EditBloc>().add(const EditEventEndedEdition());
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                  content: Text('Zapisno i zaktulizowano kalendarz')),
+              const SnackBar(content: Text('Zaktualizowane dane')),
             );
           }
         }
@@ -77,6 +119,17 @@ class _PlansPageState extends State<PlansPage> {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Usunięto plan')),
+            );
+          }
+        }
+        if (state is EditStateDayDeleted) {
+          setState(() {
+            _fetchTrainingDays();
+          });
+          context.read<EditBloc>().add(const EditEventEndedEdition());
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Usunięto dzien')),
             );
           }
         }
@@ -194,6 +247,7 @@ class _PlansPageState extends State<PlansPage> {
                                   title: "Dni z planu treningowego",
                                   isExpanded: isTrainingPlanExpanded,
                                   days: trainingPlanDays,
+                                  isFromPlan: true,
                                   onExpand: () {
                                     setState(() {
                                       isTrainingPlanExpanded =
@@ -217,6 +271,7 @@ class _PlansPageState extends State<PlansPage> {
                                   title: "Inne dni",
                                   isExpanded: isOtherDaysExpanded,
                                   days: otherDays,
+                                  isFromPlan: false,
                                   onExpand: () {
                                     setState(() {
                                       isOtherDaysExpanded =
@@ -229,7 +284,9 @@ class _PlansPageState extends State<PlansPage> {
                             }
                           }),
                       const SizedBox(height: 10),
-                      normalButton("+ Dodaj inny dzień", () {}),
+                      normalButton("+ Dodaj inny dzień", () {
+                        _showAddDayDialog();
+                      }),
                     ],
                   ),
                 ),
@@ -245,6 +302,7 @@ class _PlansPageState extends State<PlansPage> {
     required String title,
     required bool isExpanded,
     required List<TrainingDay> days,
+    required bool isFromPlan,
     VoidCallback? onExpand,
   }) {
     return Column(
@@ -265,8 +323,9 @@ class _PlansPageState extends State<PlansPage> {
         ),
         if (isExpanded)
           Column(
-            children:
-                days.map((day) => _buildExerciseDayTile(day, context)).toList(),
+            children: days
+                .map((day) => _buildExerciseDayTile(day, context, isFromPlan))
+                .toList(),
           ),
       ],
     );
@@ -304,7 +363,8 @@ class _PlansPageState extends State<PlansPage> {
   }
 }
 
-Widget _buildExerciseDayTile(TrainingDay day, BuildContext context) {
+Widget _buildExerciseDayTile(
+    TrainingDay day, BuildContext context, bool isFromPlan) {
   return Container(
     margin: const EdgeInsets.symmetric(vertical: 8.0),
     padding: const EdgeInsets.all(16.0),
@@ -325,16 +385,31 @@ Widget _buildExerciseDayTile(TrainingDay day, BuildContext context) {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            IconButton(
-              onPressed: () {
-                context
-                    .read<EditBloc>()
-                    .add(EditEventPushEditIconOnPlansPage(context, day));
+            PopupMenuButton<String>(
+              onSelected: (value) async {
+                if (value == 'edit') {
+                  context.read<EditBloc>().add(EditEventEditTrainingDay(
+                        context,
+                        day,
+                      ));
+                } else if (value == 'delete') {
+                  context.read<EditBloc>().add(EditEventDeleteTrainingDay(day));
+                }
               },
-              icon: const Icon(
-                Icons.edit,
-                size: 20.0,
-              ),
+              itemBuilder: (BuildContext context) {
+                return [
+                  const PopupMenuItem<String>(
+                    value: 'edit',
+                    child: Text('Edytuj'),
+                  ),
+                  if (!isFromPlan)
+                    const PopupMenuItem<String>(
+                      value: 'delete',
+                      child: Text('Usuń'),
+                    ),
+                ];
+              },
+              icon: const Icon(Icons.more_vert),
             ),
           ],
         ),

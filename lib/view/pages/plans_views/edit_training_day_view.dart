@@ -42,7 +42,7 @@ class _EditTrainingDaysViewState extends State<EditTrainingDaysView> {
   Widget build(BuildContext context) {
     return BlocBuilder<EditBloc, EditState>(
       builder: (context, state) {
-        if (state is EditStateTrainingDayEdition) {
+        if (state is EditStateTrainingDayAddOrEdit) {
           return Scaffold(
             appBar: appBarWithButton(
               "Zapisz",
@@ -62,7 +62,7 @@ class _EditTrainingDaysViewState extends State<EditTrainingDaysView> {
                   Padding(
                     padding: const EdgeInsets.all(20.0),
                     child: Text(
-                      'Trening w ${_getPolishDayAbbreviation(state.trainingDay.day)}',
+                      _getPolishDayAbbreviation(state.trainingDay.day),
                       style: const TextStyle(
                           fontSize: 24, fontWeight: FontWeight.bold),
                       textAlign: TextAlign.center,

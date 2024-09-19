@@ -28,6 +28,14 @@ class ConfigEventConfirmWeekAutomation extends ConfigEvent {
   const ConfigEventConfirmWeekAutomation();
 }
 
+class ConfigEventConfirmDaysCreation extends ConfigEvent {
+  const ConfigEventConfirmDaysCreation();
+}
+
+class ConfigEventConfirmAllByHand extends ConfigEvent {
+  const ConfigEventConfirmAllByHand();
+}
+
 class ConfigEventConfirmTrainingDays extends ConfigEvent {
   final List<String> selectedDays;
 
@@ -49,10 +57,22 @@ abstract class EditEvent extends AppEvent {
   const EditEvent();
 }
 
-class EditEventPushEditIconOnPlansPage extends EditEvent {
+class EditEventEditTrainingDay extends EditEvent {
   final BuildContext context;
   final TrainingDay trainingDay;
-  const EditEventPushEditIconOnPlansPage(this.context, this.trainingDay);
+  const EditEventEditTrainingDay(
+    this.context,
+    this.trainingDay,
+  );
+}
+
+class EditEventAddTrainingDay extends EditEvent {
+  final BuildContext context;
+  final TrainingDay trainingDay;
+  const EditEventAddTrainingDay(
+    this.context,
+    this.trainingDay,
+  );
 }
 
 class EditEventPushSaveButton extends EditEvent {
@@ -75,4 +95,9 @@ class ConfigEventAddPlanFromMainView extends ConfigEvent {
 
 class ConfigEventChangePlanFromMainView extends ConfigEvent {
   const ConfigEventChangePlanFromMainView();
+}
+
+class EditEventDeleteTrainingDay extends EditEvent {
+  final TrainingDay trainingDay;
+  const EditEventDeleteTrainingDay(this.trainingDay);
 }

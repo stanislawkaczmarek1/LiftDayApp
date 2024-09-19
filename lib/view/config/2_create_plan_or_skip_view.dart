@@ -107,7 +107,11 @@ class _CreatePlanOrSkipViewState extends State<CreatePlanOrSkipView> {
                   textColor: colorBlack,
                   buttonColor: colorBlack,
                   buttonTextColor: colorWhite,
-                  onPressed: () {},
+                  onPressed: () {
+                    context
+                        .read<ConfigBloc>()
+                        .add(const ConfigEventConfirmDaysCreation());
+                  },
                 ),
               ),
               const SizedBox(
@@ -121,7 +125,11 @@ class _CreatePlanOrSkipViewState extends State<CreatePlanOrSkipView> {
                   textColor: colorBlack,
                   buttonColor: colorBlack,
                   buttonTextColor: colorWhite,
-                  onPressed: () {},
+                  onPressed: () {
+                    context
+                        .read<ConfigBloc>()
+                        .add(const ConfigEventConfirmAllByHand());
+                  },
                 ),
               ),
               const SizedBox(

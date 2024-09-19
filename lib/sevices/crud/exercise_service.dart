@@ -186,16 +186,28 @@ class ExerciseService {
     });
   }
 
-  Future<void> saveTrainingDay(TrainingDay trainingDay) async {
+  Future<void> saveTrainingDay(TrainingDay trainingDay, bool isFromPlan) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
-    await db.insert(
-      trainingDaysTable,
-      {
-        dayColumn: trainingDay.day,
-        exercisesColumn: trainingDay.exercises.join(','),
-      },
-    );
+
+    if (isFromPlan) {
+      await db.insert(
+        trainingDaysTable,
+        {
+          dayColumn: trainingDay.day,
+          exercisesColumn: trainingDay.exercises.join(','),
+        },
+      );
+    } else {
+      await db.insert(
+        trainingDaysTable,
+        {
+          dayColumn: trainingDay.day,
+          exercisesColumn: trainingDay.exercises.join(','),
+          isFromPlanColumn: 0,
+        },
+      );
+    }
   }
 
   Future<void> editTrainingDay(TrainingDay trainingDay) async {
@@ -210,6 +222,19 @@ class ExerciseService {
       whereArgs: [trainingDay.day],
     );
     if (updatesCount == 0) {
+      throw CouldNotUpdateNote();
+    }
+  }
+
+  Future<void> deleteTrainingDay(TrainingDay trainingDay) async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+    final deletesCount = await db.delete(
+      trainingDaysTable,
+      where: "$dayColumn = ?",
+      whereArgs: [trainingDay.day],
+    );
+    if (deletesCount == 0) {
       throw CouldNotUpdateNote();
     }
   }
@@ -236,6 +261,7 @@ class ExerciseService {
       return TrainingDay(
         day: maps[i][dayColumn],
         exercises: (maps[i][exercisesColumn] as String).split(','),
+        isFromPlan: maps[i][isFromPlanColumn],
       );
     });
   }

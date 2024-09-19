@@ -11,7 +11,6 @@ class ConfigBloc extends Bloc<ConfigEvent, ConfigState> {
   final List<ConfigStateAddFirstWeekPlan> _firstWeekPlan = [];
   int _currentDayOfPlanConfig = 0;
   final List<TrainingDay> _exerciseDaysData = [];
-  late final ExerciseService _exerciseService;
   late final SettingsService _settingsService;
   bool isThatReplacementOfPlans = false;
 
@@ -20,7 +19,6 @@ class ConfigBloc extends Bloc<ConfigEvent, ConfigState> {
     on<ConfigEventChceckAppConfigured>(
       (event, emit) async {
         _settingsService = SettingsService();
-        _exerciseService = ExerciseService();
         await _settingsService.init();
         if (_settingsService.isAppConfiguredFlag()) {
           emit(const ConfigStateMainView());
@@ -62,6 +60,14 @@ class ConfigBloc extends Bloc<ConfigEvent, ConfigState> {
       },
     );
 
+    on<ConfigEventConfirmAllByHand>(
+      (event, emit) {
+        _stateHistory.clear();
+        _settingsService.setAppConfiguredFlag(true);
+        emit(const ConfigStateMainView());
+      },
+    );
+
     on<ConfigEventConfirmTrainingDays>(
       (event, emit) {
         _stateHistory.add(state);
@@ -96,24 +102,24 @@ class ConfigBloc extends Bloc<ConfigEvent, ConfigState> {
     on<ConfigEventConfirmPlanDuration>(
       (event, emit) async {
         _stateHistory.add(state);
-
+        final exerciseService = ExerciseService();
         if (isThatReplacementOfPlans) {
-          _exerciseService.deleteTrainingDaysFromPlan();
-          _exerciseService.deleteExercisesAndSetsFromTomorrowToEndOfDates();
+          exerciseService.deleteTrainingDaysFromPlan();
+          exerciseService.deleteExercisesAndSetsFromTomorrowToEndOfDates();
         }
 
-        final dates = await _exerciseService.createRangeOfDatesConfig(
+        final dates = await exerciseService.createRangeOfDatesConfig(
           range: event.duration,
           fromDate: DateTime.now(),
         );
         final lastDate = dates.last;
-        _exerciseService.createExercisesConfig(
+        exerciseService.createExercisesConfig(
           exerciseDays: _exerciseDaysData,
           dates: dates,
         );
 
         for (TrainingDay exerciseDay in _exerciseDaysData) {
-          await _exerciseService.saveTrainingDay(exerciseDay);
+          await exerciseService.saveTrainingDay(exerciseDay, true);
         }
 
         _settingsService.setPlanEndingDigitDate(lastDate.digitDate);
