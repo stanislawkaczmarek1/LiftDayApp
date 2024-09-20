@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:liftday/dialogs/are_you_sure_to_delate_plan.dart';
+import 'package:liftday/dialogs/error_dialog.dart';
 import 'package:liftday/sevices/bloc/app_event.dart';
 import 'package:liftday/sevices/bloc/app_state.dart';
 import 'package:liftday/sevices/bloc/config_bloc.dart';
@@ -24,6 +25,8 @@ class _PlansPageState extends State<PlansPage> {
   bool isOtherDaysExpanded = true;
   late SettingsService _settingsService;
   late bool hasPlan;
+
+  bool maximumOfOtherTrainingDays = false;
 
   Future<List<TrainingDay>> _fetchTrainingDays() async {
     final exerciseService = ExerciseService();
@@ -157,9 +160,6 @@ class _PlansPageState extends State<PlansPage> {
                                         const EditEventPushDeletePlanButton());
                                   }
                                 }),
-                                _buildTextButton("Udostępnij", Icons.share, () {
-                                  //_captureAndSharePng();
-                                }),
                               ],
                             )
                           : Row(
@@ -224,6 +224,11 @@ class _PlansPageState extends State<PlansPage> {
                                 final otherDays = snapshot.data!
                                     .where((day) => day.isFromPlan == 0)
                                     .toList();
+                                if (otherDays.length >= 4) {
+                                  maximumOfOtherTrainingDays = true;
+                                } else {
+                                  maximumOfOtherTrainingDays = false;
+                                }
                                 return _buildDropdownTile(
                                   title: "Inne dni",
                                   isExpanded: isOtherDaysExpanded,
@@ -242,9 +247,13 @@ class _PlansPageState extends State<PlansPage> {
                           }),
                       const SizedBox(height: 10),
                       normalButton("+ Dodaj inny dzień", () {
-                        context
-                            .read<EditBloc>()
-                            .add(EditEventAddOtherTrainingDay(context));
+                        if (!maximumOfOtherTrainingDays) {
+                          context
+                              .read<EditBloc>()
+                              .add(EditEventAddOtherTrainingDay(context));
+                        } else {
+                          showErrorDialog(context);
+                        }
                       }),
                     ],
                   ),

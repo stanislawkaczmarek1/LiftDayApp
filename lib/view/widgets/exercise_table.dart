@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:liftday/dialogs/error_dialog.dart';
@@ -9,6 +8,7 @@ import 'package:liftday/sevices/crud/tables_classes/database_date.dart';
 import 'package:liftday/sevices/crud/tables_classes/database_exercise.dart';
 import 'package:liftday/sevices/crud/tables_classes/database_set.dart';
 import 'package:liftday/constants/colors.dart';
+import 'package:liftday/sevices/crud/training_day.dart';
 
 class ExerciseTable extends StatefulWidget {
   final DateTime selectedDate;
@@ -24,6 +24,9 @@ class _ExerciseTableState extends State<ExerciseTable> {
 
   late StreamController<List<ExerciseCard>> _exercisesStreamController;
   List<ExerciseCard> _exerciseCards = [];
+
+  TrainingDay? _selectedDay;
+  TrainingDay? _tempSelectedDay;
 
   void _addExercise(String name) async {
     if (_date != null) {
@@ -135,7 +138,90 @@ class _ExerciseTableState extends State<ExerciseTable> {
               ))
           .toList();
       _exerciseCards = dbExercisesCards;
+      if (_selectedDay != null) {
+        log("day is selcted");
+        final selectedDayExercises =
+            await _exerciseService.createExercisesFromTrainingDayInGivenDate(
+                trainingDay: _selectedDay!, dateId: _date!.id);
+        final selectedDayExercisesCards = selectedDayExercises
+            .map((exercise) => ExerciseCard(
+                  exerciseName: exercise.name,
+                  selectedDate: _date!,
+                  onDeleteCard: _deleteExercise,
+                ))
+            .toList();
+        _exerciseCards.addAll(selectedDayExercisesCards);
+        _selectedDay = null;
+      }
       _exercisesStreamController.add(_exerciseCards);
+    }
+  }
+
+  Future<List<TrainingDay>> _fetchTrainingDaysToRadioList() async {
+    final trainingDays = _exerciseService.getTrainingDays();
+    return trainingDays;
+  }
+
+  void _showSelectDayRadioList() async {
+    List<TrainingDay> days = await _fetchTrainingDaysToRadioList();
+    if (days.isEmpty) {
+      if (mounted) {
+        showErrorDialog(context);
+      }
+    } else {
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return StatefulBuilder(
+                builder: (BuildContext context, StateSetter setState) {
+              return AlertDialog(
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ...days.map((day) {
+                      return RadioListTile<TrainingDay>(
+                        title: Text(
+                          day.day,
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                        activeColor: colorBabyBlue,
+                        value: day,
+                        groupValue: _tempSelectedDay,
+                        onChanged: (TrainingDay? value) {
+                          setState(() {
+                            _tempSelectedDay = value;
+                          });
+                        },
+                      );
+                    })
+                  ],
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text('Anuluj'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      setState(
+                        () {
+                          _selectedDay = _tempSelectedDay;
+                          _loadExercisesForSelectedDate();
+                        },
+                      );
+                    },
+                    child: const Text('Zatwierdź'),
+                  ),
+                ],
+              );
+            });
+          },
+        );
+      }
     }
   }
 
@@ -188,29 +274,60 @@ class _ExerciseTableState extends State<ExerciseTable> {
                             return const SizedBox(height: 0.0);
                         }
                       }),
-                  Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: TextButton(
-                          onPressed: _showAddExerciseDialog,
-                          style: TextButton.styleFrom(
-                            elevation: 3.0,
-                            backgroundColor: colorWhite,
-                            foregroundColor: colorBlack,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          child: const Padding(
-                            padding: EdgeInsets.all(5.0),
-                            child: Text(
-                              "+ Dodaj ćwiczenie",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.normal,
+                  Stack(
+                    children: [
+                      Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: TextButton(
+                              onPressed: _showAddExerciseDialog,
+                              style: TextButton.styleFrom(
+                                elevation: 3.0,
+                                backgroundColor: colorWhite,
+                                foregroundColor: colorBlack,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
                               ),
-                            ),
-                          ))),
+                              child: const Padding(
+                                padding: EdgeInsets.all(5.0),
+                                child: Text(
+                                  "+ Dodaj ćwiczenie",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.normal,
+                                  ),
+                                ),
+                              )),
+                        ),
+                      ),
+                      Positioned(
+                        right: 5,
+                        top: 16,
+                        child: PopupMenuButton<String>(
+                          onSelected: (value) async {
+                            if (value == 'load_day') {
+                              _showSelectDayRadioList();
+                            }
+                          },
+                          itemBuilder: (BuildContext context) {
+                            return [
+                              const PopupMenuItem<String>(
+                                value: 'load_day',
+                                child: Text('Wczytaj dzień'),
+                              ),
+                            ];
+                          },
+                          icon: const Icon(
+                            Icons.more_vert,
+                            color: colorBabyBlue,
+                            size: 30,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               );
             default:
@@ -250,6 +367,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
       if (_setRows.length >= 10) {
         if (mounted) {
           showErrorDialog(context);
+          return;
         }
       }
 

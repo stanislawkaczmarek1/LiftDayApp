@@ -9,6 +9,7 @@ import 'package:liftday/sevices/crud/tables_classes/database_set.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' show join;
+import 'package:sqflite/sqlite_api.dart';
 
 class ExerciseService {
   Database? _db;
@@ -285,6 +286,20 @@ class ExerciseService {
         isFromPlan: maps[i][isFromPlanColumn],
       );
     });
+  }
+
+  Future<List<DatabaseExercise>> createExercisesFromTrainingDayInGivenDate({
+    required TrainingDay trainingDay,
+    required int dateId,
+  }) async {
+    List<DatabaseExercise> exercises = [];
+
+    for (var i = 0; i < trainingDay.exercises.length; i++) {
+      exercises.add(await createExercise(
+          dateId: dateId, name: trainingDay.exercises.elementAt(i)));
+    }
+
+    return exercises;
   }
 
   Future<void> updateTrainingDayFromTomorrowToEndOfDates(

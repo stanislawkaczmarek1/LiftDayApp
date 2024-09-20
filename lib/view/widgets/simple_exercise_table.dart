@@ -27,6 +27,10 @@ class _SimpleExerciseTableState extends State<SimpleExerciseTable> {
 
   bool _addExercise(String name) {
     bool added = false;
+    if (exercises.length >= 10) {
+      added = false;
+      return added;
+    }
     setState(() {
       if (exercises.contains(name)) {
         added = false;
