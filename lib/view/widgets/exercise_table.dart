@@ -669,9 +669,7 @@ class _ExerciseRowState extends State<ExerciseRow> {
     }
     final weight = _convertToInt(_weightController.text);
     final reps = _convertToInt(_repsController.text);
-    if (weight == null && reps == null) {
-      return;
-    }
+
     await _exerciseService.updateSet(
       setToUpdate: mySet,
       weight: weight,

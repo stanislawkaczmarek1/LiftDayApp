@@ -9,7 +9,6 @@ import 'package:liftday/sevices/crud/tables_classes/database_set.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' show join;
-import 'package:sqflite/sqlite_api.dart';
 
 class ExerciseService {
   Database? _db;
@@ -577,9 +576,13 @@ class ExerciseService {
     final updates = <String, Object?>{};
     if (weight != null) {
       updates[weightColumn] = weight;
+    } else {
+      updates[weightColumn] = 0;
     }
     if (reps != null) {
       updates[repsColumn] = reps;
+    } else {
+      updates[repsColumn] = 0;
     }
     if (updates.isEmpty) {
       return null;
