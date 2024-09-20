@@ -46,6 +46,9 @@ class ConfigBloc extends Bloc<ConfigEvent, ConfigState> {
               _exerciseDaysData.removeLast();
               log("After removing: $_exerciseDaysData");
             }
+          } else if (_stateHistory.last is ConfigStateCreatePlanOrSkip) {
+            _currentDayOfPlanConfig = 0;
+            _exerciseDaysData.clear();
           }
 
           emit(_stateHistory.removeLast());
@@ -64,6 +67,55 @@ class ConfigBloc extends Bloc<ConfigEvent, ConfigState> {
       (event, emit) {
         _stateHistory.clear();
         _settingsService.setAppConfiguredFlag(true);
+        emit(const ConfigStateMainView());
+      },
+    );
+
+    on<ConfigEventConfirmDaysCreation>(
+      (event, emit) {
+        _stateHistory.add(state);
+        emit(ConfigStateAddTrainingDays(++_currentDayOfPlanConfig, false));
+      },
+    );
+
+    on<ConfigEventPushNextDayButton>(
+      (event, emit) {
+        _exerciseDaysData.add(event.trainingDay);
+        if (_currentDayOfPlanConfig >= 3) {
+          //numeracja 1 , 2 , ...
+          //zmusza do zapisu 4 dnia
+
+          emit(ConfigStateAddTrainingDays(_currentDayOfPlanConfig, true));
+        } else {
+          //debug
+          log("After adding: $_exerciseDaysData");
+          int a = _currentDayOfPlanConfig;
+          a++;
+          log("current day: $a");
+          //
+          emit(ConfigStateAddTrainingDays(++_currentDayOfPlanConfig, false));
+        }
+      },
+    );
+
+    on<ConfigEventPushDoneButton>(
+      (event, emit) async {
+        _exerciseDaysData.add(event.trainingDay);
+
+        log(_exerciseDaysData.toString());
+        _renameDuplicateDays(_exerciseDaysData);
+        log(_exerciseDaysData.toString());
+
+        final exerciseService = ExerciseService();
+        for (TrainingDay exerciseDay in _exerciseDaysData) {
+          await exerciseService.saveTrainingDay(exerciseDay, false);
+        }
+
+        _stateHistory.clear();
+        _settingsService.setAppConfiguredFlag(true);
+        _currentDayOfPlanConfig = 0;
+        _exerciseDaysData.clear();
+
         emit(const ConfigStateMainView());
       },
     );
@@ -150,5 +202,30 @@ class ConfigBloc extends Bloc<ConfigEvent, ConfigState> {
         emit(const ConfigStateChooseTrainingDays());
       },
     );
+  }
+}
+
+void _renameDuplicateDays(List<TrainingDay> exerciseDaysData) {
+  // Mapa do śledzenia liczby wystąpień każdego dnia
+  Map<String, int> dayOccurrences = {};
+
+  // Przejście przez całą listę dni treningowych
+  for (int i = 0; i < exerciseDaysData.length; i++) {
+    String day = exerciseDaysData[i].day;
+
+    // Jeśli ten dzień już wystąpił, zwiększamy licznik i dodajemy go do nazwy
+    if (dayOccurrences.containsKey(day)) {
+      int occurrence = dayOccurrences[day]! + 1;
+      dayOccurrences[day] = occurrence;
+      // Aktualizacja nazwy dnia z numerem
+      exerciseDaysData[i] = TrainingDay(
+        day: '$day$occurrence',
+        exercises: exerciseDaysData[i].exercises,
+        isFromPlan: exerciseDaysData[i].isFromPlan,
+      );
+    } else {
+      // Jeśli ten dzień nie wystąpił wcześniej, zapisujemy go w mapie z wartością 1
+      dayOccurrences[day] = 1;
+    }
   }
 }

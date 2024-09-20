@@ -13,8 +13,9 @@ import 'package:liftday/view/config/3_choose_training_days_view.dart';
 import 'package:liftday/view/config/2_create_plan_or_skip_view.dart';
 import 'package:liftday/view/config/1_start_view.dart';
 import 'package:liftday/view/config/5_choose_duration_of_plan_view.dart';
+import 'package:liftday/view/config_2/3_add_training_days_view.dart';
 import 'package:liftday/view/main_view.dart';
-import 'package:liftday/view/pages/plans_views/edit_training_day_view.dart';
+import 'package:liftday/view/pages/plans_views/training_day_view.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -51,7 +52,7 @@ void main() {
           ),
           home: const HomePage(),
           routes: {
-            editTrainingDayRoute: (context) => const EditTrainingDaysView(),
+            editTrainingDayRoute: (context) => const TrainingDayView(),
           },
         ),
       ),
@@ -89,6 +90,8 @@ class HomePage extends StatelessWidget {
           return const PlanDurationView();
         } else if (state is ConfigStateMainView) {
           return const MainView();
+        } else if (state is ConfigStateAddTrainingDays) {
+          return const AddTrainingDaysView();
         } else {
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),

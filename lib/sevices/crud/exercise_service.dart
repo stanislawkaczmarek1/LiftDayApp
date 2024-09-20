@@ -210,16 +210,18 @@ class ExerciseService {
     }
   }
 
-  Future<void> editTrainingDay(TrainingDay trainingDay) async {
+  Future<void> editTrainingDay(
+      TrainingDay trainingDay, String currentName) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
     final updatesCount = await db.update(
       trainingDaysTable,
       {
+        dayColumn: trainingDay.day,
         exercisesColumn: trainingDay.exercises.join(','),
       },
-      where: "day = ?",
-      whereArgs: [trainingDay.day],
+      where: "$dayColumn = ?",
+      whereArgs: [currentName],
     );
     if (updatesCount == 0) {
       throw CouldNotUpdateNote();
@@ -256,6 +258,25 @@ class ExerciseService {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
     final List<Map<String, dynamic>> maps = await db.query(trainingDaysTable);
+
+    return List.generate(maps.length, (i) {
+      return TrainingDay(
+        day: maps[i][dayColumn],
+        exercises: (maps[i][exercisesColumn] as String).split(','),
+        isFromPlan: maps[i][isFromPlanColumn],
+      );
+    });
+  }
+
+  Future<List<TrainingDay>> getOtherTrainingDays() async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+
+    final List<Map<String, dynamic>> maps = await db.query(
+      trainingDaysTable,
+      where: '$isFromPlanColumn = ?',
+      whereArgs: [0],
+    );
 
     return List.generate(maps.length, (i) {
       return TrainingDay(

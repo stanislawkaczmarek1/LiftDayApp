@@ -25,49 +25,6 @@ class _PlansPageState extends State<PlansPage> {
   late SettingsService _settingsService;
   late bool hasPlan;
 
-  void _showAddDayDialog() {
-    String dayName = '';
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          content: TextField(
-            autofocus: true,
-            onChanged: (value) {
-              dayName = value;
-            },
-            decoration: const InputDecoration(hintText: "Nazwa dnia"),
-          ),
-          actions: [
-            TextButton(
-              child: const Text('Anuluj'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: const Text('Dodaj'),
-              onPressed: () {
-                if (dayName.isNotEmpty &&
-                    dayName != 'Monday' &&
-                    dayName != 'Tuesday' &&
-                    dayName != 'Wednesday' &&
-                    dayName != 'Thursday' &&
-                    dayName != 'Friday' &&
-                    dayName != 'Saturday' &&
-                    dayName != 'Sunday') {
-                  context.read<EditBloc>().add(EditEventAddTrainingDay(
-                      context, TrainingDay(day: dayName, exercises: [])));
-                }
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   Future<List<TrainingDay>> _fetchTrainingDays() async {
     final exerciseService = ExerciseService();
     return await exerciseService.getTrainingDays();
@@ -285,7 +242,9 @@ class _PlansPageState extends State<PlansPage> {
                           }),
                       const SizedBox(height: 10),
                       normalButton("+ Dodaj inny dzień", () {
-                        _showAddDayDialog();
+                        context
+                            .read<EditBloc>()
+                            .add(EditEventAddOtherTrainingDay(context));
                       }),
                     ],
                   ),
@@ -388,10 +347,19 @@ Widget _buildExerciseDayTile(
             PopupMenuButton<String>(
               onSelected: (value) async {
                 if (value == 'edit') {
-                  context.read<EditBloc>().add(EditEventEditTrainingDay(
-                        context,
-                        day,
-                      ));
+                  if (isFromPlan) {
+                    context
+                        .read<EditBloc>()
+                        .add(EditEventEditTrainingDayFromPlan(
+                          context,
+                          day,
+                        ));
+                  } else {
+                    context.read<EditBloc>().add(EditEventEditOtherTrainingDay(
+                          context,
+                          day,
+                        ));
+                  }
                 } else if (value == 'delete') {
                   context.read<EditBloc>().add(EditEventDeleteTrainingDay(day));
                 }

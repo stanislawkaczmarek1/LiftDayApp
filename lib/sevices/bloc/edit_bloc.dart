@@ -10,18 +10,26 @@ class EditBloc extends Bloc<EditEvent, EditState> {
   bool _isThatEddition = true;
 
   EditBloc() : super(const EditStateInit()) {
-    on<EditEventEditTrainingDay>(
+    on<EditEventEditTrainingDayFromPlan>(
       (event, emit) {
         _isThatEddition = true;
-        emit(EditStateTrainingDayAddOrEdit(event.trainingDay));
+        emit(EditStateEditTrainingDayFromPlan(event.trainingDay));
         Navigator.of(event.context).pushNamed(editTrainingDayRoute);
       },
     );
 
-    on<EditEventAddTrainingDay>(
+    on<EditEventEditOtherTrainingDay>(
+      (event, emit) {
+        _isThatEddition = true;
+        emit(EditStateEditOtherTrainingDay(event.trainingDay));
+        Navigator.of(event.context).pushNamed(editTrainingDayRoute);
+      },
+    );
+
+    on<EditEventAddOtherTrainingDay>(
       (event, emit) {
         _isThatEddition = false; //addition
-        emit(EditStateTrainingDayAddOrEdit(event.trainingDay));
+        emit(const EditStateAddOtherTrainingDay());
         Navigator.of(event.context).pushNamed(editTrainingDayRoute);
       },
     );
@@ -30,7 +38,8 @@ class EditBloc extends Bloc<EditEvent, EditState> {
       (event, emit) async {
         final exerciseService = ExerciseService();
         if (_isThatEddition) {
-          await exerciseService.editTrainingDay(event.trainingDay);
+          await exerciseService.editTrainingDay(
+              event.trainingDay, event.currentName);
           await exerciseService
               .updateTrainingDayFromTomorrowToEndOfDates(event.trainingDay);
         } else {

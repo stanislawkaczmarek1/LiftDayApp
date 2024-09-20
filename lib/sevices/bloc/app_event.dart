@@ -57,28 +57,37 @@ abstract class EditEvent extends AppEvent {
   const EditEvent();
 }
 
-class EditEventEditTrainingDay extends EditEvent {
+class EditEventEditTrainingDayFromPlan extends EditEvent {
   final BuildContext context;
   final TrainingDay trainingDay;
-  const EditEventEditTrainingDay(
+  const EditEventEditTrainingDayFromPlan(
     this.context,
     this.trainingDay,
   );
 }
 
-class EditEventAddTrainingDay extends EditEvent {
+class EditEventEditOtherTrainingDay extends EditEvent {
   final BuildContext context;
   final TrainingDay trainingDay;
-  const EditEventAddTrainingDay(
+  const EditEventEditOtherTrainingDay(
     this.context,
     this.trainingDay,
+  );
+}
+
+class EditEventAddOtherTrainingDay extends EditEvent {
+  final BuildContext context;
+  const EditEventAddOtherTrainingDay(
+    this.context,
   );
 }
 
 class EditEventPushSaveButton extends EditEvent {
   final BuildContext context;
   final TrainingDay trainingDay;
-  const EditEventPushSaveButton(this.context, this.trainingDay);
+  final String currentName;
+  const EditEventPushSaveButton(
+      this.context, this.trainingDay, this.currentName);
 }
 
 class EditEventEndedEdition extends EditEvent {
@@ -100,4 +109,14 @@ class ConfigEventChangePlanFromMainView extends ConfigEvent {
 class EditEventDeleteTrainingDay extends EditEvent {
   final TrainingDay trainingDay;
   const EditEventDeleteTrainingDay(this.trainingDay);
+}
+
+class ConfigEventPushNextDayButton extends ConfigEvent {
+  final TrainingDay trainingDay;
+  const ConfigEventPushNextDayButton(this.trainingDay);
+}
+
+class ConfigEventPushDoneButton extends ConfigEvent {
+  final TrainingDay trainingDay;
+  const ConfigEventPushDoneButton(this.trainingDay);
 }

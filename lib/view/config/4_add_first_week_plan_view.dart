@@ -23,19 +23,19 @@ class _AddFirstWeekPlanViewState extends State<AddFirstWeekPlanView> {
   String _getPolishDayAbbreviation(String dayOfWeek) {
     switch (dayOfWeek) {
       case 'Monday':
-        return 'Pon';
+        return 'Poniedziałek';
       case 'Tuesday':
-        return 'Wt';
+        return 'Wtorek';
       case 'Wednesday':
-        return 'Śr';
+        return 'Środa';
       case 'Thursday':
-        return 'Czw';
+        return 'Czwartek';
       case 'Friday':
-        return 'Pt';
+        return 'Piątek';
       case 'Saturday':
-        return 'Sob';
+        return 'Sobota';
       case 'Sunday':
-        return 'Ndz';
+        return 'Niedziela';
       default:
         return dayOfWeek;
     }
@@ -107,7 +107,7 @@ class _AddFirstWeekPlanViewState extends State<AddFirstWeekPlanView> {
                   Padding(
                     padding: const EdgeInsets.all(20.0),
                     child: Text(
-                      'Trening w ${_getPolishDayAbbreviation(dayOfWeek)}',
+                      _getPolishDayAbbreviation(dayOfWeek),
                       style: const TextStyle(
                           fontSize: 24, fontWeight: FontWeight.bold),
                       textAlign: TextAlign.center,

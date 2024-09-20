@@ -15,7 +15,7 @@ Future<T?> showGenericTitleDialog<T>({
       return AlertDialog(
         title: Text(
           title,
-          textAlign: TextAlign.center,
+          textAlign: TextAlign.left,
           style: const TextStyle(fontSize: 18.0),
         ),
         content: Text(content),
