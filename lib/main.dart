@@ -4,9 +4,11 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:liftday/constants/routes.dart';
 import 'package:liftday/sevices/bloc/app_event.dart';
 import 'package:liftday/sevices/bloc/edit_bloc.dart';
-import 'package:liftday/constants/colors.dart';
 import 'package:liftday/sevices/bloc/config_bloc.dart';
 import 'package:liftday/sevices/bloc/app_state.dart';
+import 'package:liftday/sevices/bloc/theme/theme_bloc.dart';
+import 'package:liftday/sevices/bloc/theme/constans/theme_constans.dart';
+import 'package:liftday/sevices/bloc/theme/theme_state.dart';
 import 'package:liftday/sevices/provider/appbar_title_provider.dart';
 import 'package:liftday/view/config/4_add_first_week_plan_view.dart';
 import 'package:liftday/view/config/3_choose_training_days_view.dart';
@@ -39,20 +41,22 @@ void main() {
           ChangeNotifierProvider<AppBarTitleProvider>(
             create: (context) => AppBarTitleProvider(),
           ),
-        ],
-        child: MaterialApp(
-          title: 'Lift Day',
-          theme: ThemeData(
-            colorScheme: const ColorScheme.light(
-              background: colorWhite,
-              onBackground: colorBlack,
-              primary: colorBlack,
-              onPrimary: colorWhite,
-            ),
+          BlocProvider<ThemeBloc>(
+            create: (context) => ThemeBloc(),
           ),
-          home: const HomePage(),
-          routes: {
-            editTrainingDayRoute: (context) => const TrainingDayView(),
+        ],
+        child: BlocBuilder<ThemeBloc, ThemeState>(
+          builder: (context, state) {
+            return MaterialApp(
+              title: 'Lift Day',
+              theme: lightTheme,
+              darkTheme: darkTheme,
+              themeMode: state.themeMode,
+              home: const HomePage(),
+              routes: {
+                editTrainingDayRoute: (context) => const TrainingDayView(),
+              },
+            );
           },
         ),
       ),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:liftday/dialogs/error_dialog.dart';
-import 'package:liftday/constants/colors.dart';
 import 'package:liftday/view/widgets/ui_elements.dart';
 
 typedef ExercisesCallback = void Function(List<String> exercisesFromTable);
@@ -161,7 +160,7 @@ class _SimpleExerciseTableState extends State<SimpleExerciseTable> {
         ),
         Padding(
             padding: const EdgeInsets.all(16.0),
-            child: normalButton("+ Dodaj ćwiczenie", () {
+            child: normalButton(context, "+ Dodaj ćwiczenie", () {
               _showAddExerciseDialog();
             })),
       ],
@@ -189,7 +188,7 @@ class SimpleExerciseCard extends StatelessWidget {
       margin: const EdgeInsets.all(8.0),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: colorBabyBlue,
+          backgroundColor: Theme.of(context).colorScheme.secondary,
           child: Text(
             '$index',
             style: const TextStyle(fontWeight: FontWeight.w900),

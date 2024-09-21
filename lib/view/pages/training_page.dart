@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:liftday/constants/colors.dart';
 import 'package:liftday/sevices/provider/appbar_title_provider.dart';
 import 'package:liftday/view/widgets/exercise_table.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -27,15 +26,15 @@ class _TrainingPageState extends State<TrainingPage> {
   Widget build(BuildContext context) {
     return SizedBox.expand(
       child: Container(
-        color: colorLightGrey,
+        color: Theme.of(context).colorScheme.tertiary,
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Container(
-                decoration: const BoxDecoration(
-                  color: colorWhite,
-                  borderRadius: BorderRadius.only(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary,
+                  borderRadius: const BorderRadius.only(
                     bottomLeft: Radius.circular(20.0),
                     bottomRight: Radius.circular(20.0),
                   ),
@@ -164,7 +163,7 @@ class _AppCalendarState extends State<AppCalendar> {
           _resetTitleTimer?.cancel();
           _resetTitleTimer = Timer(const Duration(seconds: 1), () {
             if (mounted) {
-              context.read<AppBarTitleProvider>().setDefaultTitle();
+              //to do
             }
           });
         });
@@ -191,20 +190,20 @@ class _AppCalendarState extends State<AppCalendar> {
         },
       ),
       rowHeight: 60.0,
-      calendarStyle: const CalendarStyle(
+      calendarStyle: CalendarStyle(
         selectedDecoration: BoxDecoration(
-          color: colorBabyBlue,
+          color: Theme.of(context).colorScheme.secondary,
           shape: BoxShape.circle,
         ),
         selectedTextStyle: TextStyle(
-          color: colorWhite,
+          color: Theme.of(context).colorScheme.primary,
         ),
-        todayDecoration: BoxDecoration(
-          color: colorGray,
+        todayDecoration: const BoxDecoration(
+          color: Colors.grey,
           shape: BoxShape.circle,
         ),
         todayTextStyle: TextStyle(
-          color: colorWhite,
+          color: Theme.of(context).colorScheme.primary,
         ),
       ),
     );

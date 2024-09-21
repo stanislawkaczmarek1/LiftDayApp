@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:liftday/constants/colors.dart';
 import 'package:liftday/sevices/bloc/config_bloc.dart';
 import 'package:liftday/sevices/bloc/app_event.dart';
 import 'package:liftday/dialogs/have_to_choose_plan_duration.dart';
@@ -47,7 +46,8 @@ class _PlanDurationViewState extends State<PlanDurationView> {
                   await showHaveToChoosePlanDuration(context);
                 }
               },
-              style: TextButton.styleFrom(foregroundColor: colorBabyBlue),
+              style: TextButton.styleFrom(
+                  foregroundColor: Theme.of(context).colorScheme.secondary),
               child: const Text(
                 "Dalej",
                 style: TextStyle(fontSize: 18.0),

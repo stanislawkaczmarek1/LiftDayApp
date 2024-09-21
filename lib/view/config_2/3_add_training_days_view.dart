@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:liftday/constants/colors.dart';
 import 'package:liftday/dialogs/error_dialog.dart';
 import 'package:liftday/dialogs/training_days_delete_in_config.dart';
 import 'package:liftday/sevices/bloc/app_event.dart';
@@ -109,7 +108,8 @@ class _AddTrainingDaysViewState extends State<AddTrainingDaysView> {
                     showErrorDialog(context);
                   }
                 },
-                style: TextButton.styleFrom(foregroundColor: colorBabyBlue),
+                style: TextButton.styleFrom(
+                    foregroundColor: Theme.of(context).colorScheme.secondary),
                 child: const Text(
                   "Zakończ",
                   style: TextStyle(fontSize: 14.0),
@@ -140,7 +140,8 @@ class _AddTrainingDaysViewState extends State<AddTrainingDaysView> {
                       showErrorDialog(context);
                     }
                   },
-                  style: TextButton.styleFrom(foregroundColor: colorBabyBlue),
+                  style: TextButton.styleFrom(
+                      foregroundColor: Theme.of(context).colorScheme.secondary),
                   child: const Text(
                     "Kolejny dzień",
                     style: TextStyle(fontSize: 14.0),
@@ -165,15 +166,16 @@ class _AddTrainingDaysViewState extends State<AddTrainingDaysView> {
                   padding: const EdgeInsets.all(20.0),
                   child: TextField(
                     controller: _dayController,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                         border: InputBorder.none,
                         enabledBorder: InputBorder.none,
                         focusedBorder: UnderlineInputBorder(
-                          borderSide:
-                              BorderSide(width: 2, color: colorBabyBlue),
+                          borderSide: BorderSide(
+                              width: 2,
+                              color: Theme.of(context).colorScheme.secondary),
                         ),
                         hintText: 'Wpisz nazwę dnia',
-                        hintStyle: TextStyle(fontSize: 24)),
+                        hintStyle: const TextStyle(fontSize: 24)),
                     style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,

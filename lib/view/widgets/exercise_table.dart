@@ -7,7 +7,6 @@ import 'package:liftday/sevices/crud/exercise_service.dart';
 import 'package:liftday/sevices/crud/tables_classes/database_date.dart';
 import 'package:liftday/sevices/crud/tables_classes/database_exercise.dart';
 import 'package:liftday/sevices/crud/tables_classes/database_set.dart';
-import 'package:liftday/constants/colors.dart';
 import 'package:liftday/sevices/crud/training_day.dart';
 
 class ExerciseTable extends StatefulWidget {
@@ -185,7 +184,7 @@ class _ExerciseTableState extends State<ExerciseTable> {
                           day.day,
                           style: const TextStyle(fontSize: 16),
                         ),
-                        activeColor: colorBabyBlue,
+                        activeColor: Theme.of(context).colorScheme.secondary,
                         value: day,
                         groupValue: _tempSelectedDay,
                         onChanged: (TrainingDay? value) {
@@ -283,8 +282,10 @@ class _ExerciseTableState extends State<ExerciseTable> {
                               onPressed: _showAddExerciseDialog,
                               style: TextButton.styleFrom(
                                 elevation: 3.0,
-                                backgroundColor: colorWhite,
-                                foregroundColor: colorBlack,
+                                backgroundColor:
+                                    Theme.of(context).colorScheme.primary,
+                                foregroundColor:
+                                    Theme.of(context).colorScheme.onPrimary,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
@@ -319,9 +320,9 @@ class _ExerciseTableState extends State<ExerciseTable> {
                               ),
                             ];
                           },
-                          icon: const Icon(
+                          icon: Icon(
                             Icons.more_vert,
-                            color: colorBabyBlue,
+                            color: Theme.of(context).colorScheme.secondary,
                             size: 30,
                           ),
                         ),
@@ -470,8 +471,8 @@ class _ExerciseCardState extends State<ExerciseCard> {
         switch (snapshot.connectionState) {
           case ConnectionState.done:
             return Card(
-              color: colorWhite,
-              surfaceTintColor: colorWhite,
+              color: Theme.of(context).colorScheme.primary,
+              surfaceTintColor: Theme.of(context).colorScheme.primary,
               margin: const EdgeInsets.all(8.0),
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -587,8 +588,10 @@ class _ExerciseCardState extends State<ExerciseCard> {
                         onPressed: () => _addSet(++_setCounter),
                         style: TextButton.styleFrom(
                           elevation: 3.0,
-                          backgroundColor: colorLightGrey,
-                          foregroundColor: colorBlack,
+                          backgroundColor:
+                              Theme.of(context).colorScheme.tertiary,
+                          foregroundColor:
+                              Theme.of(context).colorScheme.onPrimary,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -761,13 +764,14 @@ class _ExerciseRowState extends State<ExerciseRow> {
                       child: TextField(
                         controller: _weightController,
                         focusNode: _weightFocusNode,
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           hintText: '',
                           border: InputBorder.none,
                           enabledBorder: InputBorder.none,
                           focusedBorder: UnderlineInputBorder(
-                            borderSide:
-                                BorderSide(width: 2, color: colorBabyBlue),
+                            borderSide: BorderSide(
+                                width: 2,
+                                color: Theme.of(context).colorScheme.secondary),
                           ),
                         ),
                         keyboardType: TextInputType.number,
@@ -783,13 +787,14 @@ class _ExerciseRowState extends State<ExerciseRow> {
                       child: TextField(
                         controller: _repsController,
                         focusNode: _repsFocusNode,
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           hintText: '',
                           border: InputBorder.none,
                           enabledBorder: InputBorder.none,
                           focusedBorder: UnderlineInputBorder(
-                            borderSide:
-                                BorderSide(width: 2, color: colorBabyBlue),
+                            borderSide: BorderSide(
+                                width: 2,
+                                color: Theme.of(context).colorScheme.secondary),
                           ),
                         ),
                         keyboardType: TextInputType.number,

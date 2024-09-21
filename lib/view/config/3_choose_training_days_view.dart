@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:liftday/constants/colors.dart';
 import 'package:liftday/sevices/bloc/config_bloc.dart';
 import 'package:liftday/sevices/bloc/app_event.dart';
 import 'package:liftday/dialogs/have_to_choose_training_days.dart';
@@ -67,7 +66,7 @@ class _ChooseTrainingDaysViewState extends State<ChooseTrainingDaysView> {
         }
       },
       child: Scaffold(
-        appBar: appBar(),
+        appBar: appBar(context),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -98,12 +97,14 @@ class _ChooseTrainingDaysViewState extends State<ChooseTrainingDaysView> {
                       width: squareSize,
                       height: 1.5 * squareSize,
                       decoration: BoxDecoration(
-                        color:
-                            selectedDays[index] ? colorBabyBlue : Colors.grey,
+                        color: selectedDays[index]
+                            ? Theme.of(context).colorScheme.secondary
+                            : Colors.grey,
                         borderRadius: BorderRadius.circular(8.0),
                         border: Border.all(
-                          color:
-                              selectedDays[index] ? colorBabyBlue : Colors.grey,
+                          color: selectedDays[index]
+                              ? Theme.of(context).colorScheme.secondary
+                              : Colors.grey,
                           width: 2,
                         ),
                       ),
@@ -128,6 +129,7 @@ class _ChooseTrainingDaysViewState extends State<ChooseTrainingDaysView> {
               height: 30.0,
             ),
             normalButton(
+              context,
               "Dalej",
               () {
                 final List<String> confirmedDays = _convertDaysBoolToString();

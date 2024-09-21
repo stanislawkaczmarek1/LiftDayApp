@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:liftday/sevices/bloc/config_bloc.dart';
 import 'package:liftday/sevices/bloc/app_event.dart';
-import 'package:liftday/constants/colors.dart';
 import 'package:liftday/view/widgets/ui_elements.dart';
 
 class CreatePlanOrSkipView extends StatefulWidget {
@@ -23,7 +22,7 @@ class _CreatePlanOrSkipViewState extends State<CreatePlanOrSkipView> {
         }
       },
       child: Scaffold(
-        appBar: appBar(),
+        appBar: appBar(context),
         body: SingleChildScrollView(
           child: Column(
             children: <Widget>[
@@ -60,10 +59,10 @@ class _CreatePlanOrSkipViewState extends State<CreatePlanOrSkipView> {
                       text:
                           "Automatyczne\nprzypisanie dni treningowych\ndo dni tygodnia",
                       buttonText: "Wybieram",
-                      backgroundColor: colorLightGrey,
-                      textColor: colorBlack,
-                      buttonColor: colorBlack,
-                      buttonTextColor: colorWhite,
+                      backgroundColor: Theme.of(context).colorScheme.tertiary,
+                      textColor: Theme.of(context).colorScheme.onPrimary,
+                      buttonColor: Theme.of(context).colorScheme.onPrimary,
+                      buttonTextColor: Theme.of(context).colorScheme.primary,
                       onPressed: () {
                         context
                             .read<ConfigBloc>()
@@ -79,7 +78,7 @@ class _CreatePlanOrSkipViewState extends State<CreatePlanOrSkipView> {
                           vertical: 4.0,
                         ),
                         decoration: BoxDecoration(
-                          color: colorBabyBlue,
+                          color: Theme.of(context).colorScheme.secondary,
                           borderRadius: BorderRadius.circular(12.0),
                         ),
                         child: const Text(
@@ -103,10 +102,10 @@ class _CreatePlanOrSkipViewState extends State<CreatePlanOrSkipView> {
                   text: "Ręczne wybieranie\ndanego dnia treningowego\n"
                       "w dany dzień tygodnia",
                   buttonText: "Wybieram",
-                  backgroundColor: colorLightGrey,
-                  textColor: colorBlack,
-                  buttonColor: colorBlack,
-                  buttonTextColor: colorWhite,
+                  backgroundColor: Theme.of(context).colorScheme.tertiary,
+                  textColor: Theme.of(context).colorScheme.onPrimary,
+                  buttonColor: Theme.of(context).colorScheme.onPrimary,
+                  buttonTextColor: Theme.of(context).colorScheme.primary,
                   onPressed: () {
                     context
                         .read<ConfigBloc>()
@@ -121,10 +120,10 @@ class _CreatePlanOrSkipViewState extends State<CreatePlanOrSkipView> {
                 child: _roundedRectangleWithButton(
                   text: "Ręczne dodawanie ćwiczeń\nkażdego dnia",
                   buttonText: "Wybieram",
-                  backgroundColor: colorLightGrey,
-                  textColor: colorBlack,
-                  buttonColor: colorBlack,
-                  buttonTextColor: colorWhite,
+                  backgroundColor: Theme.of(context).colorScheme.tertiary,
+                  textColor: Theme.of(context).colorScheme.onPrimary,
+                  buttonColor: Theme.of(context).colorScheme.onPrimary,
+                  buttonTextColor: Theme.of(context).colorScheme.primary,
                   onPressed: () {
                     context
                         .read<ConfigBloc>()
@@ -160,8 +159,11 @@ class _CreatePlanOrSkipViewState extends State<CreatePlanOrSkipView> {
             ? null
             : backgroundColor, // Ustaw tło, jeśli nie gradient
         gradient: useGradient
-            ? const LinearGradient(
-                colors: [colorBabyBlue, colorLightGrey], // Gradient
+            ? LinearGradient(
+                colors: [
+                  Theme.of(context).colorScheme.secondary,
+                  Theme.of(context).colorScheme.tertiary
+                ], // Gradient
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               )

@@ -79,6 +79,7 @@ class _AddFirstWeekPlanViewState extends State<AddFirstWeekPlanView> {
           },
           child: Scaffold(
             appBar: appBarWithButton(
+              context,
               "Dalej",
               () {
                 String day = dayOfWeek;

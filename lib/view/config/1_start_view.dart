@@ -15,7 +15,7 @@ class _StartViewState extends State<StartView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBar(),
+      appBar: appBar(context),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
@@ -31,7 +31,7 @@ class _StartViewState extends State<StartView> {
           Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              normalButton("Rozpocznij", () {
+              normalButton(context, "Rozpocznij", () {
                 context.read<ConfigBloc>().add(const ConfigEventStartButton());
               }),
               const SizedBox(

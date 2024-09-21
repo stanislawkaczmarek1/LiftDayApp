@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:liftday/constants/colors.dart';
 import 'package:liftday/dialogs/error_dialog.dart';
 import 'package:liftday/sevices/bloc/app_event.dart';
 import 'package:liftday/sevices/bloc/app_state.dart';
@@ -87,6 +86,7 @@ class _TrainingDayViewState extends State<TrainingDayView> {
           }
           return Scaffold(
             appBar: appBarWithButton(
+              context,
               "Zapisz",
               () {
                 context.read<EditBloc>().add(EditEventPushSaveButton(
@@ -129,6 +129,7 @@ class _TrainingDayViewState extends State<TrainingDayView> {
           }
           return Scaffold(
             appBar: appBarWithButton(
+              context,
               "Zapisz",
               () async {
                 if (await _chceckDayName(_dayController.text)) {
@@ -156,15 +157,16 @@ class _TrainingDayViewState extends State<TrainingDayView> {
                     padding: const EdgeInsets.all(20.0),
                     child: TextField(
                       controller: _dayController,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                           border: InputBorder.none,
                           enabledBorder: InputBorder.none,
                           focusedBorder: UnderlineInputBorder(
-                            borderSide:
-                                BorderSide(width: 2, color: colorBabyBlue),
+                            borderSide: BorderSide(
+                                width: 2,
+                                color: Theme.of(context).colorScheme.secondary),
                           ),
                           hintText: 'Wpisz nazwę dnia',
-                          hintStyle: TextStyle(fontSize: 24)),
+                          hintStyle: const TextStyle(fontSize: 24)),
                       style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -185,6 +187,7 @@ class _TrainingDayViewState extends State<TrainingDayView> {
         } else if (state is EditStateAddOtherTrainingDay) {
           return Scaffold(
             appBar: appBarWithButton(
+              context,
               "Zapisz",
               () async {
                 if (await _chceckDayName(_dayController.text)) {
@@ -212,15 +215,16 @@ class _TrainingDayViewState extends State<TrainingDayView> {
                     padding: const EdgeInsets.all(20.0),
                     child: TextField(
                       controller: _dayController,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                           border: InputBorder.none,
                           enabledBorder: InputBorder.none,
                           focusedBorder: UnderlineInputBorder(
-                            borderSide:
-                                BorderSide(width: 2, color: colorBabyBlue),
+                            borderSide: BorderSide(
+                                width: 2,
+                                color: Theme.of(context).colorScheme.secondary),
                           ),
                           hintText: 'Wpisz nazwę dnia',
-                          hintStyle: TextStyle(fontSize: 24)),
+                          hintStyle: const TextStyle(fontSize: 24)),
                       style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,

@@ -9,7 +9,6 @@ import 'package:liftday/sevices/bloc/config_bloc.dart';
 import 'package:liftday/sevices/bloc/edit_bloc.dart';
 import 'package:liftday/sevices/crud/training_day.dart';
 import 'package:liftday/sevices/crud/exercise_service.dart';
-import 'package:liftday/constants/colors.dart';
 import 'package:liftday/sevices/settings/settings_service.dart';
 import 'package:liftday/view/widgets/ui_elements.dart';
 
@@ -95,7 +94,7 @@ class _PlansPageState extends State<PlansPage> {
         }
       },
       child: Container(
-        color: colorLightGrey,
+        color: Theme.of(context).colorScheme.tertiary,
         height: MediaQuery.of(context).size.height,
         child: SingleChildScrollView(
           child: Padding(
@@ -106,7 +105,7 @@ class _PlansPageState extends State<PlansPage> {
                 Container(
                   padding: const EdgeInsets.all(16.0),
                   decoration: BoxDecoration(
-                    color: colorWhite,
+                    color: Theme.of(context).colorScheme.primary,
                     borderRadius: BorderRadius.circular(12.0),
                   ),
                   child: Column(
@@ -178,7 +177,7 @@ class _PlansPageState extends State<PlansPage> {
                 Container(
                   padding: const EdgeInsets.all(16.0),
                   decoration: BoxDecoration(
-                    color: colorWhite,
+                    color: Theme.of(context).colorScheme.primary,
                     borderRadius: BorderRadius.circular(12.0),
                   ),
                   child: Column(
@@ -246,15 +245,19 @@ class _PlansPageState extends State<PlansPage> {
                             }
                           }),
                       const SizedBox(height: 10),
-                      normalButton("+ Dodaj inny dzień", () {
-                        if (!maximumOfOtherTrainingDays) {
-                          context
-                              .read<EditBloc>()
-                              .add(EditEventAddOtherTrainingDay(context));
-                        } else {
-                          showErrorDialog(context);
-                        }
-                      }),
+                      normalButton(
+                        context,
+                        "+ Dodaj inny dzień",
+                        () {
+                          if (!maximumOfOtherTrainingDays) {
+                            context
+                                .read<EditBloc>()
+                                .add(EditEventAddOtherTrainingDay(context));
+                          } else {
+                            showErrorDialog(context);
+                          }
+                        },
+                      ),
                     ],
                   ),
                 ),
@@ -308,7 +311,8 @@ class _PlansPageState extends State<PlansPage> {
           onPressed: onPressed,
           style: TextButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 16),
-              backgroundColor: colorLightGrey,
+              backgroundColor: Theme.of(context).colorScheme.tertiary,
+              foregroundColor: Theme.of(context).colorScheme.onPrimary,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -337,7 +341,7 @@ Widget _buildExerciseDayTile(
     margin: const EdgeInsets.symmetric(vertical: 8.0),
     padding: const EdgeInsets.all(16.0),
     decoration: BoxDecoration(
-      color: colorLightGrey,
+      color: Theme.of(context).colorScheme.tertiary,
       borderRadius: BorderRadius.circular(12.0),
     ),
     child: Column(

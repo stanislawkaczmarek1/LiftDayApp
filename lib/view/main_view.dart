@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:liftday/constants/colors.dart';
-import 'package:liftday/sevices/provider/appbar_title_provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:liftday/sevices/bloc/app_bar/app_bar_bloc.dart';
+import 'package:liftday/sevices/bloc/app_bar/app_bar_state.dart';
+import 'package:liftday/view/pages/settings_page.dart';
 import 'package:liftday/view/pages/training_page.dart';
 import 'package:liftday/view/pages/plans_pages.dart';
-import 'package:provider/provider.dart';
 
 class MainView extends StatefulWidget {
   const MainView({super.key});
@@ -16,6 +17,7 @@ class _MainViewState extends State<MainView> {
   final List<Widget> _pages = [
     const TrainingPage(),
     const PlansPage(),
+    const SettingsPage(),
   ];
 
   int _selectedIndex = 0;
@@ -30,9 +32,10 @@ class _MainViewState extends State<MainView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: context.watch<AppBarTitleProvider>().title,
+        title: BlocBuilder<AppBarBloc, AppBarState>(
+          builder: (context, state) => state.title,
+        ),
         centerTitle: true,
-        backgroundColor: Colors.white,
         elevation: 0,
         scrolledUnderElevation: 0.0,
       ),
@@ -47,9 +50,13 @@ class _MainViewState extends State<MainView> {
             icon: Icon(Icons.description),
             label: 'Plans',
           ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Settings',
+          ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: colorBabyBlue,
+        selectedItemColor: Theme.of(context).colorScheme.secondary,
         onTap: _onItemTapped,
         showSelectedLabels: false,
         showUnselectedLabels: false,
