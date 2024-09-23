@@ -39,6 +39,7 @@ class ConfigBloc extends Bloc<ConfigEvent, ConfigState> {
       (event, emit) {
         if (_stateHistory.isNotEmpty) {
           if (_stateHistory.last is ConfigStateChooseTrainingDays) {
+            _currentDayOfPlanConfig = 0;
             _firstWeekPlan.clear();
           } else if (_stateHistory.last is ConfigStateAddFirstWeekPlan) {
             _currentDayOfPlanConfig--;

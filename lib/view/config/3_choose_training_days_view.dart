@@ -113,7 +113,7 @@ class _ChooseTrainingDaysViewState extends State<ChooseTrainingDaysView> {
                           daysOfWeekToDisplay[index],
                           style: TextStyle(
                             color: selectedDays[index]
-                                ? Colors.white
+                                ? Theme.of(context).colorScheme.onPrimary
                                 : Colors.black,
                             fontSize: 16,
                             fontWeight: FontWeight.bold,

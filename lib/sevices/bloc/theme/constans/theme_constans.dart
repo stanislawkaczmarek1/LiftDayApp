@@ -13,8 +13,8 @@ ThemeData lightTheme = ThemeData(
   colorScheme: const ColorScheme.light(
     background: colorWhite,
     onBackground: colorBlack,
-    primary: colorWhite,
-    onPrimary: colorBlack,
+    primary: colorBlack,
+    onPrimary: colorWhite,
     secondary: colorBabyBlue,
     tertiary: colorLightGrey,
   ),
@@ -27,8 +27,8 @@ ThemeData darkTheme = ThemeData(
   colorScheme: const ColorScheme.dark(
     background: colorBlack,
     onBackground: colorWhite,
-    primary: colorBlack,
-    onPrimary: colorWhite,
+    primary: colorWhite,
+    onPrimary: colorBlack,
     secondary: colorWhite,
     tertiary: colorDarkGrey,
   ),

@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:liftday/sevices/provider/appbar_title_provider.dart';
+import 'package:liftday/sevices/bloc/app_bar/app_bar_bloc.dart';
+import 'package:liftday/sevices/bloc/app_bar/app_bar_event.dart';
 import 'package:liftday/view/widgets/exercise_table.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -33,7 +34,7 @@ class _TrainingPageState extends State<TrainingPage> {
             children: [
               Container(
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary,
+                  color: Theme.of(context).colorScheme.onPrimary,
                   borderRadius: const BorderRadius.only(
                     bottomLeft: Radius.circular(20.0),
                     bottomRight: Radius.circular(20.0),
@@ -157,13 +158,15 @@ class _AppCalendarState extends State<AppCalendar> {
       onPageChanged: (focusedDay) async {
         setState(() {
           _focusedDay = focusedDay;
-          context.read<AppBarTitleProvider>().updateTitle(
-                _getMonthText(focusedDay),
-              );
+          context
+              .read<AppBarBloc>()
+              .add(AppBarEventUpdateTitle(_getMonthText(focusedDay)));
           _resetTitleTimer?.cancel();
           _resetTitleTimer = Timer(const Duration(seconds: 1), () {
             if (mounted) {
-              //to do
+              context
+                  .read<AppBarBloc>()
+                  .add(const AppBarEventSetDefaultTitle());
             }
           });
         });
@@ -196,14 +199,14 @@ class _AppCalendarState extends State<AppCalendar> {
           shape: BoxShape.circle,
         ),
         selectedTextStyle: TextStyle(
-          color: Theme.of(context).colorScheme.primary,
+          color: Theme.of(context).colorScheme.onPrimary,
         ),
         todayDecoration: const BoxDecoration(
           color: Colors.grey,
           shape: BoxShape.circle,
         ),
         todayTextStyle: TextStyle(
-          color: Theme.of(context).colorScheme.primary,
+          color: Theme.of(context).colorScheme.onPrimary,
         ),
       ),
     );

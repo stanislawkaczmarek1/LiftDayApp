@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:liftday/dialogs/error_dialog.dart';
 import 'package:liftday/dialogs/training_days_delete_in_config.dart';
+import 'package:liftday/sevices/bloc/app_bar/app_bar_bloc.dart';
+import 'package:liftday/sevices/bloc/app_bar/app_bar_state.dart';
 import 'package:liftday/sevices/bloc/app_event.dart';
 import 'package:liftday/sevices/bloc/app_state.dart';
 import 'package:liftday/sevices/bloc/config_bloc.dart';
@@ -88,9 +90,10 @@ class _AddTrainingDaysViewState extends State<AddTrainingDaysView> {
         },
         child: Scaffold(
           appBar: AppBar(
-            title: Image.asset(
-              "assets/liftday_logo.png",
-              height: 25,
+            title: BlocBuilder<AppBarBloc, AppBarState>(
+              builder: (context, state) {
+                return state.title;
+              },
             ),
             backgroundColor: Colors.white,
             elevation: 0,

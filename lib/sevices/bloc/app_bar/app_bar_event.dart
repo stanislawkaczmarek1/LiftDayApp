@@ -13,9 +13,7 @@ class AppBarEventUpdateTitle extends AppBarEvent {
 }
 
 class AppBarEventSetDefaultTitle extends AppBarEvent {
-  final Widget newTitle;
-
-  const AppBarEventSetDefaultTitle(this.newTitle);
+  const AppBarEventSetDefaultTitle();
 }
 
 class AppBarEventUpdateTitleBasedOnTheme extends AppBarEvent {

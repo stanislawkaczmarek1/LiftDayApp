@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:liftday/sevices/bloc/app_bar/app_bar_bloc.dart';
+import 'package:liftday/sevices/bloc/app_bar/app_bar_state.dart';
 
 typedef OnPressedFunction = void Function();
 
@@ -12,7 +15,7 @@ TextButton normalButton(
     style: TextButton.styleFrom(
       elevation: 3.0,
       backgroundColor: Theme.of(context).colorScheme.tertiary,
-      foregroundColor: Theme.of(context).colorScheme.onPrimary,
+      foregroundColor: Theme.of(context).colorScheme.primary,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
@@ -33,11 +36,12 @@ TextButton normalButton(
 
 AppBar appBar(BuildContext context) {
   return AppBar(
-    title: Image.asset(
-      "assets/liftday_logo.png",
-      height: 25,
+    title: BlocBuilder<AppBarBloc, AppBarState>(
+      builder: (context, state) {
+        return state.title;
+      },
     ),
-    backgroundColor: Theme.of(context).colorScheme.primary,
+    backgroundColor: Theme.of(context).colorScheme.onPrimary,
     elevation: 0,
     scrolledUnderElevation: 0.0,
   );
@@ -49,11 +53,12 @@ AppBar appBarWithButton(
   void Function() onPressed,
 ) {
   return AppBar(
-    title: Image.asset(
-      "assets/liftday_logo.png",
-      height: 25,
+    title: BlocBuilder<AppBarBloc, AppBarState>(
+      builder: (context, state) {
+        return state.title;
+      },
     ),
-    backgroundColor: Theme.of(context).colorScheme.primary,
+    backgroundColor: Theme.of(context).colorScheme.onPrimary,
     elevation: 0,
     scrolledUnderElevation: 0.0,
     actions: [

@@ -283,9 +283,9 @@ class _ExerciseTableState extends State<ExerciseTable> {
                               style: TextButton.styleFrom(
                                 elevation: 3.0,
                                 backgroundColor:
-                                    Theme.of(context).colorScheme.primary,
-                                foregroundColor:
                                     Theme.of(context).colorScheme.onPrimary,
+                                foregroundColor:
+                                    Theme.of(context).colorScheme.primary,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
@@ -471,8 +471,8 @@ class _ExerciseCardState extends State<ExerciseCard> {
         switch (snapshot.connectionState) {
           case ConnectionState.done:
             return Card(
-              color: Theme.of(context).colorScheme.primary,
-              surfaceTintColor: Theme.of(context).colorScheme.primary,
+              color: Theme.of(context).colorScheme.onPrimary,
+              surfaceTintColor: Theme.of(context).colorScheme.onPrimary,
               margin: const EdgeInsets.all(8.0),
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -591,7 +591,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
                           backgroundColor:
                               Theme.of(context).colorScheme.tertiary,
                           foregroundColor:
-                              Theme.of(context).colorScheme.onPrimary,
+                              Theme.of(context).colorScheme.primary,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),

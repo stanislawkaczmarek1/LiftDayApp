@@ -60,9 +60,9 @@ class _CreatePlanOrSkipViewState extends State<CreatePlanOrSkipView> {
                           "Automatyczne\nprzypisanie dni treningowych\ndo dni tygodnia",
                       buttonText: "Wybieram",
                       backgroundColor: Theme.of(context).colorScheme.tertiary,
-                      textColor: Theme.of(context).colorScheme.onPrimary,
-                      buttonColor: Theme.of(context).colorScheme.onPrimary,
-                      buttonTextColor: Theme.of(context).colorScheme.primary,
+                      textColor: Theme.of(context).colorScheme.primary,
+                      buttonColor: Theme.of(context).colorScheme.primary,
+                      buttonTextColor: Theme.of(context).colorScheme.onPrimary,
                       onPressed: () {
                         context
                             .read<ConfigBloc>()
@@ -103,9 +103,9 @@ class _CreatePlanOrSkipViewState extends State<CreatePlanOrSkipView> {
                       "w dany dzień tygodnia",
                   buttonText: "Wybieram",
                   backgroundColor: Theme.of(context).colorScheme.tertiary,
-                  textColor: Theme.of(context).colorScheme.onPrimary,
-                  buttonColor: Theme.of(context).colorScheme.onPrimary,
-                  buttonTextColor: Theme.of(context).colorScheme.primary,
+                  textColor: Theme.of(context).colorScheme.primary,
+                  buttonColor: Theme.of(context).colorScheme.primary,
+                  buttonTextColor: Theme.of(context).colorScheme.onPrimary,
                   onPressed: () {
                     context
                         .read<ConfigBloc>()
@@ -121,9 +121,9 @@ class _CreatePlanOrSkipViewState extends State<CreatePlanOrSkipView> {
                   text: "Ręczne dodawanie ćwiczeń\nkażdego dnia",
                   buttonText: "Wybieram",
                   backgroundColor: Theme.of(context).colorScheme.tertiary,
-                  textColor: Theme.of(context).colorScheme.onPrimary,
-                  buttonColor: Theme.of(context).colorScheme.onPrimary,
-                  buttonTextColor: Theme.of(context).colorScheme.primary,
+                  textColor: Theme.of(context).colorScheme.primary,
+                  buttonColor: Theme.of(context).colorScheme.primary,
+                  buttonTextColor: Theme.of(context).colorScheme.onPrimary,
                   onPressed: () {
                     context
                         .read<ConfigBloc>()
