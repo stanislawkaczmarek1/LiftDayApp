@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:liftday/dialogs/error_dialog.dart';
+import 'package:liftday/sevices/bloc/tap/tap_bloc.dart';
 import 'package:liftday/sevices/crud/exercise_service.dart';
 import 'package:liftday/sevices/crud/tables/database_date.dart';
 import 'package:liftday/sevices/crud/tables/database_exercise.dart';
@@ -593,7 +595,10 @@ class _ExerciseCardState extends State<ExerciseCard> {
                     Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: TextButton(
-                        onPressed: () => _addSet(++_setCounter),
+                        onPressed: () {
+                          _addSet(++_setCounter);
+                          context.read<TapBloc>().add(Tap());
+                        },
                         style: TextButton.styleFrom(
                           elevation: 3.0,
                           backgroundColor:
@@ -650,6 +655,7 @@ class _ExerciseRowState extends State<ExerciseRow> {
   late final TextEditingController _repsController;
   late final FocusNode _weightFocusNode;
   late final FocusNode _repsFocusNode;
+  final ValueNotifier<bool> _isInputActive = ValueNotifier<bool>(false);
 
   late int setIndex;
 
@@ -711,10 +717,12 @@ class _ExerciseRowState extends State<ExerciseRow> {
   }
 
   void _removeFocus() {
-    log("message");
+    log("removing focus");
     if (_weightFocusNode.hasFocus) {
       _weightFocusNode.unfocus();
+      _isInputActive.value = false;
     } else if (_repsFocusNode.hasFocus) {
+      _isInputActive.value = false;
       _repsFocusNode.unfocus();
     }
   }
@@ -743,102 +751,128 @@ class _ExerciseRowState extends State<ExerciseRow> {
   @override
   Widget build(BuildContext context) {
     log("building row");
-    return FutureBuilder<void>(
-      future: createOrGetExistingsSet(),
-      builder: (context, snapshot) {
-        switch (snapshot.connectionState) {
-          case ConnectionState.done:
-            _setupTextControllerListener();
-            return Dismissible(
-              key: Key(widget.setIndex.toString()),
-              direction: DismissDirection.endToStart,
-              onDismissed: (direction) {
-                widget.onDeleteSet(widget.setIndex);
-              },
-              background: Container(
-                color: Colors.red,
-                alignment: Alignment.centerRight,
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: const Icon(Icons.delete, color: Colors.white),
-              ),
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 0.0, vertical: 0.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Center(
-                        child: Text(
-                          '$setIndex',
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: TextField(
-                        controller: TextEditingController(
-                          text: _lastSetHistory ?? "-",
-                        ),
-                        readOnly: true,
-                        decoration: const InputDecoration(
-                          hintText: '',
-                          border: InputBorder.none,
-                          enabledBorder: InputBorder.none,
-                          focusedBorder: InputBorder.none,
-                        ),
-                        textAlign: TextAlign.center,
-                        style:
-                            const TextStyle(fontSize: 16, color: Colors.grey),
-                      ),
-                    ),
-                    Expanded(
-                      child: TextField(
-                        controller: _weightController,
-                        focusNode: _weightFocusNode,
-                        decoration: InputDecoration(
-                          hintText: '',
-                          border: InputBorder.none,
-                          enabledBorder: InputBorder.none,
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                                width: 2,
-                                color: Theme.of(context).colorScheme.secondary),
-                          ),
-                        ),
-                        keyboardType: TextInputType.number,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(fontSize: 16),
-                        textInputAction: TextInputAction.next,
-                      ),
-                    ),
-                    Expanded(
-                      child: TextField(
-                        controller: _repsController,
-                        focusNode: _repsFocusNode,
-                        decoration: InputDecoration(
-                          hintText: '',
-                          border: InputBorder.none,
-                          enabledBorder: InputBorder.none,
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                                width: 2,
-                                color: Theme.of(context).colorScheme.secondary),
-                          ),
-                        ),
-                        keyboardType: TextInputType.number,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(fontSize: 16),
-                        textInputAction: TextInputAction.next,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          default:
-            return const SizedBox(height: 0);
+    return BlocListener<TapBloc, TapState>(
+      listener: (context, state) {
+        if (state is Tapped && _isInputActive.value == true) {
+          log("change in state");
+          _removeFocus();
+          context.read<TapBloc>().add(SetTappedDefault());
         }
       },
+      child: FutureBuilder<void>(
+        future: createOrGetExistingsSet(),
+        builder: (context, snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.done:
+              _setupTextControllerListener();
+              return Dismissible(
+                key: Key(widget.setIndex.toString()),
+                direction: DismissDirection.endToStart,
+                onDismissed: (direction) {
+                  widget.onDeleteSet(widget.setIndex);
+                },
+                background: Container(
+                  color: Colors.red,
+                  alignment: Alignment.centerRight,
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: const Icon(Icons.delete, color: Colors.white),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 0.0, vertical: 0.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Center(
+                          child: Text(
+                            '$setIndex',
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: TextField(
+                          controller: TextEditingController(
+                            text: _lastSetHistory ?? "-",
+                          ),
+                          readOnly: true,
+                          decoration: const InputDecoration(
+                            hintText: '',
+                            border: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                          ),
+                          textAlign: TextAlign.center,
+                          style:
+                              const TextStyle(fontSize: 16, color: Colors.grey),
+                        ),
+                      ),
+                      Expanded(
+                        child: TextField(
+                          onTap: () => _isInputActive.value = true,
+                          onEditingComplete: () {
+                            _isInputActive.value = false;
+                            if (_weightFocusNode.nextFocus()) {
+                              log("found node 1");
+                              _isInputActive.value = true;
+                            } else {
+                              _isInputActive.value = false;
+                            }
+                          },
+                          controller: _weightController,
+                          focusNode: _weightFocusNode,
+                          decoration: InputDecoration(
+                            hintText: '',
+                            border: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                  width: 2,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary),
+                            ),
+                          ),
+                          keyboardType: TextInputType.number,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(fontSize: 16),
+                          textInputAction: TextInputAction.next,
+                        ),
+                      ),
+                      Expanded(
+                        child: TextField(
+                          onTap: () => _isInputActive.value = true,
+                          onEditingComplete: () {
+                            _repsFocusNode.unfocus();
+                            _isInputActive.value = false;
+                          },
+                          controller: _repsController,
+                          focusNode: _repsFocusNode,
+                          decoration: InputDecoration(
+                            hintText: '',
+                            border: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                  width: 2,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary),
+                            ),
+                          ),
+                          keyboardType: TextInputType.number,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(fontSize: 16),
+                          textInputAction: TextInputAction.done,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            default:
+              return const SizedBox(height: 0);
+          }
+        },
+      ),
     );
   }
 }

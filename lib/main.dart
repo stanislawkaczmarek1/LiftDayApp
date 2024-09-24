@@ -11,6 +11,7 @@ import 'package:liftday/sevices/bloc/config/config_event.dart';
 import 'package:liftday/sevices/bloc/config/config_state.dart';
 import 'package:liftday/sevices/bloc/edit/edit_bloc.dart';
 import 'package:liftday/sevices/bloc/language/language_bloc.dart';
+import 'package:liftday/sevices/bloc/tap/tap_bloc.dart';
 import 'package:liftday/sevices/bloc/theme/theme_bloc.dart';
 import 'package:liftday/sevices/bloc/theme/theme_state.dart';
 import 'package:liftday/view/config/4_add_first_week_plan_view.dart';
@@ -52,6 +53,9 @@ void main() {
           ),
           BlocProvider<LanguageBloc>(
             create: (context) => LanguageBloc(),
+          ),
+          BlocProvider<TapBloc>(
+            create: (context) => TapBloc(),
           ),
         ],
         child: BlocListener<ThemeBloc, ThemeState>(
