@@ -8,6 +8,7 @@ const colorGray = Colors.grey;
 const colorBabyBlue = Color.fromARGB(255, 92, 225, 230);
 const colorTurquoise = Color.fromARGB(255, 2, 127, 132);
 const colorCeladon = Color.fromARGB(255, 192, 241, 243);
+const colorPurple = Color.fromARGB(255, 186, 72, 255);
 
 ThemeData lightTheme = ThemeData(
   colorScheme: const ColorScheme.light(
@@ -29,7 +30,7 @@ ThemeData darkTheme = ThemeData(
     onBackground: colorWhite,
     primary: colorWhite,
     onPrimary: colorBlack,
-    secondary: colorWhite,
+    secondary: colorBabyBlue,
     tertiary: colorDarkGrey,
   ),
   appBarTheme: const AppBarTheme(

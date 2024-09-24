@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:liftday/constants/routes.dart';
+import 'package:liftday/l10n/l10n.dart';
 import 'package:liftday/sevices/bloc/app_bar/app_bar_bloc.dart';
 import 'package:liftday/sevices/bloc/app_bar/app_bar_event.dart';
 import 'package:liftday/sevices/bloc/app_event.dart';
 import 'package:liftday/sevices/bloc/edit_bloc.dart';
 import 'package:liftday/sevices/bloc/config_bloc.dart';
 import 'package:liftday/sevices/bloc/app_state.dart';
+import 'package:liftday/sevices/bloc/language/language_bloc.dart';
 import 'package:liftday/sevices/bloc/theme/theme_bloc.dart';
 import 'package:liftday/sevices/bloc/theme/constans/theme_constans.dart';
 import 'package:liftday/sevices/bloc/theme/theme_state.dart';
@@ -20,6 +22,7 @@ import 'package:liftday/view/config_2/3_add_training_days_view.dart';
 import 'package:liftday/view/main_view.dart';
 import 'package:liftday/view/pages/plans_views/training_day_view.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -47,6 +50,9 @@ void main() {
           BlocProvider<ThemeBloc>(
             create: (context) => ThemeBloc(),
           ),
+          BlocProvider<LanguageBloc>(
+            create: (context) => LanguageBloc(),
+          ),
         ],
         child: BlocListener<ThemeBloc, ThemeState>(
           listener: (context, state) {
@@ -55,15 +61,24 @@ void main() {
                 .add(AppBarEventUpdateTitleBasedOnTheme(state.themeMode));
           },
           child: BlocBuilder<ThemeBloc, ThemeState>(
-            builder: (context, state) {
-              return MaterialApp(
-                title: 'Lift Day',
-                theme: lightTheme,
-                darkTheme: darkTheme,
-                themeMode: state.themeMode,
-                home: const HomePage(),
-                routes: {
-                  editTrainingDayRoute: (context) => const TrainingDayView(),
+            builder: (context, themeState) {
+              return BlocBuilder<LanguageBloc, LanguageState>(
+                builder: (context, languageState) {
+                  return MaterialApp(
+                    title: 'Lift Day',
+                    theme: lightTheme,
+                    darkTheme: darkTheme,
+                    themeMode: themeState.themeMode,
+                    home: const HomePage(),
+                    supportedLocales: L10n.all,
+                    locale: languageState.locale,
+                    localizationsDelegates:
+                        AppLocalizations.localizationsDelegates,
+                    routes: {
+                      editTrainingDayRoute: (context) =>
+                          const TrainingDayView(),
+                    },
+                  );
                 },
               );
             },

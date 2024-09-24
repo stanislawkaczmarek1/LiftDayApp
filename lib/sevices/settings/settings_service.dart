@@ -10,7 +10,8 @@ class SettingsService {
   static const String _isConfiguredKey = 'isConfigured';
   static const String _hasPlanKey = 'hasPlan';
   static const String _planEndingDigitDateKey = 'planEndingDigitDate';
-  static const String _isDarkMode = 'isDarkMode';
+  static const String _isDarkModeKey = 'isDarkMode';
+  static const String _languageKey = 'language';
 
   Future<void> init() async {
     _preferences = await SharedPreferences.getInstance();
@@ -56,11 +57,21 @@ class SettingsService {
 
   Future<void> setIsDarkModeFlag(bool value) async {
     _ensureInitialized();
-    await _preferences.setBool(_isDarkMode, value);
+    await _preferences.setBool(_isDarkModeKey, value);
   }
 
   bool isDarkModeFlag() {
     _ensureInitialized();
-    return _preferences.getBool(_isDarkMode) ?? false;
+    return _preferences.getBool(_isDarkModeKey) ?? false;
+  }
+
+  Future<void> setLanguage(String value) async {
+    _ensureInitialized();
+    await _preferences.setString(_languageKey, value);
+  }
+
+  String? language() {
+    _ensureInitialized();
+    return _preferences.getString(_languageKey);
   }
 }
