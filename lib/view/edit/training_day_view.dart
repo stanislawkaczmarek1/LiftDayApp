@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:liftday/dialogs/error_dialog.dart';
-import 'package:liftday/sevices/bloc/app_event.dart';
-import 'package:liftday/sevices/bloc/app_state.dart';
-import 'package:liftday/sevices/bloc/edit_bloc.dart';
+import 'package:liftday/sevices/bloc/edit/edit_bloc.dart';
+import 'package:liftday/sevices/bloc/edit/edit_event.dart';
+import 'package:liftday/sevices/bloc/edit/edit_state.dart';
 import 'package:liftday/sevices/crud/exercise_service.dart';
-import 'package:liftday/sevices/crud/training_day.dart';
+import 'package:liftday/sevices/crud/tables/training_day.dart';
 import 'package:liftday/view/widgets/simple_exercise_table.dart';
 import 'package:liftday/view/widgets/ui_elements.dart';
 

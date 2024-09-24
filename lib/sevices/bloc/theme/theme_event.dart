@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:liftday/sevices/bloc/app_event.dart';
+import 'package:liftday/sevices/bloc/abstract/app_event.dart';
 
 @immutable
 abstract class ThemeEvent extends AppEvent {

@@ -4,10 +4,10 @@ import 'package:liftday/dialogs/error_dialog.dart';
 import 'package:liftday/dialogs/training_days_delete_in_config.dart';
 import 'package:liftday/sevices/bloc/app_bar/app_bar_bloc.dart';
 import 'package:liftday/sevices/bloc/app_bar/app_bar_state.dart';
-import 'package:liftday/sevices/bloc/app_event.dart';
-import 'package:liftday/sevices/bloc/app_state.dart';
-import 'package:liftday/sevices/bloc/config_bloc.dart';
-import 'package:liftday/sevices/crud/training_day.dart';
+import 'package:liftday/sevices/bloc/config/config_bloc.dart';
+import 'package:liftday/sevices/bloc/config/config_event.dart';
+import 'package:liftday/sevices/bloc/config/config_state.dart';
+import 'package:liftday/sevices/crud/tables/training_day.dart';
 import 'package:liftday/view/widgets/simple_exercise_table.dart';
 
 class AddTrainingDaysView extends StatefulWidget {

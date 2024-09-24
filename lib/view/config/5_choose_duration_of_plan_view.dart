@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:liftday/sevices/bloc/app_bar/app_bar_bloc.dart';
 import 'package:liftday/sevices/bloc/app_bar/app_bar_state.dart';
-import 'package:liftday/sevices/bloc/config_bloc.dart';
-import 'package:liftday/sevices/bloc/app_event.dart';
 import 'package:liftday/dialogs/have_to_choose_plan_duration.dart';
+import 'package:liftday/sevices/bloc/config/config_bloc.dart';
+import 'package:liftday/sevices/bloc/config/config_event.dart';
 
 class PlanDurationView extends StatefulWidget {
   const PlanDurationView({super.key});

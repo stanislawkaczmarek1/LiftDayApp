@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'package:intl/intl.dart';
+import 'package:liftday/constants/database.dart';
 import 'package:liftday/sevices/crud/crud_exceptions.dart';
-import 'package:liftday/sevices/crud/tables_classes/database_constans.dart';
-import 'package:liftday/sevices/crud/tables_classes/database_date.dart';
-import 'package:liftday/sevices/crud/training_day.dart';
-import 'package:liftday/sevices/crud/tables_classes/database_exercise.dart';
-import 'package:liftday/sevices/crud/tables_classes/database_set.dart';
+import 'package:liftday/sevices/crud/tables/database_date.dart';
+import 'package:liftday/sevices/crud/tables/training_day.dart';
+import 'package:liftday/sevices/crud/tables/database_exercise.dart';
+import 'package:liftday/sevices/crud/tables/database_set.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' show join;
@@ -639,6 +639,54 @@ class ExerciseService {
     if (deletedCount == 0) {
       throw CouldNotDeleteNote();
     }
+  }
+
+  Future<String?> getPreviousSetData(
+      int dateId, String exercise, int setIndex) async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+
+    final dates = await db.rawQuery('''
+    SELECT id FROM $datesTable
+    WHERE id < ?
+    ORDER BY id DESC
+    ''', [dateId]);
+
+    if (dates.isEmpty) {
+      return null;
+    }
+
+    for (final date in dates) {
+      final dateIdFromDB = date['id'];
+
+      final exercises = await db.rawQuery('''
+      SELECT id FROM $exercisesTable
+      WHERE date_id = ? AND name = ?
+    ''', [dateIdFromDB, exercise]);
+
+      if (exercises.isEmpty) {
+        continue;
+      }
+
+      for (final exerciseRow in exercises) {
+        final exerciseId = exerciseRow['id'];
+
+        final sets = await db.rawQuery('''
+        SELECT weight, reps FROM $setsTable
+        WHERE exercise_id = ? AND set_index = ?
+      ''', [exerciseId, setIndex]);
+
+        if (sets.isNotEmpty) {
+          final set = sets.first;
+          final weight = set['weight'];
+          final reps = set['reps'];
+
+          return '$weight x $reps';
+        }
+      }
+    }
+
+    return null;
   }
 
   Database _getDatabaseOrThrow() {

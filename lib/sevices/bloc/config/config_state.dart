@@ -1,10 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:liftday/sevices/crud/training_day.dart';
-
-@immutable
-abstract class AppState {
-  const AppState();
-}
+import 'package:liftday/sevices/bloc/abstract/app_state.dart';
 
 @immutable
 abstract class ConfigState extends AppState {
@@ -38,41 +33,6 @@ class ConfigStateChooseDurationOfPlan extends ConfigState {
 
 class ConfigStateMainView extends ConfigState {
   const ConfigStateMainView();
-}
-
-@immutable
-abstract class EditState extends AppState {
-  const EditState();
-}
-
-class EditStateInit extends EditState {
-  const EditStateInit();
-}
-
-class EditStateEditTrainingDayFromPlan extends EditState {
-  final TrainingDay trainingDay;
-  const EditStateEditTrainingDayFromPlan(this.trainingDay);
-}
-
-class EditStateEditOtherTrainingDay extends EditState {
-  final TrainingDay trainingDay;
-  const EditStateEditOtherTrainingDay(this.trainingDay);
-}
-
-class EditStateAddOtherTrainingDay extends EditState {
-  const EditStateAddOtherTrainingDay();
-}
-
-class EditStateDayUpdated extends EditState {
-  const EditStateDayUpdated();
-}
-
-class EditStatePlanDeleted extends EditState {
-  const EditStatePlanDeleted();
-}
-
-class EditStateDayDeleted extends EditState {
-  const EditStateDayDeleted();
 }
 
 class ConfigStateAddTrainingDays extends ConfigState {

@@ -1,8 +1,8 @@
 import 'dart:developer';
 import 'package:bloc/bloc.dart';
-import 'package:liftday/sevices/bloc/app_event.dart';
-import 'package:liftday/sevices/bloc/app_state.dart';
-import 'package:liftday/sevices/crud/training_day.dart';
+import 'package:liftday/sevices/bloc/config/config_event.dart';
+import 'package:liftday/sevices/bloc/config/config_state.dart';
+import 'package:liftday/sevices/crud/tables/training_day.dart';
 import 'package:liftday/sevices/crud/exercise_service.dart';
 import 'package:liftday/sevices/settings/settings_service.dart';
 

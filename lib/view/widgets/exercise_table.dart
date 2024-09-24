@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:liftday/dialogs/error_dialog.dart';
 import 'package:liftday/sevices/crud/exercise_service.dart';
-import 'package:liftday/sevices/crud/tables_classes/database_date.dart';
-import 'package:liftday/sevices/crud/tables_classes/database_exercise.dart';
-import 'package:liftday/sevices/crud/tables_classes/database_set.dart';
-import 'package:liftday/sevices/crud/training_day.dart';
+import 'package:liftday/sevices/crud/tables/database_date.dart';
+import 'package:liftday/sevices/crud/tables/database_exercise.dart';
+import 'package:liftday/sevices/crud/tables/database_set.dart';
+import 'package:liftday/sevices/crud/tables/training_day.dart';
 
 class ExerciseTable extends StatefulWidget {
   final DateTime selectedDate;
@@ -545,6 +545,14 @@ class _ExerciseCardState extends State<ExerciseCard> {
                         ),
                         Expanded(
                           child: Center(
+                              child: Icon(
+                            Icons.history,
+                            size: 20,
+                            color: Colors.grey,
+                          )),
+                        ),
+                        Expanded(
+                          child: Center(
                             child: Text('kg',
                                 style: TextStyle(
                                     fontSize: 16, fontWeight: FontWeight.bold)),
@@ -640,12 +648,14 @@ class ExerciseRow extends StatefulWidget {
 class _ExerciseRowState extends State<ExerciseRow> {
   late final TextEditingController _weightController;
   late final TextEditingController _repsController;
-
   late final FocusNode _weightFocusNode;
   late final FocusNode _repsFocusNode;
+
   late int setIndex;
 
   late final ExerciseService _exerciseService;
+
+  String? _lastSetHistory;
 
   DatabaseSet? _set;
 
@@ -681,20 +691,13 @@ class _ExerciseRowState extends State<ExerciseRow> {
     log("saved by controller => id: ${mySet.id}, weight: $weight, reps: $reps");
   }
 
-  void _onRepsSubmitted() {
-    //to do
-  }
-
-  void _onKgSubmitted() {
-    FocusScope.of(context).requestFocus(_repsFocusNode);
-  }
-
   Future<void> createOrGetExistingsSet() async {
     final dbSet = await _exerciseService.getSetByExerciseAndIndex(
       exerciseId: widget.exercise.id,
       setIndex: setIndex,
     );
     _set = dbSet;
+
     if (dbSet != null) {
       if (dbSet.weight != 0) {
         _weightController.text = dbSet.weight.toString();
@@ -702,6 +705,17 @@ class _ExerciseRowState extends State<ExerciseRow> {
       if (dbSet.reps != 0) {
         _repsController.text = dbSet.reps.toString();
       }
+    }
+    _lastSetHistory = await _exerciseService.getPreviousSetData(
+        widget.exercise.dateId, widget.exercise.name, widget.setIndex);
+  }
+
+  void _removeFocus() {
+    log("message");
+    if (_weightFocusNode.hasFocus) {
+      _weightFocusNode.unfocus();
+    } else if (_repsFocusNode.hasFocus) {
+      _repsFocusNode.unfocus();
     }
   }
 
@@ -762,6 +776,23 @@ class _ExerciseRowState extends State<ExerciseRow> {
                     ),
                     Expanded(
                       child: TextField(
+                        controller: TextEditingController(
+                          text: _lastSetHistory ?? "-",
+                        ),
+                        readOnly: true,
+                        decoration: const InputDecoration(
+                          hintText: '',
+                          border: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                        ),
+                        textAlign: TextAlign.center,
+                        style:
+                            const TextStyle(fontSize: 16, color: Colors.grey),
+                      ),
+                    ),
+                    Expanded(
+                      child: TextField(
                         controller: _weightController,
                         focusNode: _weightFocusNode,
                         decoration: InputDecoration(
@@ -778,9 +809,6 @@ class _ExerciseRowState extends State<ExerciseRow> {
                         textAlign: TextAlign.center,
                         style: const TextStyle(fontSize: 16),
                         textInputAction: TextInputAction.next,
-                        onSubmitted: (value) {
-                          _onKgSubmitted();
-                        },
                       ),
                     ),
                     Expanded(
@@ -801,9 +829,6 @@ class _ExerciseRowState extends State<ExerciseRow> {
                         textAlign: TextAlign.center,
                         style: const TextStyle(fontSize: 16),
                         textInputAction: TextInputAction.next,
-                        onSubmitted: (value) {
-                          _onRepsSubmitted();
-                        },
                       ),
                     ),
                   ],

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:liftday/sevices/bloc/config_bloc.dart';
-import 'package:liftday/sevices/bloc/app_event.dart';
-import 'package:liftday/sevices/bloc/app_state.dart';
-import 'package:liftday/sevices/crud/training_day.dart';
+import 'package:liftday/sevices/bloc/config/config_bloc.dart';
+import 'package:liftday/sevices/bloc/config/config_event.dart';
+import 'package:liftday/sevices/bloc/config/config_state.dart';
+import 'package:liftday/sevices/crud/tables/training_day.dart';
 import 'package:liftday/view/widgets/simple_exercise_table.dart';
 import 'package:liftday/view/widgets/ui_elements.dart';
 

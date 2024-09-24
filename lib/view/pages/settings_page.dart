@@ -30,16 +30,21 @@ class _SettingsPageState extends State<SettingsPage> {
                   ListTile(
                     title: const Text(
                       'Tryb Ciemny',
-                      style: TextStyle(fontSize: 16),
+                      style: TextStyle(
+                        fontSize: 16,
+                      ),
                     ),
-                    trailing: Switch(
-                      value: isDarkMode,
-                      focusColor: Theme.of(context).colorScheme.secondary,
-                      onChanged: (value) {
-                        BlocProvider.of<ThemeBloc>(context).add(
-                          ThemeEventChange(isDarkMode: value),
-                        );
-                      },
+                    trailing: Transform.scale(
+                      scale: 0.8,
+                      child: Switch(
+                        value: isDarkMode,
+                        focusColor: Theme.of(context).colorScheme.secondary,
+                        onChanged: (value) {
+                          BlocProvider.of<ThemeBloc>(context).add(
+                            ThemeEventChange(isDarkMode: value),
+                          );
+                        },
+                      ),
                     ),
                   ),
                   ListTile(

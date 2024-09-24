@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:liftday/sevices/bloc/config_bloc.dart';
-import 'package:liftday/sevices/bloc/app_event.dart';
 import 'package:liftday/dialogs/have_to_choose_training_days.dart';
+import 'package:liftday/sevices/bloc/config/config_bloc.dart';
+import 'package:liftday/sevices/bloc/config/config_event.dart';
 import 'package:liftday/view/widgets/ui_elements.dart';
 
 class ChooseTrainingDaysView extends StatefulWidget {

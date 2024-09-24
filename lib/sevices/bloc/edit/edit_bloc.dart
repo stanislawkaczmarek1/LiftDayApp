@@ -1,8 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:liftday/constants/routes.dart';
-import 'package:liftday/sevices/bloc/app_event.dart';
-import 'package:liftday/sevices/bloc/app_state.dart';
+import 'package:liftday/sevices/bloc/edit/edit_event.dart';
+import 'package:liftday/sevices/bloc/edit/edit_state.dart';
 import 'package:liftday/sevices/crud/exercise_service.dart';
 import 'package:liftday/sevices/settings/settings_service.dart';
 
