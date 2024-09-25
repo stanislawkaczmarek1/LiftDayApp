@@ -29,7 +29,7 @@ class _ExerciseTableState extends State<ExerciseTable> {
   TrainingDay? _selectedDay;
   TrainingDay? _tempSelectedDay;
 
-  void _addExercise(String name, bool isThatDurationTypeExercise) async {
+  void _addExercise(String name, String exerciseType) async {
     if (_date != null) {
       final existingExercise = await _exerciseService.getExerciseByDateAndName(
           dateId: _date!.id, name: name);
@@ -45,7 +45,7 @@ class _ExerciseTableState extends State<ExerciseTable> {
           return;
         }
       }
-      if (isThatDurationTypeExercise) {
+      if (exerciseType == "duration") {
         await _exerciseService.createDurationExercise(
             dateId: _date!.id, name: name);
       } else {
@@ -66,7 +66,7 @@ class _ExerciseTableState extends State<ExerciseTable> {
           widget.selectedDate.isBefore(endDate)) {
         _date =
             await _exerciseService.createDate(dateTime: widget.selectedDate);
-        _addExercise(name, isThatDurationTypeExercise);
+        _addExercise(name, exerciseType);
       } else {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -94,7 +94,7 @@ class _ExerciseTableState extends State<ExerciseTable> {
 
   void _showAddExerciseDialog() {
     String exerciseName = '';
-    String exerciseType = 'ciężar i powtórzenia';
+    String exerciseType = 'reps';
     String exerciseText = 'ciężar i powtórzenia';
 
     showDialog(
@@ -132,11 +132,11 @@ class _ExerciseTableState extends State<ExerciseTable> {
                       GestureDetector(
                         onTap: () {
                           setState(() {
-                            if (exerciseType == 'ciężar i powtórzenia') {
-                              exerciseType = 'ciężar i czas';
+                            if (exerciseType == 'reps') {
+                              exerciseType = 'duration';
                               exerciseText = 'ciężar i czas';
                             } else {
-                              exerciseType = 'ciężar i powtórzenia';
+                              exerciseType = 'reps';
                               exerciseText = 'ciężar i powtórzenia';
                             }
                           });
@@ -164,10 +164,10 @@ class _ExerciseTableState extends State<ExerciseTable> {
                   child: const Text('Dodaj'),
                   onPressed: () {
                     if (exerciseName.isNotEmpty) {
-                      if (exerciseType == 'ciężar i czas') {
-                        _addExercise(exerciseName, true);
+                      if (exerciseType == 'reps') {
+                        _addExercise(exerciseName, 'reps');
                       } else {
-                        _addExercise(exerciseName, false);
+                        _addExercise(exerciseName, 'duration');
                       }
                     }
                     Navigator.of(context).pop();
@@ -422,7 +422,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
   late StreamController<List<ExerciseRow>> _setsStreamController;
   List<ExerciseRow> _setRows = [];
 
-  bool _isThatDurationTypeExercie = false;
+  bool _isThatDurationTypeExercise = false;
 
   Future<void> _addSet(int setIndex) async {
     if (_exercise != null) {
@@ -448,18 +448,13 @@ class _ExerciseCardState extends State<ExerciseCard> {
         }
       }
 
-      if (_isThatDurationTypeExercie) {
+      if (_isThatDurationTypeExercise) {
         await _exerciseService.createDurationSet(
           exerciseId: _exercise!.id,
           setIndex: setIndex,
           weight: lastSetWeight,
           duration: lastSetDuration,
         );
-        _setRows.add(ExerciseRow(
-          exercise: _exercise!,
-          setIndex: setIndex,
-          onDeleteSet: _deleteSet,
-        ));
       } else {
         await _exerciseService.createSet(
           exerciseId: _exercise!.id,
@@ -467,12 +462,12 @@ class _ExerciseCardState extends State<ExerciseCard> {
           weight: lastSetWeight,
           reps: lastSetReps,
         );
-        _setRows.add(ExerciseRow(
-          exercise: _exercise!,
-          setIndex: setIndex,
-          onDeleteSet: _deleteSet,
-        ));
       }
+      _setRows.add(ExerciseRow(
+        exercise: _exercise!,
+        setIndex: setIndex,
+        onDeleteSet: _deleteSet,
+      ));
       _setsStreamController.add(_setRows);
       log("created set with index $setIndex");
     } else {
@@ -503,7 +498,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
 
     if (exercise != null) {
       if (exercise.type == "duration") {
-        _isThatDurationTypeExercie = true;
+        _isThatDurationTypeExercise = true;
       }
       final dbSets =
           await _exerciseService.getSetsForExercise(exerciseId: exercise.id);
@@ -640,7 +635,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
                         ),
                         Expanded(
                           child: Center(
-                              child: _isThatDurationTypeExercie
+                              child: _isThatDurationTypeExercise
                                   ? const Icon(
                                       Icons.timer,
                                       size: 20,
