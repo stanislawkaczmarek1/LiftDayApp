@@ -10,6 +10,8 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' show join;
 
+//uzupelnic wszedzie muscle group
+
 class ExerciseService {
   Database? _db;
 
@@ -144,6 +146,27 @@ class ExerciseService {
       id: exerciseId,
       dateId: dateId,
       name: name,
+    );
+
+    return exercise;
+  }
+
+  Future<DatabaseExercise> createDurationExercise(
+      {required int dateId, required String name}) async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+
+    final exerciseId = await db.insert(exercisesTable, {
+      dateIdColumn: dateId,
+      nameColumn: name,
+      typeColumn: "duration",
+    });
+
+    final exercise = DatabaseExercise(
+      id: exerciseId,
+      dateId: dateId,
+      name: name,
+      type: "duration",
     );
 
     return exercise;
@@ -512,6 +535,33 @@ class ExerciseService {
     return newSet;
   }
 
+  Future<DatabaseSet> createDurationSet(
+      {required int exerciseId,
+      required int setIndex,
+      required int weight,
+      required int duration}) async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+
+    final setId = await db.insert(setsTable, {
+      exerciseIdColumn: exerciseId,
+      setIndexColumn: setIndex,
+      weightColumn: weight,
+      repsColumn: 0,
+      durationColumn: duration,
+    });
+    final newSet = DatabaseSet(
+      id: setId,
+      exerciseId: exerciseId,
+      setIndex: setIndex,
+      weight: weight,
+      reps: 0,
+      duration: duration,
+    );
+
+    return newSet;
+  }
+
   Future<DatabaseSet> getSet({required int id}) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
@@ -566,10 +616,12 @@ class ExerciseService {
     }
   }
 
-  Future<DatabaseSet?> updateSet(
-      {required DatabaseSet setToUpdate,
-      required int? weight,
-      required int? reps}) async {
+  Future<DatabaseSet?> updateSet({
+    required DatabaseSet setToUpdate,
+    required int? weight,
+    required int? reps,
+    required int? duration,
+  }) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
 
@@ -584,6 +636,10 @@ class ExerciseService {
     } else {
       updates[repsColumn] = 0;
     }
+    if (duration != null) {
+      updates[durationColumn] = duration;
+    }
+
     if (updates.isEmpty) {
       return null;
     }

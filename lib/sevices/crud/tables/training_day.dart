@@ -14,3 +14,13 @@ class TrainingDay {
     return "$day, $exercises, isFromPlan: $isFromPlan";
   }
 }
+
+class Exercise {
+  final String name;
+  final String type; //reps and duration
+
+  Exercise({
+    required this.name,
+    this.type = "reps",
+  });
+}

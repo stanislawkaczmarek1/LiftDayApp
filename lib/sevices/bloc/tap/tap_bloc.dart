@@ -25,7 +25,8 @@ class NoTapped extends TapState {
 class TapBloc extends Bloc<TapEvent, TapState> {
   TapBloc() : super(NoTapped()) {
     on<Tap>((event, emit) {
-      emit(Tapped());
+      emit(
+          Tapped()); //potencjalnie duza strata wydajnosci (emisja stanu przy kazdym klinknieciu)
     });
 
     on<SetTappedDefault>((event, emit) {

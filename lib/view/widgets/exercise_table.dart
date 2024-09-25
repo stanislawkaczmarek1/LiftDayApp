@@ -29,7 +29,7 @@ class _ExerciseTableState extends State<ExerciseTable> {
   TrainingDay? _selectedDay;
   TrainingDay? _tempSelectedDay;
 
-  void _addExercise(String name) async {
+  void _addExercise(String name, bool isThatDurationTypeExercise) async {
     if (_date != null) {
       final existingExercise = await _exerciseService.getExerciseByDateAndName(
           dateId: _date!.id, name: name);
@@ -45,7 +45,12 @@ class _ExerciseTableState extends State<ExerciseTable> {
           return;
         }
       }
-      await _exerciseService.createExercise(dateId: _date!.id, name: name);
+      if (isThatDurationTypeExercise) {
+        await _exerciseService.createDurationExercise(
+            dateId: _date!.id, name: name);
+      } else {
+        await _exerciseService.createExercise(dateId: _date!.id, name: name);
+      }
       _exerciseCards.add(ExerciseCard(
         exerciseName: name,
         selectedDate: _date!,
@@ -59,11 +64,9 @@ class _ExerciseTableState extends State<ExerciseTable> {
 
       if (widget.selectedDate.isAfter(startDate) &&
           widget.selectedDate.isBefore(endDate)) {
-        _exerciseService.createDate(dateTime: widget.selectedDate);
-        setState(() {
-          _loadExercisesForSelectedDate();
-        });
-        _addExercise(name);
+        _date =
+            await _exerciseService.createDate(dateTime: widget.selectedDate);
+        _addExercise(name, isThatDurationTypeExercise);
       } else {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -91,34 +94,88 @@ class _ExerciseTableState extends State<ExerciseTable> {
 
   void _showAddExerciseDialog() {
     String exerciseName = '';
+    String exerciseType = 'ciężar i powtórzenia';
+    String exerciseText = 'ciężar i powtórzenia';
+
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          content: TextField(
-            autofocus: true,
-            onChanged: (value) {
-              exerciseName = value;
-            },
-            decoration: const InputDecoration(hintText: "Nazwa ćwiczenia"),
-          ),
-          actions: [
-            TextButton(
-              child: const Text('Anuluj'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: const Text('Dodaj'),
-              onPressed: () {
-                if (exerciseName.isNotEmpty) {
-                  _addExercise(exerciseName);
-                }
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Align(
+                    alignment: Alignment.bottomLeft,
+                    child: Text(
+                      "Nazwa: ",
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ),
+                  TextField(
+                    autofocus: true,
+                    onChanged: (value) {
+                      exerciseName = value;
+                    },
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                  const SizedBox(
+                    height: 24,
+                  ),
+                  Row(
+                    children: [
+                      const Text(
+                        "Rodzaj: ",
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            if (exerciseType == 'ciężar i powtórzenia') {
+                              exerciseType = 'ciężar i czas';
+                              exerciseText = 'ciężar i czas';
+                            } else {
+                              exerciseType = 'ciężar i powtórzenia';
+                              exerciseText = 'ciężar i powtórzenia';
+                            }
+                          });
+                        },
+                        child: Text(
+                          exerciseText,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  child: const Text('Anuluj'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                TextButton(
+                  child: const Text('Dodaj'),
+                  onPressed: () {
+                    if (exerciseName.isNotEmpty) {
+                      if (exerciseType == 'ciężar i czas') {
+                        _addExercise(exerciseName, true);
+                      } else {
+                        _addExercise(exerciseName, false);
+                      }
+                    }
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
         );
       },
     );
@@ -365,6 +422,8 @@ class _ExerciseCardState extends State<ExerciseCard> {
   late StreamController<List<ExerciseRow>> _setsStreamController;
   List<ExerciseRow> _setRows = [];
 
+  bool _isThatDurationTypeExercie = false;
+
   Future<void> _addSet(int setIndex) async {
     if (_exercise != null) {
       if (_setRows.length >= 10) {
@@ -376,6 +435,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
 
       int lastSetWeight = 0;
       int lastSetReps = 0;
+      int lastSetDuration = 0;
 
       if (_setRows.isNotEmpty) {
         final lastSet = _setRows.last;
@@ -384,20 +444,35 @@ class _ExerciseCardState extends State<ExerciseCard> {
         if (dbLastSet != null) {
           lastSetWeight = dbLastSet.weight;
           lastSetReps = dbLastSet.reps;
+          lastSetDuration = dbLastSet.duration;
         }
       }
 
-      await _exerciseService.createSet(
-        exerciseId: _exercise!.id,
-        setIndex: setIndex,
-        weight: lastSetWeight,
-        reps: lastSetReps,
-      );
-      _setRows.add(ExerciseRow(
-        exercise: _exercise!,
-        setIndex: setIndex,
-        onDeleteSet: _deleteSet,
-      ));
+      if (_isThatDurationTypeExercie) {
+        await _exerciseService.createDurationSet(
+          exerciseId: _exercise!.id,
+          setIndex: setIndex,
+          weight: lastSetWeight,
+          duration: lastSetDuration,
+        );
+        _setRows.add(ExerciseRow(
+          exercise: _exercise!,
+          setIndex: setIndex,
+          onDeleteSet: _deleteSet,
+        ));
+      } else {
+        await _exerciseService.createSet(
+          exerciseId: _exercise!.id,
+          setIndex: setIndex,
+          weight: lastSetWeight,
+          reps: lastSetReps,
+        );
+        _setRows.add(ExerciseRow(
+          exercise: _exercise!,
+          setIndex: setIndex,
+          onDeleteSet: _deleteSet,
+        ));
+      }
       _setsStreamController.add(_setRows);
       log("created set with index $setIndex");
     } else {
@@ -427,6 +502,9 @@ class _ExerciseCardState extends State<ExerciseCard> {
     _exercise = exercise;
 
     if (exercise != null) {
+      if (exercise.type == "duration") {
+        _isThatDurationTypeExercie = true;
+      }
       final dbSets =
           await _exerciseService.getSetsForExercise(exerciseId: exercise.id);
       if (dbSets.isEmpty) {
@@ -536,16 +614,16 @@ class _ExerciseCardState extends State<ExerciseCard> {
                       ],
                     ),
                     const SizedBox(height: 16.0),
-                    const Row(
+                    Row(
                       children: [
-                        Expanded(
+                        const Expanded(
                           child: Center(
                             child: Text('seria',
                                 style: TextStyle(
                                     fontSize: 16, fontWeight: FontWeight.bold)),
                           ),
                         ),
-                        Expanded(
+                        const Expanded(
                           child: Center(
                               child: Icon(
                             Icons.history,
@@ -553,7 +631,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
                             color: Colors.grey,
                           )),
                         ),
-                        Expanded(
+                        const Expanded(
                           child: Center(
                             child: Text('kg',
                                 style: TextStyle(
@@ -562,10 +640,15 @@ class _ExerciseCardState extends State<ExerciseCard> {
                         ),
                         Expanded(
                           child: Center(
-                            child: Text('x',
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.bold)),
-                          ),
+                              child: _isThatDurationTypeExercie
+                                  ? const Icon(
+                                      Icons.timer,
+                                      size: 20,
+                                    )
+                                  : const Text('x',
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold))),
                         ),
                       ],
                     ),
@@ -653,8 +736,10 @@ class ExerciseRow extends StatefulWidget {
 class _ExerciseRowState extends State<ExerciseRow> {
   late final TextEditingController _weightController;
   late final TextEditingController _repsController;
+  late final TextEditingController _durationController;
   late final FocusNode _weightFocusNode;
   late final FocusNode _repsFocusNode;
+  late final FocusNode _durationFocusNode;
   final ValueNotifier<bool> _isInputActive = ValueNotifier<bool>(false);
 
   late int setIndex;
@@ -665,11 +750,20 @@ class _ExerciseRowState extends State<ExerciseRow> {
 
   DatabaseSet? _set;
 
-  void _setupTextControllerListener() {
+  bool _isThatDurationTypeSet = false;
+
+  void _setupTextControllerListenerTypeReps() {
     _weightController.removeListener(_kgAndRepsControllerListner);
     _weightController.addListener(_kgAndRepsControllerListner);
     _repsController.removeListener(_kgAndRepsControllerListner);
     _repsController.addListener(_kgAndRepsControllerListner);
+  }
+
+  void _setupTextControllerListenerTypeDuration() {
+    _weightController.removeListener(_kgAndDurationControllerListner);
+    _weightController.addListener(_kgAndDurationControllerListner);
+    _durationController.removeListener(_kgAndDurationControllerListner);
+    _durationController.addListener(_kgAndDurationControllerListner);
   }
 
   int? _convertToInt(String text) {
@@ -679,6 +773,18 @@ class _ExerciseRowState extends State<ExerciseRow> {
     } catch (e) {
       return null;
     }
+  }
+
+  int _convertTimeToSeconds(String time) {
+    if (!time.contains(':')) return 0;
+
+    List<String> parts = time.split(':');
+    if (parts.length != 2) return 0;
+
+    int minutes = int.tryParse(parts[0]) ?? 0;
+    int seconds = int.tryParse(parts[1]) ?? 0;
+
+    return (minutes * 60) + seconds;
   }
 
   void _kgAndRepsControllerListner() async {
@@ -693,11 +799,61 @@ class _ExerciseRowState extends State<ExerciseRow> {
       setToUpdate: mySet,
       weight: weight,
       reps: reps,
+      duration: null,
     );
     log("saved by controller => id: ${mySet.id}, weight: $weight, reps: $reps");
   }
 
+  void _kgAndDurationControllerListner() async {
+    String durationText = _durationController.text;
+    durationText = durationText.replaceAll(RegExp(r'[^0-9]'), '');
+
+    if (durationText.length >= 3) {
+      durationText =
+          '${durationText.substring(0, 2)}:${durationText.substring(2)}';
+    }
+    if (durationText.length > 5) {
+      durationText = durationText.substring(0, 5);
+    }
+    _durationController.value = _durationController.value.copyWith(
+      text: durationText,
+      selection: TextSelection.collapsed(offset: durationText.length),
+    );
+
+    final mySet = _set;
+    if (mySet == null) {
+      return;
+    }
+    final weight = _convertToInt(_weightController.text);
+    final duration = _convertTimeToSeconds(durationText);
+
+    await _exerciseService.updateSet(
+      setToUpdate: mySet,
+      weight: weight,
+      reps: null,
+      duration: duration,
+    );
+    log("saved by controller => id: ${mySet.id}, weight: $weight, duration: $duration");
+  }
+
+  String _convertSecondsToTime(int seconds) {
+    if (seconds < 0) {
+      return '00:00';
+    }
+
+    int minutes = seconds ~/ 60;
+    int remainingSeconds = seconds % 60;
+    String formattedMinutes = minutes.toString().padLeft(2, '0');
+    String formattedSeconds = remainingSeconds.toString().padLeft(2, '0');
+
+    return '$formattedMinutes:$formattedSeconds';
+  }
+
   Future<void> createOrGetExistingsSet() async {
+    if (widget.exercise.type == "duration") {
+      _isThatDurationTypeSet = true;
+    }
+
     final dbSet = await _exerciseService.getSetByExerciseAndIndex(
       exerciseId: widget.exercise.id,
       setIndex: setIndex,
@@ -711,9 +867,12 @@ class _ExerciseRowState extends State<ExerciseRow> {
       if (dbSet.reps != 0) {
         _repsController.text = dbSet.reps.toString();
       }
+      if (dbSet.duration != 0) {
+        _durationController.text = _convertSecondsToTime(dbSet.duration);
+      }
+      _lastSetHistory = await _exerciseService.getPreviousSetData(
+          widget.exercise.dateId, widget.exercise.name, widget.setIndex);
     }
-    _lastSetHistory = await _exerciseService.getPreviousSetData(
-        widget.exercise.dateId, widget.exercise.name, widget.setIndex);
   }
 
   void _removeFocus() {
@@ -724,6 +883,9 @@ class _ExerciseRowState extends State<ExerciseRow> {
     } else if (_repsFocusNode.hasFocus) {
       _isInputActive.value = false;
       _repsFocusNode.unfocus();
+    } else if (_durationFocusNode.hasFocus) {
+      _isInputActive.value = false;
+      _durationFocusNode.unfocus();
     }
   }
 
@@ -733,8 +895,10 @@ class _ExerciseRowState extends State<ExerciseRow> {
     _exerciseService = ExerciseService();
     _weightController = TextEditingController();
     _repsController = TextEditingController();
+    _durationController = TextEditingController();
     _weightFocusNode = FocusNode();
     _repsFocusNode = FocusNode();
+    _durationFocusNode = FocusNode();
     setIndex = widget.setIndex;
   }
 
@@ -743,8 +907,11 @@ class _ExerciseRowState extends State<ExerciseRow> {
     log("dispose row");
     _weightController.dispose();
     _repsController.dispose();
+    _durationController.dispose();
     _weightFocusNode.dispose();
     _repsFocusNode.dispose();
+    _durationFocusNode.dispose();
+
     super.dispose();
   }
 
@@ -764,7 +931,11 @@ class _ExerciseRowState extends State<ExerciseRow> {
         builder: (context, snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.done:
-              _setupTextControllerListener();
+              if (_isThatDurationTypeSet) {
+                _setupTextControllerListenerTypeDuration();
+              } else {
+                _setupTextControllerListenerTypeReps();
+              }
               return Dismissible(
                 key: Key(widget.setIndex.toString()),
                 direction: DismissDirection.endToStart,
@@ -813,7 +984,6 @@ class _ExerciseRowState extends State<ExerciseRow> {
                           onEditingComplete: () {
                             _isInputActive.value = false;
                             if (_weightFocusNode.nextFocus()) {
-                              log("found node 1");
                               _isInputActive.value = true;
                             } else {
                               _isInputActive.value = false;
@@ -838,32 +1008,63 @@ class _ExerciseRowState extends State<ExerciseRow> {
                           textInputAction: TextInputAction.next,
                         ),
                       ),
-                      Expanded(
-                        child: TextField(
-                          onTap: () => _isInputActive.value = true,
-                          onEditingComplete: () {
-                            _repsFocusNode.unfocus();
-                            _isInputActive.value = false;
-                          },
-                          controller: _repsController,
-                          focusNode: _repsFocusNode,
-                          decoration: InputDecoration(
-                            hintText: '',
-                            border: InputBorder.none,
-                            enabledBorder: InputBorder.none,
-                            focusedBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(
-                                  width: 2,
-                                  color:
-                                      Theme.of(context).colorScheme.secondary),
+                      _isThatDurationTypeSet
+                          ? Expanded(
+                              child: TextField(
+                                onTap: () => _isInputActive.value = true,
+                                onEditingComplete: () {
+                                  _durationFocusNode.unfocus();
+                                  _isInputActive.value = false;
+                                },
+                                controller: _durationController,
+                                focusNode: _durationFocusNode,
+                                decoration: InputDecoration(
+                                  hintText: 'min:sec',
+                                  hintStyle: const TextStyle(
+                                      color: Colors.grey, fontSize: 14),
+                                  border: InputBorder.none,
+                                  enabledBorder: InputBorder.none,
+                                  focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                        width: 2,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary),
+                                  ),
+                                ),
+                                keyboardType: TextInputType.number,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(fontSize: 16),
+                                textInputAction: TextInputAction.done,
+                              ),
+                            )
+                          : Expanded(
+                              child: TextField(
+                                onTap: () => _isInputActive.value = true,
+                                onEditingComplete: () {
+                                  _repsFocusNode.unfocus();
+                                  _isInputActive.value = false;
+                                },
+                                controller: _repsController,
+                                focusNode: _repsFocusNode,
+                                decoration: InputDecoration(
+                                  hintText: '',
+                                  border: InputBorder.none,
+                                  enabledBorder: InputBorder.none,
+                                  focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                        width: 2,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary),
+                                  ),
+                                ),
+                                keyboardType: TextInputType.number,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(fontSize: 16),
+                                textInputAction: TextInputAction.done,
+                              ),
                             ),
-                          ),
-                          keyboardType: TextInputType.number,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(fontSize: 16),
-                          textInputAction: TextInputAction.done,
-                        ),
-                      ),
                     ],
                   ),
                 ),

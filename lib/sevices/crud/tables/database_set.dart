@@ -6,6 +6,7 @@ class DatabaseSet {
   final int setIndex;
   final int weight;
   final int reps;
+  final int duration; //default 0
 
   DatabaseSet({
     required this.id,
@@ -13,6 +14,7 @@ class DatabaseSet {
     required this.setIndex,
     required this.weight,
     required this.reps,
+    this.duration = 0,
   });
 
   DatabaseSet.fromRow(Map<String, Object?> map)
@@ -20,11 +22,12 @@ class DatabaseSet {
         exerciseId = map[exerciseIdColumn] as int,
         setIndex = map[setIndexColumn] as int,
         weight = map[weightColumn] as int,
-        reps = map[repsColumn] as int;
+        reps = map[repsColumn] as int,
+        duration = map[durationColumn] as int;
 
   @override
   String toString() =>
-      "Set, ID = $id, exerciseID = $exerciseId, setIndex = $setIndex, weight = $weight, reps = $reps";
+      "Set, ID = $id, exerciseID = $exerciseId, setIndex = $setIndex, weight = $weight, reps = $reps, duration = $duration";
 
   @override
   bool operator ==(covariant DatabaseSet other) => id == other.id;
