@@ -4,8 +4,9 @@ import 'package:liftday/dialogs/error_dialog.dart';
 import 'package:liftday/sevices/bloc/edit/edit_bloc.dart';
 import 'package:liftday/sevices/bloc/edit/edit_event.dart';
 import 'package:liftday/sevices/bloc/edit/edit_state.dart';
+import 'package:liftday/sevices/crud/data_package/exercise_data.dart';
 import 'package:liftday/sevices/crud/exercise_service.dart';
-import 'package:liftday/sevices/crud/tables/training_day.dart';
+import 'package:liftday/sevices/crud/data_package/training_day_data.dart';
 import 'package:liftday/view/widgets/simple_exercise_table.dart';
 import 'package:liftday/view/widgets/ui_elements.dart';
 
@@ -17,7 +18,7 @@ class TrainingDayView extends StatefulWidget {
 }
 
 class _TrainingDayViewState extends State<TrainingDayView> {
-  List<String> exercises = [];
+  List<ExerciseData> exercises = [];
   final TextEditingController _dayController = TextEditingController();
   late ExerciseService _exerciseService;
   String _currentName = "";
@@ -31,9 +32,9 @@ class _TrainingDayViewState extends State<TrainingDayView> {
         name != 'Friday' &&
         name != 'Saturday' &&
         name != 'Sunday') {
-      final otherDays = await _exerciseService.getOtherTrainingDays();
+      final otherDays = await _exerciseService.getTrainingDaysNotFromPlanData();
       for (var i = 0; i < otherDays.length; i++) {
-        if (otherDays.elementAt(i).day == name && _currentName != name) {
+        if (otherDays.elementAt(i).name == name && _currentName != name) {
           return false;
         }
       }
@@ -91,11 +92,11 @@ class _TrainingDayViewState extends State<TrainingDayView> {
               () {
                 context.read<EditBloc>().add(EditEventPushSaveButton(
                     context,
-                    TrainingDay(
-                      day: state.trainingDay.day,
+                    TrainingDayData(
+                      name: state.trainingDay.name,
                       exercises: exercises,
                     ),
-                    state.trainingDay.day));
+                    state.trainingDay.name));
               },
             ),
             body: SingleChildScrollView(
@@ -105,7 +106,7 @@ class _TrainingDayViewState extends State<TrainingDayView> {
                   Padding(
                     padding: const EdgeInsets.all(20.0),
                     child: Text(
-                      _getPolishDayAbbreviation(state.trainingDay.day),
+                      _getPolishDayAbbreviation(state.trainingDay.name),
                       style: const TextStyle(
                           fontSize: 24, fontWeight: FontWeight.bold),
                       textAlign: TextAlign.center,
@@ -113,7 +114,7 @@ class _TrainingDayViewState extends State<TrainingDayView> {
                   ),
                   SimpleExerciseTable(
                     exercises: state.trainingDay.exercises,
-                    callback: (List<String> exercisesFromTable) {
+                    callback: (List<ExerciseData> exercisesFromTable) {
                       exercises = exercisesFromTable;
                     },
                   ),
@@ -122,8 +123,8 @@ class _TrainingDayViewState extends State<TrainingDayView> {
             ),
           );
         } else if (state is EditStateEditOtherTrainingDay) {
-          _dayController.text = state.trainingDay.day;
-          _currentName = state.trainingDay.day;
+          _dayController.text = state.trainingDay.name;
+          _currentName = state.trainingDay.name;
           if (exercises.isEmpty) {
             exercises = List.from(state.trainingDay.exercises);
           }
@@ -136,8 +137,8 @@ class _TrainingDayViewState extends State<TrainingDayView> {
                   if (context.mounted) {
                     context.read<EditBloc>().add(EditEventPushSaveButton(
                         context,
-                        TrainingDay(
-                          day: _dayController.text,
+                        TrainingDayData(
+                          name: _dayController.text,
                           exercises: exercises,
                         ),
                         _currentName));
@@ -176,7 +177,7 @@ class _TrainingDayViewState extends State<TrainingDayView> {
                   ),
                   SimpleExerciseTable(
                     exercises: state.trainingDay.exercises,
-                    callback: (List<String> exercisesFromTable) {
+                    callback: (List<ExerciseData> exercisesFromTable) {
                       exercises = exercisesFromTable;
                     },
                   ),
@@ -194,8 +195,8 @@ class _TrainingDayViewState extends State<TrainingDayView> {
                   if (context.mounted) {
                     context.read<EditBloc>().add(EditEventPushSaveButton(
                         context,
-                        TrainingDay(
-                          day: _dayController.text,
+                        TrainingDayData(
+                          name: _dayController.text,
                           exercises: exercises,
                         ),
                         " "));
@@ -234,7 +235,7 @@ class _TrainingDayViewState extends State<TrainingDayView> {
                   ),
                   SimpleExerciseTable(
                     exercises: exercises,
-                    callback: (List<String> exercisesFromTable) {
+                    callback: (List<ExerciseData> exercisesFromTable) {
                       exercises = exercisesFromTable;
                     },
                   ),

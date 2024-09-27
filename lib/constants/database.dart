@@ -3,6 +3,7 @@ const datesTable = 'dates';
 const exercisesTable = 'exercises';
 const setsTable = 'sets';
 const trainingDaysTable = 'training_days';
+const trainingDayExercisesTable = 'training_day_exercises';
 const idColumn = 'id';
 const digitDateColumn = 'digit_date';
 const dayColumn = 'day';
@@ -12,11 +13,11 @@ const exerciseIdColumn = 'exercise_id';
 const setIndexColumn = 'set_index';
 const weightColumn = 'weight';
 const repsColumn = 'reps';
-const exercisesColumn = 'exercises';
 const isFromPlanColumn = 'is_from_plan';
 const muscleGroupColumn = 'muscle_group';
 const durationColumn = 'duration';
 const typeColumn = 'type';
+const trainingDayIdColumn = 'training_day_id';
 const createDatesTable = """CREATE TABLE IF NOT EXISTS "dates" (
 	"id"	INTEGER NOT NULL,
 	"digit_date"	TEXT NOT NULL UNIQUE,
@@ -43,9 +44,17 @@ const createSetsTable = """CREATE TABLE IF NOT EXISTS "sets" (
 );""";
 const createTrainingDaysTable = """CREATE TABLE IF NOT EXISTS "training_days" (
 	"id"	INTEGER NOT NULL,
-	"day"	TEXT NOT NULL UNIQUE,
-	"exercises"	TEXT NOT NULL,
+	"name"	TEXT NOT NULL UNIQUE,
   "is_from_plan"	INTEGER NOT NULL DEFAULT 1,
+	PRIMARY KEY("id" AUTOINCREMENT)
+);""";
+const createTrainingDayExercisesTable =
+    """CREATE TABLE IF NOT EXISTS "training_day_exercises" (
+	"id"	INTEGER NOT NULL,
+	"training_day_id"	INTEGER NOT NULL,
+	"name"	TEXT NOT NULL,
+	"type"	TEXT NOT NULL DEFAULT 'reps',
+	FOREIGN KEY("training_day_id") REFERENCES "training_days"("id"),
 	PRIMARY KEY("id" AUTOINCREMENT)
 );""";
 

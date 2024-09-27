@@ -2,7 +2,7 @@ import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:liftday/sevices/bloc/config/config_event.dart';
 import 'package:liftday/sevices/bloc/config/config_state.dart';
-import 'package:liftday/sevices/crud/tables/training_day.dart';
+import 'package:liftday/sevices/crud/data_package/training_day_data.dart';
 import 'package:liftday/sevices/crud/exercise_service.dart';
 import 'package:liftday/sevices/settings/settings_service.dart';
 
@@ -10,7 +10,7 @@ class ConfigBloc extends Bloc<ConfigEvent, ConfigState> {
   final List<ConfigState> _stateHistory = [];
   final List<ConfigStateAddFirstWeekPlan> _firstWeekPlan = [];
   int _currentDayOfPlanConfig = 0;
-  final List<TrainingDay> _exerciseDaysData = [];
+  final List<TrainingDayData> _exerciseDaysData = [];
   late final SettingsService _settingsService;
   bool isThatReplacementOfPlans = false;
 
@@ -108,8 +108,8 @@ class ConfigBloc extends Bloc<ConfigEvent, ConfigState> {
         log(_exerciseDaysData.toString());
 
         final exerciseService = ExerciseService();
-        for (TrainingDay exerciseDay in _exerciseDaysData) {
-          await exerciseService.saveTrainingDay(exerciseDay, false);
+        for (TrainingDayData exerciseDay in _exerciseDaysData) {
+          await exerciseService.saveTrainingDayData(exerciseDay, false);
         }
 
         _stateHistory.clear();
@@ -153,11 +153,12 @@ class ConfigBloc extends Bloc<ConfigEvent, ConfigState> {
     );
 
     on<ConfigEventConfirmPlanDuration>(
+      ///////
       (event, emit) async {
         _stateHistory.add(state);
         final exerciseService = ExerciseService();
         if (isThatReplacementOfPlans) {
-          exerciseService.deleteTrainingDaysFromPlan();
+          exerciseService.deleteTrainingDaysDataFromPlan();
           exerciseService.deleteExercisesAndSetsFromTomorrowToEndOfDates();
         }
 
@@ -171,8 +172,8 @@ class ConfigBloc extends Bloc<ConfigEvent, ConfigState> {
           dates: dates,
         );
 
-        for (TrainingDay exerciseDay in _exerciseDaysData) {
-          await exerciseService.saveTrainingDay(exerciseDay, true);
+        for (TrainingDayData exerciseDay in _exerciseDaysData) {
+          await exerciseService.saveTrainingDayData(exerciseDay, true);
         }
 
         _settingsService.setPlanEndingDigitDate(lastDate.digitDate);
@@ -206,21 +207,21 @@ class ConfigBloc extends Bloc<ConfigEvent, ConfigState> {
   }
 }
 
-void _renameDuplicateDays(List<TrainingDay> exerciseDaysData) {
+void _renameDuplicateDays(List<TrainingDayData> exerciseDaysData) {
   // Mapa do śledzenia liczby wystąpień każdego dnia
   Map<String, int> dayOccurrences = {};
 
   // Przejście przez całą listę dni treningowych
   for (int i = 0; i < exerciseDaysData.length; i++) {
-    String day = exerciseDaysData[i].day;
+    String day = exerciseDaysData[i].name;
 
     // Jeśli ten dzień już wystąpił, zwiększamy licznik i dodajemy go do nazwy
     if (dayOccurrences.containsKey(day)) {
       int occurrence = dayOccurrences[day]! + 1;
       dayOccurrences[day] = occurrence;
       // Aktualizacja nazwy dnia z numerem
-      exerciseDaysData[i] = TrainingDay(
-        day: '$day$occurrence',
+      exerciseDaysData[i] = TrainingDayData(
+        name: '$day$occurrence',
         exercises: exerciseDaysData[i].exercises,
         isFromPlan: exerciseDaysData[i].isFromPlan,
       );

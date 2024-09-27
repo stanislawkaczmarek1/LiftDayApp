@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:liftday/sevices/bloc/abstract/app_event.dart';
-import 'package:liftday/sevices/crud/tables/training_day.dart';
+import 'package:liftday/sevices/crud/data_package/training_day_data.dart';
 
 @immutable
 abstract class ConfigEvent extends AppEvent {
@@ -38,7 +38,7 @@ class ConfigEventConfirmTrainingDays extends ConfigEvent {
 }
 
 class ConfigEventConfirmExercisesInDay extends ConfigEvent {
-  final TrainingDay trainingDay;
+  final TrainingDayData trainingDay;
   const ConfigEventConfirmExercisesInDay(this.trainingDay);
 }
 
@@ -56,11 +56,11 @@ class ConfigEventChangePlanFromMainView extends ConfigEvent {
 }
 
 class ConfigEventPushNextDayButton extends ConfigEvent {
-  final TrainingDay trainingDay;
+  final TrainingDayData trainingDay;
   const ConfigEventPushNextDayButton(this.trainingDay);
 }
 
 class ConfigEventPushDoneButton extends ConfigEvent {
-  final TrainingDay trainingDay;
+  final TrainingDayData trainingDay;
   const ConfigEventPushDoneButton(this.trainingDay);
 }

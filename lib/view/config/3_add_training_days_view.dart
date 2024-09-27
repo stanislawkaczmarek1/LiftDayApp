@@ -7,7 +7,8 @@ import 'package:liftday/sevices/bloc/app_bar/app_bar_state.dart';
 import 'package:liftday/sevices/bloc/config/config_bloc.dart';
 import 'package:liftday/sevices/bloc/config/config_event.dart';
 import 'package:liftday/sevices/bloc/config/config_state.dart';
-import 'package:liftday/sevices/crud/tables/training_day.dart';
+import 'package:liftday/sevices/crud/data_package/exercise_data.dart';
+import 'package:liftday/sevices/crud/data_package/training_day_data.dart';
 import 'package:liftday/view/widgets/simple_exercise_table.dart';
 
 class AddTrainingDaysView extends StatefulWidget {
@@ -20,7 +21,7 @@ class AddTrainingDaysView extends StatefulWidget {
 class _AddTrainingDaysViewState extends State<AddTrainingDaysView> {
   Key _exerciseTableKey = UniqueKey();
   late SimpleExerciseTable _exerciseTable;
-  List<String> exercises = [];
+  List<ExerciseData> exercises = [];
   final TextEditingController _dayController = TextEditingController();
   bool _maximumOfDays = false;
 
@@ -43,7 +44,7 @@ class _AddTrainingDaysViewState extends State<AddTrainingDaysView> {
   void initState() {
     _exerciseTable = SimpleExerciseTable(
       key: _exerciseTableKey,
-      callback: (List<String> exercisesFromTable) {
+      callback: (List<ExerciseData> exercisesFromTable) {
         exercises = exercisesFromTable;
       },
     );
@@ -80,7 +81,7 @@ class _AddTrainingDaysViewState extends State<AddTrainingDaysView> {
                     UniqueKey(); // Wymusza przebudowę ExerciseTable
                 _exerciseTable = SimpleExerciseTable(
                   key: _exerciseTableKey,
-                  callback: (List<String> exercisesFromTable) {
+                  callback: (List<ExerciseData> exercisesFromTable) {
                     exercises = exercisesFromTable;
                   },
                 );
@@ -103,8 +104,8 @@ class _AddTrainingDaysViewState extends State<AddTrainingDaysView> {
                 onPressed: () {
                   if (_chceckDayName(_dayController.text)) {
                     context.read<ConfigBloc>().add(ConfigEventPushDoneButton(
-                        TrainingDay(
-                            day: _dayController.text,
+                        TrainingDayData(
+                            name: _dayController.text,
                             exercises: exercises,
                             isFromPlan: 0)));
                   } else {
@@ -123,8 +124,8 @@ class _AddTrainingDaysViewState extends State<AddTrainingDaysView> {
                   onPressed: () {
                     if (_chceckDayName(_dayController.text)) {
                       context.read<ConfigBloc>().add(
-                          ConfigEventPushNextDayButton(TrainingDay(
-                              day: _dayController.text,
+                          ConfigEventPushNextDayButton(TrainingDayData(
+                              name: _dayController.text,
                               exercises: exercises,
                               isFromPlan: 0)));
                       setState(() {
@@ -132,7 +133,7 @@ class _AddTrainingDaysViewState extends State<AddTrainingDaysView> {
                             UniqueKey(); // Wymusza przebudowę ExerciseTable
                         _exerciseTable = SimpleExerciseTable(
                           key: _exerciseTableKey,
-                          callback: (List<String> exercisesFromTable) {
+                          callback: (List<ExerciseData> exercisesFromTable) {
                             exercises = exercisesFromTable;
                           },
                         );

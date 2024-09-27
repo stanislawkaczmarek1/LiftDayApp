@@ -38,13 +38,13 @@ class EditBloc extends Bloc<EditEvent, EditState> {
       (event, emit) async {
         final exerciseService = ExerciseService();
         if (_isThatEddition) {
-          await exerciseService.editTrainingDay(
+          await exerciseService.editTrainingDayData(
               event.trainingDay, event.currentName);
           await exerciseService
               .updateTrainingDayFromTomorrowToEndOfDates(event.trainingDay);
         } else {
           //addition of other days
-          await exerciseService.saveTrainingDay(event.trainingDay, false);
+          await exerciseService.saveTrainingDayData(event.trainingDay, false);
         }
         if (event.context.mounted) {
           Navigator.of(event.context).pop();
@@ -62,7 +62,7 @@ class EditBloc extends Bloc<EditEvent, EditState> {
     on<EditEventPushDeletePlanButton>(
       (event, emit) async {
         final exerciseService = ExerciseService();
-        await exerciseService.deleteTrainingDaysFromPlan();
+        await exerciseService.deleteTrainingDaysDataFromPlan();
         await exerciseService.deleteExercisesAndSetsFromTomorrowToEndOfDates();
         final settingsService = SettingsService();
         settingsService.setHasPlanFlag(false);
@@ -73,7 +73,7 @@ class EditBloc extends Bloc<EditEvent, EditState> {
     on<EditEventDeleteTrainingDay>(
       (event, emit) async {
         final exerciseService = ExerciseService();
-        await exerciseService.deleteTrainingDay(event.trainingDay);
+        await exerciseService.deleteTrainingDayDataByName(event.trainingDay);
         emit(const EditStateDayDeleted());
       },
     );

@@ -8,10 +8,13 @@ import 'package:liftday/sevices/bloc/config/config_event.dart';
 import 'package:liftday/sevices/bloc/edit/edit_bloc.dart';
 import 'package:liftday/sevices/bloc/edit/edit_event.dart';
 import 'package:liftday/sevices/bloc/edit/edit_state.dart';
-import 'package:liftday/sevices/crud/tables/training_day.dart';
+import 'package:liftday/sevices/crud/data_package/exercise_data.dart';
+import 'package:liftday/sevices/crud/data_package/training_day_data.dart';
 import 'package:liftday/sevices/crud/exercise_service.dart';
 import 'package:liftday/sevices/settings/settings_service.dart';
 import 'package:liftday/view/widgets/ui_elements.dart';
+//caly plans page sie rozjechal podczas testow, reszta wydaje sie ok
+//TO DO
 
 class PlansPage extends StatefulWidget {
   const PlansPage({super.key});
@@ -28,9 +31,10 @@ class _PlansPageState extends State<PlansPage> {
 
   bool maximumOfOtherTrainingDays = false;
 
-  Future<List<TrainingDay>> _fetchTrainingDays() async {
+  Future<List<TrainingDayData>> _fetchTrainingDays() async {
     final exerciseService = ExerciseService();
-    return await exerciseService.getTrainingDays();
+    final trainingDays = await exerciseService.getTrainingDaysData();
+    return trainingDays;
   }
 
   Future<int?> _getDaysUntilEnd() async {
@@ -192,55 +196,63 @@ class _PlansPageState extends State<PlansPage> {
                         ),
                       ),
                       const SizedBox(height: 24.0),
-                      FutureBuilder<List<TrainingDay>>(
+                      FutureBuilder<List<TrainingDayData>>(
                           future: _fetchTrainingDays(),
                           builder: (context, snapshot) {
                             switch (snapshot.connectionState) {
                               case ConnectionState.done:
-                                final trainingPlanDays = snapshot.data!
-                                    .where((day) => day.isFromPlan == 1)
-                                    .toList();
-                                return _buildDropdownTile(
-                                  title: "Dni z planu treningowego",
-                                  isExpanded: isTrainingPlanExpanded,
-                                  days: trainingPlanDays,
-                                  isFromPlan: true,
-                                  onExpand: () {
-                                    setState(() {
-                                      isTrainingPlanExpanded =
-                                          !isTrainingPlanExpanded;
-                                    });
-                                  },
-                                );
+                                if (snapshot.hasData && snapshot.data != null) {
+                                  final trainingPlanDays = snapshot.data!
+                                      .where((day) => day.isFromPlan == 1)
+                                      .toList();
+                                  return _buildDropdownTile(
+                                    title: "Dni z planu treningowego",
+                                    isExpanded: isTrainingPlanExpanded,
+                                    days: trainingPlanDays,
+                                    isFromPlan: true,
+                                    onExpand: () {
+                                      setState(() {
+                                        isTrainingPlanExpanded =
+                                            !isTrainingPlanExpanded;
+                                      });
+                                    },
+                                  );
+                                } else {
+                                  return const SizedBox(height: 0);
+                                }
                               default:
                                 return const SizedBox(height: 0);
                             }
                           }),
-                      FutureBuilder<List<TrainingDay>>(
+                      FutureBuilder<List<TrainingDayData>>(
                           future: _fetchTrainingDays(),
                           builder: (context, snapshot) {
                             switch (snapshot.connectionState) {
                               case ConnectionState.done:
-                                final otherDays = snapshot.data!
-                                    .where((day) => day.isFromPlan == 0)
-                                    .toList();
-                                if (otherDays.length >= 4) {
-                                  maximumOfOtherTrainingDays = true;
+                                if (snapshot.hasData && snapshot.data != null) {
+                                  final otherDays = snapshot.data!
+                                      .where((day) => day.isFromPlan == 0)
+                                      .toList();
+                                  if (otherDays.length >= 4) {
+                                    maximumOfOtherTrainingDays = true;
+                                  } else {
+                                    maximumOfOtherTrainingDays = false;
+                                  }
+                                  return _buildDropdownTile(
+                                    title: "Inne dni",
+                                    isExpanded: isOtherDaysExpanded,
+                                    days: otherDays,
+                                    isFromPlan: false,
+                                    onExpand: () {
+                                      setState(() {
+                                        isOtherDaysExpanded =
+                                            !isOtherDaysExpanded;
+                                      });
+                                    },
+                                  );
                                 } else {
-                                  maximumOfOtherTrainingDays = false;
+                                  return const SizedBox(height: 0);
                                 }
-                                return _buildDropdownTile(
-                                  title: "Inne dni",
-                                  isExpanded: isOtherDaysExpanded,
-                                  days: otherDays,
-                                  isFromPlan: false,
-                                  onExpand: () {
-                                    setState(() {
-                                      isOtherDaysExpanded =
-                                          !isOtherDaysExpanded;
-                                    });
-                                  },
-                                );
                               default:
                                 return const SizedBox(height: 0);
                             }
@@ -273,7 +285,7 @@ class _PlansPageState extends State<PlansPage> {
   Widget _buildDropdownTile({
     required String title,
     required bool isExpanded,
-    required List<TrainingDay> days,
+    required List<TrainingDayData> days,
     required bool isFromPlan,
     VoidCallback? onExpand,
   }) {
@@ -337,7 +349,7 @@ class _PlansPageState extends State<PlansPage> {
 }
 
 Widget _buildExerciseDayTile(
-    TrainingDay day, BuildContext context, bool isFromPlan) {
+    TrainingDayData day, BuildContext context, bool isFromPlan) {
   return Container(
     margin: const EdgeInsets.symmetric(vertical: 8.0),
     padding: const EdgeInsets.all(16.0),
@@ -352,7 +364,7 @@ Widget _buildExerciseDayTile(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              _getPolishDayAbbreviation(day.day),
+              _getPolishDayAbbreviation(day.name),
               style: const TextStyle(
                 fontSize: 16.0,
                 fontWeight: FontWeight.bold,
@@ -397,7 +409,7 @@ Widget _buildExerciseDayTile(
         ),
         const SizedBox(height: 8.0),
         Text(
-          day.exercises.join(', '),
+          _writeExercises(day.exercises),
           style: const TextStyle(
             fontSize: 14.0,
             color: Colors.grey,
@@ -406,6 +418,19 @@ Widget _buildExerciseDayTile(
       ],
     ),
   );
+}
+
+String _writeExercises(List<ExerciseData> exercises) {
+  String exercisesText = "";
+  String pointer = "";
+  for (var i = 0; i < exercises.length; i++) {
+    if (i > 0) {
+      pointer = ", ";
+    }
+    exercisesText = "$exercisesText$pointer${exercises.elementAt(i).name}";
+  }
+
+  return exercisesText;
 }
 
 String _getPolishDayAbbreviation(String dayOfWeek) {

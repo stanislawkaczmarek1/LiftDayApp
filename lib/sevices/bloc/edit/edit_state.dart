@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:liftday/sevices/bloc/abstract/app_state.dart';
-import 'package:liftday/sevices/crud/tables/training_day.dart';
+import 'package:liftday/sevices/crud/data_package/training_day_data.dart';
 
 @immutable
 abstract class EditState extends AppState {
@@ -12,12 +12,12 @@ class EditStateInit extends EditState {
 }
 
 class EditStateEditTrainingDayFromPlan extends EditState {
-  final TrainingDay trainingDay;
+  final TrainingDayData trainingDay;
   const EditStateEditTrainingDayFromPlan(this.trainingDay);
 }
 
 class EditStateEditOtherTrainingDay extends EditState {
-  final TrainingDay trainingDay;
+  final TrainingDayData trainingDay;
   const EditStateEditOtherTrainingDay(this.trainingDay);
 }
 

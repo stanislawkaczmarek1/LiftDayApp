@@ -9,7 +9,7 @@ import 'package:liftday/sevices/crud/exercise_service.dart';
 import 'package:liftday/sevices/crud/tables/database_date.dart';
 import 'package:liftday/sevices/crud/tables/database_exercise.dart';
 import 'package:liftday/sevices/crud/tables/database_set.dart';
-import 'package:liftday/sevices/crud/tables/training_day.dart';
+import 'package:liftday/sevices/crud/data_package/training_day_data.dart';
 
 class ExerciseTable extends StatefulWidget {
   final DateTime selectedDate;
@@ -26,8 +26,8 @@ class _ExerciseTableState extends State<ExerciseTable> {
   late StreamController<List<ExerciseCard>> _exercisesStreamController;
   List<ExerciseCard> _exerciseCards = [];
 
-  TrainingDay? _selectedDay;
-  TrainingDay? _tempSelectedDay;
+  TrainingDayData? _selectedDay;
+  TrainingDayData? _tempSelectedDay;
 
   void _addExercise(String name, String exerciseType) async {
     if (_date != null) {
@@ -215,13 +215,13 @@ class _ExerciseTableState extends State<ExerciseTable> {
     }
   }
 
-  Future<List<TrainingDay>> _fetchTrainingDaysToRadioList() async {
-    final trainingDays = _exerciseService.getTrainingDays();
+  Future<List<TrainingDayData>> _fetchTrainingDaysToRadioList() async {
+    final trainingDays = _exerciseService.getTrainingDaysFromPlanData();
     return trainingDays;
   }
 
   void _showSelectDayRadioList() async {
-    List<TrainingDay> days = await _fetchTrainingDaysToRadioList();
+    List<TrainingDayData> days = await _fetchTrainingDaysToRadioList();
     if (days.isEmpty) {
       if (mounted) {
         showErrorDialog(context);
@@ -238,15 +238,15 @@ class _ExerciseTableState extends State<ExerciseTable> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     ...days.map((day) {
-                      return RadioListTile<TrainingDay>(
+                      return RadioListTile<TrainingDayData>(
                         title: Text(
-                          day.day,
+                          day.name,
                           style: const TextStyle(fontSize: 16),
                         ),
                         activeColor: Theme.of(context).colorScheme.secondary,
                         value: day,
                         groupValue: _tempSelectedDay,
-                        onChanged: (TrainingDay? value) {
+                        onChanged: (TrainingDayData? value) {
                           setState(() {
                             _tempSelectedDay = value;
                           });

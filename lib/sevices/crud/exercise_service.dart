@@ -2,10 +2,13 @@ import 'dart:async';
 import 'package:intl/intl.dart';
 import 'package:liftday/constants/database.dart';
 import 'package:liftday/sevices/crud/crud_exceptions.dart';
+import 'package:liftday/sevices/crud/data_package/exercise_data.dart';
 import 'package:liftday/sevices/crud/tables/database_date.dart';
-import 'package:liftday/sevices/crud/tables/training_day.dart';
+import 'package:liftday/sevices/crud/data_package/training_day_data.dart';
 import 'package:liftday/sevices/crud/tables/database_exercise.dart';
 import 'package:liftday/sevices/crud/tables/database_set.dart';
+import 'package:liftday/sevices/crud/tables/database_training_day.dart';
+import 'package:liftday/sevices/crud/tables/database_training_day_exercise.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' show join;
@@ -173,7 +176,7 @@ class ExerciseService {
   }
 
   Future<void> createExercisesConfig({
-    required List<TrainingDay> exerciseDays,
+    required List<TrainingDayData> exerciseDays,
     required List<DatabaseDate> dates,
   }) async {
     await _ensureDbIsOpen();
@@ -190,17 +193,17 @@ class ExerciseService {
 
     await db.transaction((txn) async {
       for (var exerciseDay in exerciseDays) {
-        final day = exerciseDay.day;
+        final day = exerciseDay.name;
 
         // Pobierz wszystkie daty odpowiadające dniowi tygodnia
         final datesForDay = datesGroupedByDay[day];
 
         if (datesForDay != null) {
           for (var date in datesForDay) {
-            for (var exerciseName in exerciseDay.exercises) {
+            for (var exercise in exerciseDay.exercises) {
               await txn.insert(exercisesTable, {
                 dateIdColumn: date.id,
-                nameColumn: exerciseName,
+                nameColumn: exercise.name,
               });
             }
           }
@@ -209,123 +212,297 @@ class ExerciseService {
     });
   }
 
-  Future<void> saveTrainingDay(TrainingDay trainingDay, bool isFromPlan) async {
+  Future<DatabaseTrainingDay> createTrainingDay(
+      {required String name, required bool isFromPlan}) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
 
+    final int trainingDayId;
+    final int isFromPlanInt;
     if (isFromPlan) {
-      await db.insert(
-        trainingDaysTable,
-        {
-          dayColumn: trainingDay.day,
-          exercisesColumn: trainingDay.exercises.join(','),
-        },
-      );
+      isFromPlanInt = 1;
+      trainingDayId = await db.insert(trainingDaysTable, {
+        nameColumn: name,
+      });
     } else {
-      await db.insert(
-        trainingDaysTable,
-        {
-          dayColumn: trainingDay.day,
-          exercisesColumn: trainingDay.exercises.join(','),
-          isFromPlanColumn: 0,
-        },
-      );
+      isFromPlanInt = 0;
+      trainingDayId = await db.insert(trainingDaysTable, {
+        nameColumn: name,
+        isFromPlanColumn: isFromPlanInt,
+      });
+    }
+
+    final trainingDay = DatabaseTrainingDay(
+        id: trainingDayId, name: name, isFromPlan: isFromPlanInt);
+
+    return trainingDay;
+  }
+
+  Future<DatabaseTrainingDay> getTrainingDayByName(
+      {required String name}) async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+    final trainingDays = await db.query(
+      trainingDaysTable,
+      limit: 1,
+      where: "$nameColumn = ?",
+      whereArgs: [name],
+    );
+    if (trainingDays.isEmpty) {
+      throw CouldNotFindNote();
+    } else {
+      final trainingDay = DatabaseTrainingDay.fromRow(trainingDays.first);
+      return trainingDay;
     }
   }
 
-  Future<void> editTrainingDay(
-      TrainingDay trainingDay, String currentName) async {
+  Future<List<DatabaseTrainingDay>> getTrainingDaysFromPlan() async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
+    final trainingDays = await db.query(
+      trainingDaysTable,
+      where: "$isFromPlanColumn = ?",
+      whereArgs: [1],
+    );
+
+    return trainingDays
+        .map((dayRow) => DatabaseTrainingDay.fromRow(dayRow))
+        .toList();
+  }
+
+  Future<List<DatabaseTrainingDay>> getTrainingDaysNotFromPlan() async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+    final trainingDays = await db.query(
+      trainingDaysTable,
+      where: "$isFromPlanColumn = ?",
+      whereArgs: [0],
+    );
+
+    return trainingDays
+        .map((dayRow) => DatabaseTrainingDay.fromRow(dayRow))
+        .toList();
+  }
+
+  Future<List<DatabaseTrainingDay>> getTrainingDays() async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+    final trainingDays = await db.query(trainingDaysTable);
+
+    return trainingDays
+        .map((dayRow) => DatabaseTrainingDay.fromRow(dayRow))
+        .toList();
+  }
+
+  Future<void> updateTrainingDayByName({required String name}) async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+
+    //mozna ew stworzyc geter z id i updateowac po id
+
     final updatesCount = await db.update(
       trainingDaysTable,
       {
-        dayColumn: trainingDay.day,
-        exercisesColumn: trainingDay.exercises.join(','),
+        nameColumn: name,
       },
-      where: "$dayColumn = ?",
-      whereArgs: [currentName],
+      where: "name = ?",
+      whereArgs: [name],
     );
+
     if (updatesCount == 0) {
       throw CouldNotUpdateNote();
     }
   }
 
-  Future<void> deleteTrainingDay(TrainingDay trainingDay) async {
+  Future<void> deleteTrainingDayByName({required String name}) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
-    final deletesCount = await db.delete(
+    final deletedCount = await db.delete(
       trainingDaysTable,
-      where: "$dayColumn = ?",
-      whereArgs: [trainingDay.day],
+      where: "$nameColumn = ?",
+      whereArgs: [name],
     );
-    if (deletesCount == 0) {
-      throw CouldNotUpdateNote();
+    if (deletedCount == 0) {
+      throw CouldNotDeleteNote();
     }
   }
 
-  Future<void> deleteTrainingDaysFromPlan() async {
+  Future<DatabaseTrainingDayExercise> createTrainingDayExercise(
+      {required int trainingDayId,
+      required String name,
+      required String type}) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
-    final deletesCount = await db.delete(
-      trainingDaysTable,
-      where: "$isFromPlanColumn = ?",
-      whereArgs: [1],
+
+    final exerciseId = await db.insert(trainingDayExercisesTable, {
+      trainingDayIdColumn: trainingDayId,
+      nameColumn: name,
+      typeColumn: type,
+    });
+
+    final exercise = DatabaseTrainingDayExercise(
+      id: exerciseId,
+      trainingDayId: trainingDayId,
+      name: name,
+      type: type,
     );
-    if (deletesCount == 0) {
-      throw CouldNotUpdateNote();
+
+    return exercise;
+  }
+
+  Future<List<DatabaseTrainingDayExercise>>
+      getTrainingDayExercisesByTrainingDayId(
+          {required int trainingDayId}) async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+    final dbExercises = await db.query(
+      trainingDayExercisesTable,
+      where: "$trainingDayIdColumn = ?",
+      whereArgs: [trainingDayId],
+    );
+
+    return dbExercises
+        .map((exerciseRow) => DatabaseTrainingDayExercise.fromRow(exerciseRow))
+        .toList();
+  }
+
+  Future<void> deleteTrainingDayExercisesByTrainingDayId(
+      {required int trainingDayId}) async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+    await db.delete(
+      trainingDayExercisesTable,
+      where: "$trainingDayIdColumn = ?",
+      whereArgs: [trainingDayId],
+    );
+    //pytanie czy to powinno sie zawsze wywolywac w metodach jesli mamy pusta liste cwiczen
+    //wczesniej rzucalem wyjatek jesli liczba usunietych jest 0 - zmuszalo mnie to do ominiecia takiej sytaucji
+  }
+
+  Future<void> saveTrainingDayData(
+      TrainingDayData trainingDayData, bool isFromPlan) async {
+    final dbTrainingDay = await createTrainingDay(
+        name: trainingDayData.name, isFromPlan: isFromPlan);
+
+    for (var exercise in trainingDayData.exercises) {
+      await createTrainingDayExercise(
+          trainingDayId: dbTrainingDay.id,
+          name: exercise.name,
+          type: exercise.type);
     }
   }
 
-  Future<List<TrainingDay>> getTrainingDays() async {
-    await _ensureDbIsOpen();
-    final db = _getDatabaseOrThrow();
-    final List<Map<String, dynamic>> maps = await db.query(trainingDaysTable);
+  Future<void> editTrainingDayData(
+      TrainingDayData trainingDay, String currentName) async {
+    final dbDay = await getTrainingDayByName(name: currentName);
 
-    return List.generate(maps.length, (i) {
-      return TrainingDay(
-        day: maps[i][dayColumn],
-        exercises: (maps[i][exercisesColumn] as String).split(','),
-        isFromPlan: maps[i][isFromPlanColumn],
-      );
-    });
+    await deleteTrainingDayExercisesByTrainingDayId(trainingDayId: dbDay.id);
+
+    for (var newExercise in trainingDay.exercises) {
+      await createTrainingDayExercise(
+          trainingDayId: dbDay.id,
+          name: newExercise.name,
+          type: newExercise.type);
+    }
+
+    await updateTrainingDayByName(name: trainingDay.name);
+
+    //jesli wiemy z jakiego dnia pochodza cwiczenia, a znamy zawsze bo nazwy dni sa unikatowe
+    //to mozemy usunac cwiczenia danego dnia a potem dodac nowe przeslane w data (zawsze przysylamy wszystkie)
+
+    //problem by byl jesli chcielibysmy edytowac cwiczenie bez konkretnego dnia treningowego
+    //co jest sprzeczne z zamiarem tabeli TRAINING_DAY_exercises
   }
 
-  Future<List<TrainingDay>> getOtherTrainingDays() async {
-    await _ensureDbIsOpen();
-    final db = _getDatabaseOrThrow();
+  Future<void> deleteTrainingDayDataByName(
+      TrainingDayData trainingDayData) async {
+    final day = await getTrainingDayByName(name: trainingDayData.name);
+    if (trainingDayData.exercises.isNotEmpty) {
+      await deleteTrainingDayExercisesByTrainingDayId(trainingDayId: day.id);
+    }
+    await deleteTrainingDayByName(name: trainingDayData.name);
+  }
 
-    final List<Map<String, dynamic>> maps = await db.query(
-      trainingDaysTable,
-      where: '$isFromPlanColumn = ?',
-      whereArgs: [0],
-    );
+  Future<void> deleteTrainingDaysDataFromPlan() async {
+    final days = await getTrainingDaysFromPlan();
 
-    return List.generate(maps.length, (i) {
-      return TrainingDay(
-        day: maps[i][dayColumn],
-        exercises: (maps[i][exercisesColumn] as String).split(','),
-        isFromPlan: maps[i][isFromPlanColumn],
-      );
-    });
+    for (var day in days) {
+      await deleteTrainingDayExercisesByTrainingDayId(trainingDayId: day.id);
+      await deleteTrainingDayByName(name: day.name);
+    }
+  }
+
+  Future<List<TrainingDayData>> getTrainingDaysFromPlanData() async {
+    final days = await getTrainingDaysFromPlan();
+
+    List<TrainingDayData> data = [];
+    for (var day in days) {
+      final dbExercises =
+          await getTrainingDayExercisesByTrainingDayId(trainingDayId: day.id);
+
+      List<ExerciseData> exercises = [];
+      for (var dbExericse in dbExercises) {
+        exercises.add(ExerciseData(name: dbExericse.name));
+      }
+
+      data.add(TrainingDayData(name: day.name, exercises: exercises));
+    }
+    return data;
+  }
+
+  Future<List<TrainingDayData>> getTrainingDaysNotFromPlanData() async {
+    final days = await getTrainingDaysNotFromPlan();
+
+    List<TrainingDayData> data = [];
+    for (var day in days) {
+      final dbExercises =
+          await getTrainingDayExercisesByTrainingDayId(trainingDayId: day.id);
+
+      List<ExerciseData> exercises = [];
+      for (var dbExericse in dbExercises) {
+        exercises.add(ExerciseData(name: dbExericse.name));
+      }
+
+      data.add(TrainingDayData(name: day.name, exercises: exercises));
+    }
+    return data;
+  }
+
+  Future<List<TrainingDayData>> getTrainingDaysData() async {
+    final days = await getTrainingDays();
+
+    List<TrainingDayData> data = [];
+    for (var day in days) {
+      final dbExercises =
+          await getTrainingDayExercisesByTrainingDayId(trainingDayId: day.id);
+
+      List<ExerciseData> exercises = [];
+      for (var dbExericse in dbExercises) {
+        exercises.add(ExerciseData(name: dbExericse.name));
+      }
+
+      data.add(TrainingDayData(
+          name: day.name, exercises: exercises, isFromPlan: day.isFromPlan));
+    }
+    return data;
   }
 
   Future<List<DatabaseExercise>> createExercisesFromTrainingDayInGivenDate({
-    required TrainingDay trainingDay,
+    required TrainingDayData trainingDay,
     required int dateId,
   }) async {
     List<DatabaseExercise> exercises = [];
 
     for (var i = 0; i < trainingDay.exercises.length; i++) {
       exercises.add(await createExercise(
-          dateId: dateId, name: trainingDay.exercises.elementAt(i)));
+          dateId: dateId, name: trainingDay.exercises.elementAt(i).name));
     }
 
     return exercises;
   }
 
   Future<void> updateTrainingDayFromTomorrowToEndOfDates(
-      TrainingDay trainingDay) async {
+      TrainingDayData trainingDay) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
 
@@ -339,7 +516,7 @@ class ExerciseService {
         where: "$digitDateColumn >= ? AND $dayColumn = ?",
         whereArgs: [
           tomorrowString,
-          trainingDay.day
+          trainingDay.name
         ], // Porównujemy na podstawie stringa ISO8601
       );
 
@@ -378,7 +555,7 @@ class ExerciseService {
             exercisesTable,
             {
               dateIdColumn: dateId,
-              nameColumn: exercise,
+              nameColumn: exercise.name,
             },
           );
         }
@@ -776,6 +953,7 @@ class ExerciseService {
       await db.execute(createExerciseTable);
       await db.execute(createSetsTable);
       await db.execute(createTrainingDaysTable);
+      await db.execute(createTrainingDayExercisesTable);
 
       //await _cacheNotes();
     } on MissingPlatformDirectoryException {

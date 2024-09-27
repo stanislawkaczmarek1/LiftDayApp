@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:liftday/dialogs/error_dialog.dart';
+import 'package:liftday/sevices/crud/data_package/exercise_data.dart';
 import 'package:liftday/view/widgets/ui_elements.dart';
 
-typedef ExercisesCallback = void Function(List<String> exercisesFromTable);
+typedef ExercisesCallback = void Function(
+    List<ExerciseData> exercisesFromTable);
 
 class SimpleExerciseTable extends StatefulWidget {
-  final List<String>? exercises;
+  final List<ExerciseData>? exercises;
   final ExercisesCallback callback;
   const SimpleExerciseTable(
       {super.key, required this.callback, this.exercises});
@@ -15,35 +16,27 @@ class SimpleExerciseTable extends StatefulWidget {
 }
 
 class _SimpleExerciseTableState extends State<SimpleExerciseTable> {
-  List<String> exercises = [];
+  List<ExerciseData> exercises = [];
 
   void _getExercises() {
-    List<String> data = exercises;
+    List<ExerciseData> data = exercises;
     setState(() {
       widget.callback(data);
     });
   }
 
-  bool _addExercise(String name) {
-    bool added = false;
+  void _addExercise(ExerciseData exerciseData) {
     if (exercises.length >= 10) {
-      added = false;
-      return added;
+      return;
     }
     setState(() {
-      if (exercises.contains(name)) {
-        added = false;
-      } else {
-        exercises.add(name);
-        added = true;
-      }
+      exercises.add(exerciseData);
     });
-    return added;
   }
 
-  void _editExercise(int index, String newName) {
+  void _editExercise(int index, ExerciseData exerciseData) {
     setState(() {
-      exercises[index] = newName;
+      exercises[index] = exerciseData;
       _getExercises();
     });
   }
@@ -79,13 +72,9 @@ class _SimpleExerciseTableState extends State<SimpleExerciseTable> {
               child: const Text('Dodaj'),
               onPressed: () {
                 if (exerciseName.isNotEmpty) {
-                  if (_addExercise(exerciseName)) {
-                    _getExercises();
-                    Navigator.of(context).pop();
-                  } else {
-                    Navigator.of(context).pop();
-                    showErrorDialog(context);
-                  }
+                  _addExercise(ExerciseData(name: exerciseName));
+                  _getExercises();
+                  Navigator.of(context).pop();
                 }
               },
             ),
@@ -96,7 +85,7 @@ class _SimpleExerciseTableState extends State<SimpleExerciseTable> {
   }
 
   void _showEditExerciseDialog(int index) {
-    String updatedExerciseName = exercises[index];
+    String updatedExerciseName = exercises[index].name;
     showDialog(
       context: context,
       builder: (context) {
@@ -107,7 +96,7 @@ class _SimpleExerciseTableState extends State<SimpleExerciseTable> {
               updatedExerciseName = value;
             },
             decoration: const InputDecoration(hintText: "Edytuj ćwiczenie"),
-            controller: TextEditingController(text: exercises[index]),
+            controller: TextEditingController(text: exercises[index].name),
           ),
           actions: [
             TextButton(
@@ -120,7 +109,7 @@ class _SimpleExerciseTableState extends State<SimpleExerciseTable> {
               child: const Text('Zapisz'),
               onPressed: () {
                 if (updatedExerciseName.isNotEmpty) {
-                  _editExercise(index, updatedExerciseName);
+                  _editExercise(index, ExerciseData(name: updatedExerciseName));
                   Navigator.of(context).pop();
                 }
               },
@@ -170,7 +159,7 @@ class _SimpleExerciseTableState extends State<SimpleExerciseTable> {
 
 class SimpleExerciseCard extends StatelessWidget {
   final int index;
-  final String exercise;
+  final ExerciseData exercise;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
@@ -195,7 +184,7 @@ class SimpleExerciseCard extends StatelessWidget {
           ),
         ),
         title: Text(
-          exercise,
+          exercise.name,
           style: const TextStyle(fontSize: 18),
         ),
         trailing: PopupMenuButton<String>(

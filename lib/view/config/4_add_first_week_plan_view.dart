@@ -3,7 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:liftday/sevices/bloc/config/config_bloc.dart';
 import 'package:liftday/sevices/bloc/config/config_event.dart';
 import 'package:liftday/sevices/bloc/config/config_state.dart';
-import 'package:liftday/sevices/crud/tables/training_day.dart';
+import 'package:liftday/sevices/crud/data_package/exercise_data.dart';
+import 'package:liftday/sevices/crud/data_package/training_day_data.dart';
 import 'package:liftday/view/widgets/simple_exercise_table.dart';
 import 'package:liftday/view/widgets/ui_elements.dart';
 
@@ -18,7 +19,7 @@ class _AddFirstWeekPlanViewState extends State<AddFirstWeekPlanView> {
   String dayOfWeek = "";
   Key _exerciseTableKey = UniqueKey();
   late SimpleExerciseTable _exerciseTable;
-  List<String> exercises = [];
+  List<ExerciseData> exercises = [];
 
   String _getPolishDayAbbreviation(String dayOfWeek) {
     switch (dayOfWeek) {
@@ -45,7 +46,7 @@ class _AddFirstWeekPlanViewState extends State<AddFirstWeekPlanView> {
   void initState() {
     _exerciseTable = SimpleExerciseTable(
       key: _exerciseTableKey,
-      callback: (List<String> exercisesFromTable) {
+      callback: (List<ExerciseData> exercisesFromTable) {
         exercises = exercisesFromTable;
       },
     );
@@ -70,7 +71,7 @@ class _AddFirstWeekPlanViewState extends State<AddFirstWeekPlanView> {
                     UniqueKey(); // Wymusza przebudowę ExerciseTable
                 _exerciseTable = SimpleExerciseTable(
                   key: _exerciseTableKey,
-                  callback: (List<String> exercisesFromTable) {
+                  callback: (List<ExerciseData> exercisesFromTable) {
                     exercises = exercisesFromTable;
                   },
                 );
@@ -85,7 +86,7 @@ class _AddFirstWeekPlanViewState extends State<AddFirstWeekPlanView> {
                 String day = dayOfWeek;
                 context.read<ConfigBloc>().add(
                       ConfigEventConfirmExercisesInDay(
-                        TrainingDay(day: day, exercises: exercises),
+                        TrainingDayData(name: day, exercises: exercises),
                       ),
                     );
                 setState(() {
@@ -93,7 +94,7 @@ class _AddFirstWeekPlanViewState extends State<AddFirstWeekPlanView> {
                       UniqueKey(); // Wymusza przebudowę ExerciseTable
                   _exerciseTable = SimpleExerciseTable(
                     key: _exerciseTableKey,
-                    callback: (List<String> exercisesFromTable) {
+                    callback: (List<ExerciseData> exercisesFromTable) {
                       exercises = exercisesFromTable;
                     },
                   );
