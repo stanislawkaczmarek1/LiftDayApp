@@ -3,25 +3,22 @@ import 'package:liftday/constants/database.dart';
 class DatabaseExercise {
   final int id;
   final int dateId;
-  final String name;
-  final String type; //"reps" lub "duration"
+  final int exerciseInfoId;
 
   DatabaseExercise({
     required this.id,
     required this.dateId,
-    required this.name,
-    this.type = "reps",
+    required this.exerciseInfoId,
   });
 
   DatabaseExercise.fromRow(Map<String, Object?> map)
       : id = map[idColumn] as int,
         dateId = map[dateIdColumn] as int,
-        name = map[nameColumn] as String,
-        type = map[typeColumn] as String;
+        exerciseInfoId = map[exerciseInfoIdColumn] as int;
 
   @override
   String toString() =>
-      "Exercise, ID = $id, dateID = $dateId, name = $name, type = $type";
+      "Exercise, ID = $id, dateID = $dateId, exerciseInfoId = $exerciseInfoId";
 
   @override
   bool operator ==(covariant DatabaseExercise other) => id == other.id;

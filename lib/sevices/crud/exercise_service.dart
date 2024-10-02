@@ -6,6 +6,7 @@ import 'package:liftday/sevices/crud/data_package/exercise_data.dart';
 import 'package:liftday/sevices/crud/tables/database_date.dart';
 import 'package:liftday/sevices/crud/data_package/training_day_data.dart';
 import 'package:liftday/sevices/crud/tables/database_exercise.dart';
+import 'package:liftday/sevices/crud/tables/database_exercise_info.dart';
 import 'package:liftday/sevices/crud/tables/database_set.dart';
 import 'package:liftday/sevices/crud/tables/database_training_day.dart';
 import 'package:liftday/sevices/crud/tables/database_training_day_exercise.dart';
@@ -135,41 +136,85 @@ class ExerciseService {
     return dates;
   }
 
-  Future<DatabaseExercise> createExercise(
-      {required int dateId, required String name}) async {
+  Future<DatabaseExerciseInfo?> checkIfExerciseInfoExistAndReturn(
+      {required String name, required String type}) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
 
-    final exerciseId = await db.insert(exercisesTable, {
-      dateIdColumn: dateId,
-      nameColumn: name,
-    });
-
-    final exercise = DatabaseExercise(
-      id: exerciseId,
-      dateId: dateId,
-      name: name,
+    final exercisesInfo = await db.query(
+      exercisesInfoTable,
+      limit: 1,
+      where: "$nameColumn = ? AND $typeColumn = ?",
+      whereArgs: [name, type],
     );
-
-    return exercise;
+    if (exercisesInfo.isEmpty) {
+      return null;
+    } else {
+      return DatabaseExerciseInfo.fromRow(exercisesInfo.first);
+    }
   }
 
-  Future<DatabaseExercise> createDurationExercise(
-      {required int dateId, required String name}) async {
+  Future<DatabaseExerciseInfo> createExerciseInfo(
+      {required String name, required String type}) async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+
+    final exerciseInfoId = await db.insert(exercisesInfoTable, {
+      nameColumn: name,
+      typeColumn: type,
+    });
+    final exerciseInfo = DatabaseExerciseInfo(
+      id: exerciseInfoId,
+      name: name,
+      type: type,
+    );
+    return exerciseInfo;
+  }
+
+  Future<DatabaseExerciseInfo> getExerciseInfo({required int id}) async {
+    //wrzedzie gdzie uzywam tej metody zwaracm tylko id z bazy danych a powinienem tez z bazy cwiczen TO DO
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+    final exercisesInfo = await db.query(
+      exercisesInfoTable,
+      limit: 1,
+      where: "$idColumn = ?",
+      whereArgs: [id],
+    );
+    if (exercisesInfo.isEmpty) {
+      throw CouldNotFindNote();
+    } else {
+      final exerciseInfo = DatabaseExerciseInfo.fromRow(exercisesInfo.first);
+      return exerciseInfo;
+    }
+  }
+
+  Future<List<DatabaseExerciseInfo>> getAllExercisesInfo() async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+    final exercisesInfo = await db.query(
+      exercisesInfoTable,
+    );
+
+    return exercisesInfo
+        .map((exerciseInfoRow) => DatabaseExerciseInfo.fromRow(exerciseInfoRow))
+        .toList();
+  }
+
+  Future<DatabaseExercise> createExercise(
+      {required int dateId, required int exerciseInfoId}) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
 
     final exerciseId = await db.insert(exercisesTable, {
       dateIdColumn: dateId,
-      nameColumn: name,
-      typeColumn: "duration",
+      exerciseInfoIdColumn: exerciseInfoId,
     });
 
     final exercise = DatabaseExercise(
       id: exerciseId,
       dateId: dateId,
-      name: name,
-      type: "duration",
+      exerciseInfoId: exerciseInfoId,
     );
 
     return exercise;
@@ -191,25 +236,52 @@ class ExerciseService {
       datesGroupedByDay[date.day]!.add(date);
     }
 
-    await db.transaction((txn) async {
-      for (var exerciseDay in exerciseDays) {
-        final day = exerciseDay.name;
+    for (var exerciseDay in exerciseDays) {
+      final day = exerciseDay.name;
 
-        // Pobierz wszystkie daty odpowiadające dniowi tygodnia
-        final datesForDay = datesGroupedByDay[day];
+      // Pobierz wszystkie daty odpowiadające dniowi tygodnia
+      final datesForDay = datesGroupedByDay[day];
 
-        if (datesForDay != null) {
-          for (var date in datesForDay) {
-            for (var exercise in exerciseDay.exercises) {
-              await txn.insert(exercisesTable, {
+      if (datesForDay != null) {
+        for (var date in datesForDay) {
+          for (var exercise in exerciseDay.exercises) {
+            if (exercise.infoId == null &&
+                exercise.name != null &&
+                exercise.type != null) {
+              //uzytkownik wpisal wlasne cwiczenie
+              // sprawdzenie czy wpisane cwiczenie znajduje sie juz w bazie
+              final result = await checkIfExerciseInfoExistAndReturn(
+                name: exercise.name!,
+                type: exercise.type!,
+              );
+              if (result == null) {
+                //nie ma w bazie wiec tworzymy i dodajemy stworzone
+                final info = await createExerciseInfo(
+                    name: exercise.name!, type: exercise.type!);
+                await db.insert(exercisesTable, {
+                  dateIdColumn: date.id,
+                  exerciseInfoIdColumn: info.id,
+                });
+              } else {
+                // jest w bazie wiec nie tworzymy drugiego i dodajemy to ktore jest
+                await db.insert(exercisesTable, {
+                  dateIdColumn: date.id,
+                  exerciseInfoIdColumn: result.id,
+                });
+              }
+            } else if (exercise.infoId != null &&
+                exercise.name == null &&
+                exercise.type == null) {
+              //uzytkownik wybral cwiczenie z listy
+              await db.insert(exercisesTable, {
                 dateIdColumn: date.id,
-                nameColumn: exercise.name,
+                exerciseInfoIdColumn: exercise.infoId,
               });
             }
           }
         }
       }
-    });
+    }
   }
 
   Future<DatabaseTrainingDay> createTrainingDay(
@@ -328,23 +400,19 @@ class ExerciseService {
   }
 
   Future<DatabaseTrainingDayExercise> createTrainingDayExercise(
-      {required int trainingDayId,
-      required String name,
-      required String type}) async {
+      {required int trainingDayId, required int exerciseInfoId}) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
 
     final exerciseId = await db.insert(trainingDayExercisesTable, {
       trainingDayIdColumn: trainingDayId,
-      nameColumn: name,
-      typeColumn: type,
+      exerciseInfoIdColumn: exerciseInfoId,
     });
 
     final exercise = DatabaseTrainingDayExercise(
       id: exerciseId,
       trainingDayId: trainingDayId,
-      name: name,
-      type: type,
+      exerciseInfoId: exerciseInfoId,
     );
 
     return exercise;
@@ -385,10 +453,32 @@ class ExerciseService {
         name: trainingDayData.name, isFromPlan: isFromPlan);
 
     for (var exercise in trainingDayData.exercises) {
-      await createTrainingDayExercise(
-          trainingDayId: dbTrainingDay.id,
-          name: exercise.name,
-          type: exercise.type);
+      if (exercise.infoId == null &&
+          exercise.name != null &&
+          exercise.type != null) {
+        //uzytkownik wpisal wlasne cwiczenie
+        final result = await checkIfExerciseInfoExistAndReturn(
+          name: exercise.name!,
+          type: exercise.type!,
+        );
+        if (result == null) {
+          //nie ma w bazie wiec tworzymy i dodajemy stworzone
+          final info = await createExerciseInfo(
+              name: exercise.name!, type: exercise.type!);
+          await createTrainingDayExercise(
+              trainingDayId: dbTrainingDay.id, exerciseInfoId: info.id);
+        } else {
+          // jest w bazie wiec nie tworzymy drugiego i dodajemy to ktore jest
+          await createTrainingDayExercise(
+              trainingDayId: dbTrainingDay.id, exerciseInfoId: result.id);
+        }
+      } else if (exercise.infoId != null &&
+          exercise.name == null &&
+          exercise.type == null) {
+        //uzytkownik wybral cwiczenie z listy
+        await createTrainingDayExercise(
+            trainingDayId: dbTrainingDay.id, exerciseInfoId: exercise.infoId!);
+      }
     }
   }
 
@@ -399,10 +489,33 @@ class ExerciseService {
     await deleteTrainingDayExercisesByTrainingDayId(trainingDayId: dbDay.id);
 
     for (var newExercise in trainingDay.exercises) {
-      await createTrainingDayExercise(
-          trainingDayId: dbDay.id,
-          name: newExercise.name,
-          type: newExercise.type);
+      if (newExercise.infoId == null &&
+          newExercise.name != null &&
+          newExercise.type != null) {
+        //uzytkownik wpisal wlasne cwiczenie
+        //TO DO SPrawdzenie
+        final result = await checkIfExerciseInfoExistAndReturn(
+          name: newExercise.name!,
+          type: newExercise.type!,
+        );
+        if (result == null) {
+          //nie ma w bazie wiec tworzymy i dodajemy stworzone
+          final info = await createExerciseInfo(
+              name: newExercise.name!, type: newExercise.type!);
+          await createTrainingDayExercise(
+              trainingDayId: dbDay.id, exerciseInfoId: info.id);
+        } else {
+          // jest w bazie wiec nie tworzymy drugiego i dodajemy to ktore jest
+          await createTrainingDayExercise(
+              trainingDayId: dbDay.id, exerciseInfoId: result.id);
+        }
+      } else if (newExercise.infoId != null &&
+          newExercise.name == null &&
+          newExercise.type == null) {
+        //uzytkownik wybral cwiczenie z listy
+        await createTrainingDayExercise(
+            trainingDayId: dbDay.id, exerciseInfoId: newExercise.infoId!);
+      }
     }
 
     await updateTrainingDayByName(name: trainingDay.name);
@@ -442,7 +555,12 @@ class ExerciseService {
 
       List<ExerciseData> exercises = [];
       for (var dbExericse in dbExercises) {
-        exercises.add(ExerciseData(name: dbExericse.name));
+        exercises.add(ExerciseData(
+          name: null,
+          type: null,
+          infoId: dbExericse.id,
+        )); //wszystkie training Day exercises maja exercise info id
+        //wiec kiedy zwracam exercise data to musi miec tylko ID (mozna by ogarnac zwracanie List<DatabaseExerciseInfo> zamiast tego)
       }
 
       data.add(TrainingDayData(name: day.name, exercises: exercises));
@@ -460,7 +578,11 @@ class ExerciseService {
 
       List<ExerciseData> exercises = [];
       for (var dbExericse in dbExercises) {
-        exercises.add(ExerciseData(name: dbExericse.name));
+        exercises.add(ExerciseData(
+          name: null,
+          type: null,
+          infoId: dbExericse.id,
+        ));
       }
 
       data.add(TrainingDayData(name: day.name, exercises: exercises));
@@ -478,7 +600,11 @@ class ExerciseService {
 
       List<ExerciseData> exercises = [];
       for (var dbExericse in dbExercises) {
-        exercises.add(ExerciseData(name: dbExericse.name));
+        exercises.add(ExerciseData(
+          name: null,
+          type: null,
+          infoId: dbExericse.id,
+        ));
       }
 
       data.add(TrainingDayData(
@@ -494,8 +620,12 @@ class ExerciseService {
     List<DatabaseExercise> exercises = [];
 
     for (var i = 0; i < trainingDay.exercises.length; i++) {
-      exercises.add(await createExercise(
-          dateId: dateId, name: trainingDay.exercises.elementAt(i).name));
+      final exerciseInfoId = trainingDay.exercises.elementAt(i).infoId;
+      if (exerciseInfoId != null) {
+        //nie moze byc null bo w radio liscie sa ExerciseData w takim formacie (null, null, id)
+        exercises.add(await createExercise(
+            dateId: dateId, exerciseInfoId: exerciseInfoId));
+      }
     }
 
     return exercises;
@@ -509,58 +639,82 @@ class ExerciseService {
     final tomorrow = DateTime.now().add(const Duration(days: 1));
     final tomorrowString = tomorrow.toIso8601String().split('T')[0];
 
-    await db.transaction((txn) async {
-      // 1. Pobierz wszystkie daty od jutra do końca z tabeli `dates`
-      final datesToRemove = await txn.query(
-        datesTable,
-        where: "$digitDateColumn >= ? AND $dayColumn = ?",
-        whereArgs: [
-          tomorrowString,
-          trainingDay.name
-        ], // Porównujemy na podstawie stringa ISO8601
+    // 1. Pobierz wszystkie daty od jutra do końca z tabeli `dates`
+    final datesToRemove = await db.query(
+      datesTable,
+      where: "$digitDateColumn >= ? AND $dayColumn = ?",
+      whereArgs: [
+        tomorrowString,
+        trainingDay.name
+      ], // Porównujemy na podstawie stringa ISO8601
+    );
+
+    // Jeśli nie ma dat do usunięcia, zakończ operację
+    if (datesToRemove.isEmpty) {
+      return;
+    }
+
+    // 2. Dla każdej daty usuń wszystkie ćwiczenia i powiązane zestawy
+    for (var date in datesToRemove) {
+      final dateId = date[idColumn];
+
+      // Usuń zestawy powiązane z ćwiczeniami
+      await db.delete(
+        setsTable,
+        where:
+            "$exerciseIdColumn IN (SELECT $idColumn FROM $exercisesTable WHERE $dateIdColumn = ?)",
+        whereArgs: [dateId],
       );
 
-      // Jeśli nie ma dat do usunięcia, zakończ operację
-      if (datesToRemove.isEmpty) {
-        return;
-      }
+      // Usuń ćwiczenia dla danej daty
+      await db.delete(
+        exercisesTable,
+        where: "$dateIdColumn = ?",
+        whereArgs: [dateId],
+      );
+    }
 
-      // 2. Dla każdej daty usuń wszystkie ćwiczenia i powiązane zestawy
-      for (var date in datesToRemove) {
-        final dateId = date[idColumn];
+    // 3. Dodaj nowe ćwiczenia dla każdej daty z tego samego zakresu
+    for (var date in datesToRemove) {
+      final dateId = date[idColumn];
 
-        // Usuń zestawy powiązane z ćwiczeniami
-        await txn.delete(
-          setsTable,
-          where:
-              "$exerciseIdColumn IN (SELECT $idColumn FROM $exercisesTable WHERE $dateIdColumn = ?)",
-          whereArgs: [dateId],
-        );
-
-        // Usuń ćwiczenia dla danej daty
-        await txn.delete(
-          exercisesTable,
-          where: "$dateIdColumn = ?",
-          whereArgs: [dateId],
-        );
-      }
-
-      // 3. Dodaj nowe ćwiczenia dla każdej daty z tego samego zakresu
-      for (var date in datesToRemove) {
-        final dateId = date[idColumn];
-
-        for (var exercise in trainingDay.exercises) {
-          // Dodaj ćwiczenie dla danej daty
-          await txn.insert(
-            exercisesTable,
-            {
-              dateIdColumn: dateId,
-              nameColumn: exercise.name,
-            },
+      for (var exercise in trainingDay.exercises) {
+        // Dodaj ćwiczenie dla danej daty
+        if (exercise.infoId == null &&
+            exercise.name != null &&
+            exercise.type != null) {
+          //uzytkownik wpisal wlasne cwiczenie
+          // sprawdzenie czy wpisane cwiczenie znajduje sie juz w bazie
+          final result = await checkIfExerciseInfoExistAndReturn(
+            name: exercise.name!,
+            type: exercise.type!,
           );
+          if (result == null) {
+            //nie ma w bazie wiec tworzymy i dodajemy stworzone
+            final info = await createExerciseInfo(
+                name: exercise.name!, type: exercise.type!);
+            await db.insert(exercisesTable, {
+              dateIdColumn: dateId,
+              exerciseInfoIdColumn: info.id,
+            });
+          } else {
+            // jest w bazie wiec nie tworzymy drugiego i dodajemy to ktore jest
+            await db.insert(exercisesTable, {
+              dateIdColumn: dateId,
+              exerciseInfoIdColumn: result.id,
+            });
+          }
+        } else if (exercise.infoId != null &&
+            exercise.name == null &&
+            exercise.type == null) {
+          //uzytkownik wybral cwiczenie z listy
+          await db.insert(exercisesTable, {
+            dateIdColumn: dateId,
+            exerciseInfoIdColumn: exercise.infoId,
+          });
         }
       }
-    });
+    }
   }
 
   Future<void> deleteExercisesAndSetsFromTomorrowToEndOfDates() async {
@@ -669,16 +823,18 @@ class ExerciseService {
     return exercises.map((row) => DatabaseExercise.fromRow(row)).toList();
   }
 
-  Future<DatabaseExercise?> getExerciseByDateAndName(
-      {required int dateId, required String name}) async {
+  Future<DatabaseExercise?> getExerciseByDateAndInfoId(
+      //potencjalny problem z duplikatami
+      {required int dateId,
+      required int infoId}) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
 
     final results = await db.query(
       exercisesTable,
       limit: 1,
-      where: "$dateIdColumn = ? AND $nameColumn = ?",
-      whereArgs: [dateId, name],
+      where: "$dateIdColumn = ? AND $exerciseInfoIdColumn = ?",
+      whereArgs: [dateId, infoId],
     );
     if (results.isEmpty) {
       return null;
@@ -874,52 +1030,52 @@ class ExerciseService {
     }
   }
 
-  Future<String?> getPreviousSetData(
-      int dateId, String exercise, int setIndex) async {
+  Future<String?> getPreviousRepsSetData(
+      int dateId, int exerciseInfoId, int setIndex) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
+    final result = await db.rawQuery('''
+    SELECT s.weight, s.reps
+    FROM $setsTable s
+    JOIN $exercisesTable e ON e.id = s.exercise_id
+    JOIN $datesTable d ON d.id = e.date_id
+    WHERE d.id < ? AND e.$exerciseInfoIdColumn = ? AND s.set_index = ?
+    ORDER BY d.id DESC
+    LIMIT 1;
+  ''', [dateId, exerciseInfoId, setIndex]);
 
-    final dates = await db.rawQuery('''
-    SELECT id FROM $datesTable
-    WHERE id < ?
-    ORDER BY id DESC
-    ''', [dateId]);
-
-    if (dates.isEmpty) {
+    if (result.isNotEmpty) {
+      final set = result.first;
+      final weight = set['weight'];
+      final reps = set['reps'];
+      return '$weight x $reps';
+    } else {
       return null;
     }
+  }
 
-    for (final date in dates) {
-      final dateIdFromDB = date['id'];
+  Future<String?> getPreviousDurationSetData(
+      int dateId, int exerciseInfoId, int setIndex) async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+    final result = await db.rawQuery('''
+    SELECT s.weight, s.duration
+    FROM $setsTable s
+    JOIN $exercisesTable e ON e.id = s.exercise_id
+    JOIN $datesTable d ON d.id = e.date_id
+    WHERE d.id < ? AND e.$exerciseInfoIdColumn = ? AND s.set_index = ?
+    ORDER BY d.id DESC
+    LIMIT 1;
+  ''', [dateId, exerciseInfoId, setIndex]);
 
-      final exercises = await db.rawQuery('''
-      SELECT id FROM $exercisesTable
-      WHERE date_id = ? AND name = ?
-    ''', [dateIdFromDB, exercise]);
-
-      if (exercises.isEmpty) {
-        continue;
-      }
-
-      for (final exerciseRow in exercises) {
-        final exerciseId = exerciseRow['id'];
-
-        final sets = await db.rawQuery('''
-        SELECT weight, reps FROM $setsTable
-        WHERE exercise_id = ? AND set_index = ?
-      ''', [exerciseId, setIndex]);
-
-        if (sets.isNotEmpty) {
-          final set = sets.first;
-          final weight = set['weight'];
-          final reps = set['reps'];
-
-          return '$weight x $reps';
-        }
-      }
+    if (result.isNotEmpty) {
+      final set = result.first;
+      final weight = set['weight'];
+      final duration = set['duration'];
+      return '$weight x ${duration}s';
+    } else {
+      return null;
     }
-
-    return null;
   }
 
   Database _getDatabaseOrThrow() {
@@ -950,6 +1106,7 @@ class ExerciseService {
       _db = db;
 
       await db.execute(createDatesTable);
+      await db.execute(createExercisesInfoTable);
       await db.execute(createExerciseTable);
       await db.execute(createSetsTable);
       await db.execute(createTrainingDaysTable);

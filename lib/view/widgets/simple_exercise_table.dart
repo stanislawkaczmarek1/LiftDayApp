@@ -72,7 +72,8 @@ class _SimpleExerciseTableState extends State<SimpleExerciseTable> {
               child: const Text('Dodaj'),
               onPressed: () {
                 if (exerciseName.isNotEmpty) {
-                  _addExercise(ExerciseData(name: exerciseName));
+                  _addExercise(ExerciseData(
+                      name: exerciseName, type: "reps", infoId: null));
                   _getExercises();
                   Navigator.of(context).pop();
                 }
@@ -85,7 +86,7 @@ class _SimpleExerciseTableState extends State<SimpleExerciseTable> {
   }
 
   void _showEditExerciseDialog(int index) {
-    String updatedExerciseName = exercises[index].name;
+    String updatedExerciseName = exercises[index].name ?? "";
     showDialog(
       context: context,
       builder: (context) {
@@ -109,7 +110,12 @@ class _SimpleExerciseTableState extends State<SimpleExerciseTable> {
               child: const Text('Zapisz'),
               onPressed: () {
                 if (updatedExerciseName.isNotEmpty) {
-                  _editExercise(index, ExerciseData(name: updatedExerciseName));
+                  _editExercise(
+                      index,
+                      ExerciseData(
+                          name: updatedExerciseName,
+                          type: "reps",
+                          infoId: null));
                   Navigator.of(context).pop();
                 }
               },
@@ -184,7 +190,9 @@ class SimpleExerciseCard extends StatelessWidget {
           ),
         ),
         title: Text(
-          exercise.name,
+          exercise.name ??
+              exercise.infoId
+                  .toString(), //bedzie trzeba pobrac nazwe i typ jesli cwicznie bedzie z listy
           style: const TextStyle(fontSize: 18),
         ),
         trailing: PopupMenuButton<String>(

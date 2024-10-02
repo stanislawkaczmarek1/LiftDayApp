@@ -29,34 +29,68 @@ class _ExerciseTableState extends State<ExerciseTable> {
   TrainingDayData? _selectedDay;
   TrainingDayData? _tempSelectedDay;
 
-  void _addExercise(String name, String exerciseType) async {
+  void _addExercise(String? name, String? type, int? exerciseInfoId) async {
     if (_date != null) {
-      final existingExercise = await _exerciseService.getExerciseByDateAndName(
-          dateId: _date!.id, name: name);
-      if (existingExercise != null) {
-        if (mounted) {
-          showErrorDialog(context);
-          return;
-        }
-      }
       if (_exerciseCards.length >= 10) {
         if (mounted) {
           showErrorDialog(context);
           return;
         }
       }
-      if (exerciseType == "duration") {
-        await _exerciseService.createDurationExercise(
-            dateId: _date!.id, name: name);
-      } else {
-        await _exerciseService.createExercise(dateId: _date!.id, name: name);
+      final DatabaseExercise exercise;
+      if (name != null && type != null && exerciseInfoId == null) {
+        //wpisane
+        final result = await _exerciseService.checkIfExerciseInfoExistAndReturn(
+          name: name,
+          type: type,
+        );
+        if (result == null) {
+          //nie ma w bazie wiec tworzymy i dodajemy stworzone
+          final info =
+              await _exerciseService.createExerciseInfo(name: name, type: type);
+          exercise = await _exerciseService.createExercise(
+            dateId: _date!.id,
+            exerciseInfoId: info.id,
+          );
+          _exerciseCards.add(ExerciseCard(
+            exercise: exercise,
+            exerciseName: info.name,
+            exerciseType: info.type,
+            selectedDate: _date!,
+            onDeleteCard: _deleteExercise,
+          ));
+          _exercisesStreamController.add(_exerciseCards);
+        } else {
+          // jest w bazie wiec nie tworzymy drugiego i dodajemy to ktore jest
+          exercise = await _exerciseService.createExercise(
+            dateId: _date!.id,
+            exerciseInfoId: result.id,
+          );
+          _exerciseCards.add(ExerciseCard(
+            exercise: exercise,
+            exerciseName: result.name,
+            exerciseType: result.type,
+            selectedDate: _date!,
+            onDeleteCard: _deleteExercise,
+          ));
+          _exercisesStreamController.add(_exerciseCards);
+        }
+      } else if (name == null && type == null && exerciseInfoId != null) {
+        //z listy
+        final info = await _exerciseService.getExerciseInfo(id: exerciseInfoId);
+        exercise = await _exerciseService.createExercise(
+          dateId: _date!.id,
+          exerciseInfoId: exerciseInfoId,
+        );
+        _exerciseCards.add(ExerciseCard(
+          exercise: exercise,
+          exerciseName: info.name,
+          exerciseType: info.type,
+          selectedDate: _date!,
+          onDeleteCard: _deleteExercise,
+        ));
+        _exercisesStreamController.add(_exerciseCards);
       }
-      _exerciseCards.add(ExerciseCard(
-        exerciseName: name,
-        selectedDate: _date!,
-        onDeleteCard: _deleteExercise,
-      ));
-      _exercisesStreamController.add(_exerciseCards);
     } else {
       DateTime now = DateTime.now();
       DateTime startDate = now.subtract(const Duration(days: 14));
@@ -66,7 +100,7 @@ class _ExerciseTableState extends State<ExerciseTable> {
           widget.selectedDate.isBefore(endDate)) {
         _date =
             await _exerciseService.createDate(dateTime: widget.selectedDate);
-        _addExercise(name, exerciseType);
+        _addExercise(name, type, exerciseInfoId);
       } else {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -87,7 +121,9 @@ class _ExerciseTableState extends State<ExerciseTable> {
       );
     }
     setState(() {
-      _exerciseCards.removeWhere((card) => card.exerciseName == name);
+      _exerciseCards.removeWhere((card) =>
+          card.exerciseName ==
+          name); //Uwaga usuwanie po nazwie ;( warto dodac indexy do cwiczen imo
     });
     _exercisesStreamController.add(_exerciseCards);
   }
@@ -165,9 +201,9 @@ class _ExerciseTableState extends State<ExerciseTable> {
                   onPressed: () {
                     if (exerciseName.isNotEmpty) {
                       if (exerciseType == 'reps') {
-                        _addExercise(exerciseName, 'reps');
+                        _addExercise(exerciseName, 'reps', null);
                       } else {
-                        _addExercise(exerciseName, 'duration');
+                        _addExercise(exerciseName, 'duration', null);
                       }
                     }
                     Navigator.of(context).pop();
@@ -188,26 +224,37 @@ class _ExerciseTableState extends State<ExerciseTable> {
     if (_date != null) {
       final dbExercises =
           await _exerciseService.getExercisesForDate(dateId: _date!.id);
-      final dbExercisesCards = dbExercises
-          .map((exercise) => ExerciseCard(
-                exerciseName: exercise.name,
-                selectedDate: _date!,
-                onDeleteCard: _deleteExercise,
-              ))
-          .toList();
+
+      final dbExercisesCards =
+          await Future.wait(dbExercises.map((exercise) async {
+        final exerciseInfo =
+            await _exerciseService.getExerciseInfo(id: exercise.exerciseInfoId);
+        return ExerciseCard(
+          exercise: exercise,
+          exerciseName: exerciseInfo.name,
+          exerciseType: exerciseInfo.type,
+          selectedDate: _date!,
+          onDeleteCard: _deleteExercise,
+        );
+      }).toList());
       _exerciseCards = dbExercisesCards;
       if (_selectedDay != null) {
         log("day is selcted");
         final selectedDayExercises =
             await _exerciseService.createExercisesFromTrainingDayInGivenDate(
                 trainingDay: _selectedDay!, dateId: _date!.id);
-        final selectedDayExercisesCards = selectedDayExercises
-            .map((exercise) => ExerciseCard(
-                  exerciseName: exercise.name,
-                  selectedDate: _date!,
-                  onDeleteCard: _deleteExercise,
-                ))
-            .toList();
+        final selectedDayExercisesCards =
+            await Future.wait(selectedDayExercises.map((exercise) async {
+          final exerciseInfo = await _exerciseService.getExerciseInfo(
+              id: exercise.exerciseInfoId);
+          return ExerciseCard(
+            exercise: exercise,
+            exerciseName: exerciseInfo.name,
+            exerciseType: exerciseInfo.type,
+            selectedDate: _date!,
+            onDeleteCard: _deleteExercise,
+          );
+        }).toList());
         _exerciseCards.addAll(selectedDayExercisesCards);
         _selectedDay = null;
       }
@@ -216,7 +263,7 @@ class _ExerciseTableState extends State<ExerciseTable> {
   }
 
   Future<List<TrainingDayData>> _fetchTrainingDaysToRadioList() async {
-    final trainingDays = _exerciseService.getTrainingDaysFromPlanData();
+    final trainingDays = await _exerciseService.getTrainingDaysFromPlanData();
     return trainingDays;
   }
 
@@ -400,13 +447,17 @@ class _ExerciseTableState extends State<ExerciseTable> {
 //exercise card moze byc stworzony tylko gdy dane cwiczenie istnieje w dany dzien (patrz metoda _loadExercises)
 class ExerciseCard extends StatefulWidget {
   final DatabaseDate selectedDate;
+  final DatabaseExercise exercise;
   final String exerciseName;
+  final String exerciseType;
   final Function(int exerciseId, String name) onDeleteCard;
 
   const ExerciseCard({
     super.key,
     required this.selectedDate,
+    required this.exercise,
     required this.exerciseName,
+    required this.exerciseType,
     required this.onDeleteCard,
   });
 
@@ -417,106 +468,88 @@ class ExerciseCard extends StatefulWidget {
 class _ExerciseCardState extends State<ExerciseCard> {
   late int _setCounter = 0;
   late final ExerciseService _exerciseService;
-  late DatabaseExercise? _exercise;
 
   late StreamController<List<ExerciseRow>> _setsStreamController;
   List<ExerciseRow> _setRows = [];
 
-  bool _isThatDurationTypeExercise = false;
+  late bool _isThatDurationTypeExercise = false;
 
   Future<void> _addSet(int setIndex) async {
-    if (_exercise != null) {
-      if (_setRows.length >= 10) {
-        if (mounted) {
-          showErrorDialog(context);
-          return;
-        }
-      }
-
-      int lastSetWeight = 0;
-      int lastSetReps = 0;
-      int lastSetDuration = 0;
-
-      if (_setRows.isNotEmpty) {
-        final lastSet = _setRows.last;
-        final dbLastSet = await _exerciseService.getSetByExerciseAndIndex(
-            exerciseId: _exercise!.id, setIndex: lastSet.setIndex);
-        if (dbLastSet != null) {
-          lastSetWeight = dbLastSet.weight;
-          lastSetReps = dbLastSet.reps;
-          lastSetDuration = dbLastSet.duration;
-        }
-      }
-
-      if (_isThatDurationTypeExercise) {
-        await _exerciseService.createDurationSet(
-          exerciseId: _exercise!.id,
-          setIndex: setIndex,
-          weight: lastSetWeight,
-          duration: lastSetDuration,
-        );
-      } else {
-        await _exerciseService.createSet(
-          exerciseId: _exercise!.id,
-          setIndex: setIndex,
-          weight: lastSetWeight,
-          reps: lastSetReps,
-        );
-      }
-      _setRows.add(ExerciseRow(
-        exercise: _exercise!,
-        setIndex: setIndex,
-        onDeleteSet: _deleteSet,
-      ));
-      _setsStreamController.add(_setRows);
-      log("created set with index $setIndex");
-    } else {
+    if (_setRows.length >= 10) {
       if (mounted) {
         showErrorDialog(context);
+        return;
       }
     }
+
+    int lastSetWeight = 0;
+    int lastSetReps = 0;
+    int lastSetDuration = 0;
+
+    if (_setRows.isNotEmpty) {
+      final lastSet = _setRows.last;
+      final dbLastSet = await _exerciseService.getSetByExerciseAndIndex(
+          exerciseId: widget.exercise.id, setIndex: lastSet.setIndex);
+      if (dbLastSet != null) {
+        lastSetWeight = dbLastSet.weight;
+        lastSetReps = dbLastSet.reps;
+        lastSetDuration = dbLastSet.duration;
+      }
+    }
+
+    if (_isThatDurationTypeExercise) {
+      await _exerciseService.createDurationSet(
+        exerciseId: widget.exercise.id,
+        setIndex: setIndex,
+        weight: lastSetWeight,
+        duration: lastSetDuration,
+      );
+    } else {
+      await _exerciseService.createSet(
+        exerciseId: widget.exercise.id,
+        setIndex: setIndex,
+        weight: lastSetWeight,
+        reps: lastSetReps,
+      );
+    }
+
+    _setRows.add(ExerciseRow(
+      exercise: widget.exercise,
+      setIndex: setIndex,
+      onDeleteSet: _deleteSet,
+    ));
+    _setsStreamController.add(_setRows);
+    log("created set with index $setIndex");
   }
 
   Future<void> _deleteSet(int setIndex) async {
-    if (_exercise != null) {
-      await _exerciseService.deleteSetByIndexForExercise(
-        exerciseId: _exercise!.id,
-        setIndex: setIndex,
-      );
-      setState(() {
-        _setRows.removeWhere((row) => row.setIndex == setIndex);
-      });
-      _setsStreamController.add(_setRows);
-    }
+    await _exerciseService.deleteSetByIndexForExercise(
+      exerciseId: widget.exercise.id,
+      setIndex: setIndex,
+    );
+    setState(() {
+      _setRows.removeWhere((row) => row.setIndex == setIndex);
+    });
+    _setsStreamController.add(_setRows);
   }
 
   Future<void> _loadSetsForExercise() async {
-    DatabaseExercise? exercise =
-        await _exerciseService.getExerciseByDateAndName(
-            dateId: widget.selectedDate.id, name: widget.exerciseName);
-    _exercise = exercise;
-
-    if (exercise != null) {
-      if (exercise.type == "duration") {
-        _isThatDurationTypeExercise = true;
-      }
-      final dbSets =
-          await _exerciseService.getSetsForExercise(exerciseId: exercise.id);
-      if (dbSets.isEmpty) {
-        _setCounter = 0;
-        _addSet(++_setCounter);
-      } else {
-        _setCounter = dbSets.last.setIndex;
-        final rowDbSets = dbSets
-            .map((dbSet) => ExerciseRow(
-                  exercise: exercise,
-                  setIndex: dbSet.setIndex,
-                  onDeleteSet: _deleteSet,
-                ))
-            .toList();
-        _setRows = rowDbSets;
-        _setsStreamController.add(_setRows);
-      }
+    final dbSets = await _exerciseService.getSetsForExercise(
+        exerciseId: widget.exercise.id);
+    if (dbSets.isEmpty) {
+      _setCounter = 0;
+      _addSet(++_setCounter);
+    } else {
+      _setCounter = dbSets.last.setIndex;
+      final rowDbSets = dbSets
+          .map((dbSet) => ExerciseRow(
+                exercise: widget.exercise,
+                setIndex: dbSet.setIndex,
+                onDeleteSet: _deleteSet,
+              ))
+          .toList();
+      _setRows = rowDbSets;
+      _setsStreamController.add(_setRows);
     }
   }
 
@@ -529,6 +562,9 @@ class _ExerciseCardState extends State<ExerciseCard> {
         _setsStreamController.sink.add(_setRows);
       },
     );
+    if (widget.exerciseType == "duration") {
+      _isThatDurationTypeExercise = true;
+    }
   }
 
   @override
@@ -588,9 +624,9 @@ class _ExerciseCardState extends State<ExerciseCard> {
                                   ],
                                 ),
                               );
-                              if (confirm == true && _exercise != null) {
+                              if (confirm == true) {
                                 widget.onDeleteCard(
-                                    _exercise!.id, _exercise!.name);
+                                    widget.exercise.id, widget.exerciseName);
                                 // Informowanie o usunięciu ćwiczenia
                                 // Zaktualizuj widok po usunięciu
                               }
@@ -845,7 +881,10 @@ class _ExerciseRowState extends State<ExerciseRow> {
   }
 
   Future<void> createOrGetExistingsSet() async {
-    if (widget.exercise.type == "duration") {
+    //mozna to jakos bardziej elegancko rozwiazac
+    final info = await _exerciseService.getExerciseInfo(
+        id: widget.exercise.exerciseInfoId);
+    if (info.type == "duration") {
       _isThatDurationTypeSet = true;
     }
 
@@ -865,8 +904,18 @@ class _ExerciseRowState extends State<ExerciseRow> {
       if (dbSet.duration != 0) {
         _durationController.text = _convertSecondsToTime(dbSet.duration);
       }
-      _lastSetHistory = await _exerciseService.getPreviousSetData(
-          widget.exercise.dateId, widget.exercise.name, widget.setIndex);
+
+      if (_isThatDurationTypeSet) {
+        _lastSetHistory = await _exerciseService.getPreviousDurationSetData(
+            widget.exercise.dateId,
+            widget.exercise.exerciseInfoId,
+            widget.setIndex);
+      } else {
+        _lastSetHistory = await _exerciseService.getPreviousRepsSetData(
+            widget.exercise.dateId,
+            widget.exercise.exerciseInfoId,
+            widget.setIndex);
+      }
     }
   }
 

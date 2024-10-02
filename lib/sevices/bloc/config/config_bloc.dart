@@ -158,8 +158,9 @@ class ConfigBloc extends Bloc<ConfigEvent, ConfigState> {
         _stateHistory.add(state);
         final exerciseService = ExerciseService();
         if (isThatReplacementOfPlans) {
-          exerciseService.deleteTrainingDaysDataFromPlan();
-          exerciseService.deleteExercisesAndSetsFromTomorrowToEndOfDates();
+          await exerciseService.deleteTrainingDaysDataFromPlan();
+          await exerciseService
+              .deleteExercisesAndSetsFromTomorrowToEndOfDates();
         }
 
         final dates = await exerciseService.createRangeOfDatesConfig(
@@ -167,7 +168,7 @@ class ConfigBloc extends Bloc<ConfigEvent, ConfigState> {
           fromDate: DateTime.now(),
         );
         final lastDate = dates.last;
-        exerciseService.createExercisesConfig(
+        await exerciseService.createExercisesConfig(
           exerciseDays: _exerciseDaysData,
           dates: dates,
         );
