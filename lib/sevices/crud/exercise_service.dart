@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'package:intl/intl.dart';
 import 'package:liftday/constants/database.dart';
 import 'package:liftday/sevices/crud/crud_exceptions.dart';
@@ -173,6 +174,7 @@ class ExerciseService {
 
   Future<DatabaseExerciseInfo> getExerciseInfo({required int id}) async {
     //wrzedzie gdzie uzywam tej metody zwaracm tylko id z bazy danych a powinienem tez z bazy cwiczen TO DO
+    log("request fot info id: $id");
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
     final exercisesInfo = await db.query(
@@ -269,9 +271,7 @@ class ExerciseService {
                   exerciseInfoIdColumn: result.id,
                 });
               }
-            } else if (exercise.infoId != null &&
-                exercise.name == null &&
-                exercise.type == null) {
+            } else if (exercise.infoId != null) {
               //uzytkownik wybral cwiczenie z listy
               await db.insert(exercisesTable, {
                 dateIdColumn: date.id,
@@ -472,10 +472,9 @@ class ExerciseService {
           await createTrainingDayExercise(
               trainingDayId: dbTrainingDay.id, exerciseInfoId: result.id);
         }
-      } else if (exercise.infoId != null &&
-          exercise.name == null &&
-          exercise.type == null) {
-        //uzytkownik wybral cwiczenie z listy
+      } else if (exercise.infoId != null) {
+        //uzytkownik wybral cwiczenie z listy(lub nie zmodyfikowal - sytuacja (cos,cos,cos))
+        //zalozenie: nie mozna modyfikowac name, type, ... w exerciseData - operujemy tylko na id
         await createTrainingDayExercise(
             trainingDayId: dbTrainingDay.id, exerciseInfoId: exercise.infoId!);
       }
@@ -493,7 +492,6 @@ class ExerciseService {
           newExercise.name != null &&
           newExercise.type != null) {
         //uzytkownik wpisal wlasne cwiczenie
-        //TO DO SPrawdzenie
         final result = await checkIfExerciseInfoExistAndReturn(
           name: newExercise.name!,
           type: newExercise.type!,
@@ -509,10 +507,8 @@ class ExerciseService {
           await createTrainingDayExercise(
               trainingDayId: dbDay.id, exerciseInfoId: result.id);
         }
-      } else if (newExercise.infoId != null &&
-          newExercise.name == null &&
-          newExercise.type == null) {
-        //uzytkownik wybral cwiczenie z listy
+      } else if (newExercise.infoId != null) {
+        //uzytkownik wybral cwiczenie z listy lub nie modyfikowal
         await createTrainingDayExercise(
             trainingDayId: dbDay.id, exerciseInfoId: newExercise.infoId!);
       }
@@ -555,12 +551,13 @@ class ExerciseService {
 
       List<ExerciseData> exercises = [];
       for (var dbExericse in dbExercises) {
+        final info = await getExerciseInfo(id: dbExericse.exerciseInfoId);
         exercises.add(ExerciseData(
-          name: null,
-          type: null,
-          infoId: dbExericse.id,
+          name: info.name,
+          type: info.type,
+          infoId: dbExericse.exerciseInfoId,
         )); //wszystkie training Day exercises maja exercise info id
-        //wiec kiedy zwracam exercise data to musi miec tylko ID (mozna by ogarnac zwracanie List<DatabaseExerciseInfo> zamiast tego)
+        //wiec kiedy zwracam exercise data to musi miec ID (dodaje nazwy i cala reszte aby nie trzeba bylo tego robic w ui)
       }
 
       data.add(TrainingDayData(name: day.name, exercises: exercises));
@@ -578,10 +575,11 @@ class ExerciseService {
 
       List<ExerciseData> exercises = [];
       for (var dbExericse in dbExercises) {
+        final info = await getExerciseInfo(id: dbExericse.exerciseInfoId);
         exercises.add(ExerciseData(
-          name: null,
-          type: null,
-          infoId: dbExericse.id,
+          name: info.name,
+          type: info.type,
+          infoId: dbExericse.exerciseInfoId,
         ));
       }
 
@@ -592,7 +590,7 @@ class ExerciseService {
 
   Future<List<TrainingDayData>> getTrainingDaysData() async {
     final days = await getTrainingDays();
-
+    log("$days");
     List<TrainingDayData> data = [];
     for (var day in days) {
       final dbExercises =
@@ -600,10 +598,11 @@ class ExerciseService {
 
       List<ExerciseData> exercises = [];
       for (var dbExericse in dbExercises) {
+        final info = await getExerciseInfo(id: dbExericse.exerciseInfoId);
         exercises.add(ExerciseData(
-          name: null,
-          type: null,
-          infoId: dbExericse.id,
+          name: info.name,
+          type: info.type,
+          infoId: dbExericse.exerciseInfoId,
         ));
       }
 
@@ -622,12 +621,11 @@ class ExerciseService {
     for (var i = 0; i < trainingDay.exercises.length; i++) {
       final exerciseInfoId = trainingDay.exercises.elementAt(i).infoId;
       if (exerciseInfoId != null) {
-        //nie moze byc null bo w radio liscie sa ExerciseData w takim formacie (null, null, id)
+        //nie moze byc null bo w radio liscie sa ExerciseData w takim formacie (name, type, id)
         exercises.add(await createExercise(
             dateId: dateId, exerciseInfoId: exerciseInfoId));
       }
     }
-
     return exercises;
   }
 
@@ -704,9 +702,7 @@ class ExerciseService {
               exerciseInfoIdColumn: result.id,
             });
           }
-        } else if (exercise.infoId != null &&
-            exercise.name == null &&
-            exercise.type == null) {
+        } else if (exercise.infoId != null) {
           //uzytkownik wybral cwiczenie z listy
           await db.insert(exercisesTable, {
             dateIdColumn: dateId,
@@ -1048,7 +1044,12 @@ class ExerciseService {
       final set = result.first;
       final weight = set['weight'];
       final reps = set['reps'];
-      return '$weight x $reps';
+      final string = '$weight x $reps';
+      if (string == '0 x 0') {
+        return null;
+      } else {
+        return string;
+      }
     } else {
       return null;
     }
@@ -1072,7 +1073,12 @@ class ExerciseService {
       final set = result.first;
       final weight = set['weight'];
       final duration = set['duration'];
-      return '$weight x ${duration}s';
+      final string = '$weight x ${duration}s';
+      if (string == '0 x 0s') {
+        return null;
+      } else {
+        return string;
+      }
     } else {
       return null;
     }

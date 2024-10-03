@@ -427,7 +427,7 @@ String _writeExercises(List<ExerciseData> exercises) {
     if (i > 0) {
       pointer = ", ";
     }
-    exercisesText = "$exercisesText$pointer${exercises.elementAt(i).infoId}";
+    exercisesText = "$exercisesText$pointer${exercises.elementAt(i).name}";
   }
 
   return exercisesText;

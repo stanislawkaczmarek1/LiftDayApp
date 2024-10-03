@@ -239,10 +239,11 @@ class _ExerciseTableState extends State<ExerciseTable> {
       }).toList());
       _exerciseCards = dbExercisesCards;
       if (_selectedDay != null) {
-        log("day is selcted");
+        log("day is selcted: $_selectedDay");
         final selectedDayExercises =
             await _exerciseService.createExercisesFromTrainingDayInGivenDate(
                 trainingDay: _selectedDay!, dateId: _date!.id);
+
         final selectedDayExercisesCards =
             await Future.wait(selectedDayExercises.map((exercise) async {
           final exerciseInfo = await _exerciseService.getExerciseInfo(
@@ -263,7 +264,7 @@ class _ExerciseTableState extends State<ExerciseTable> {
   }
 
   Future<List<TrainingDayData>> _fetchTrainingDaysToRadioList() async {
-    final trainingDays = await _exerciseService.getTrainingDaysFromPlanData();
+    final trainingDays = await _exerciseService.getTrainingDaysData();
     return trainingDays;
   }
 

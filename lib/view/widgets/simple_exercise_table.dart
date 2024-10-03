@@ -34,13 +34,6 @@ class _SimpleExerciseTableState extends State<SimpleExerciseTable> {
     });
   }
 
-  void _editExercise(int index, ExerciseData exerciseData) {
-    setState(() {
-      exercises[index] = exerciseData;
-      _getExercises();
-    });
-  }
-
   void _removeExercise(int index) {
     setState(() {
       exercises.removeAt(index);
@@ -85,47 +78,6 @@ class _SimpleExerciseTableState extends State<SimpleExerciseTable> {
     );
   }
 
-  void _showEditExerciseDialog(int index) {
-    String updatedExerciseName = exercises[index].name ?? "";
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          content: TextField(
-            autofocus: true,
-            onChanged: (value) {
-              updatedExerciseName = value;
-            },
-            decoration: const InputDecoration(hintText: "Edytuj ćwiczenie"),
-            controller: TextEditingController(text: exercises[index].name),
-          ),
-          actions: [
-            TextButton(
-              child: const Text('Anuluj'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: const Text('Zapisz'),
-              onPressed: () {
-                if (updatedExerciseName.isNotEmpty) {
-                  _editExercise(
-                      index,
-                      ExerciseData(
-                          name: updatedExerciseName,
-                          type: "reps",
-                          infoId: null));
-                  Navigator.of(context).pop();
-                }
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   @override
   void initState() {
     exercises = widget.exercises ?? [];
@@ -145,7 +97,6 @@ class _SimpleExerciseTableState extends State<SimpleExerciseTable> {
             return SimpleExerciseCard(
               index: index + 1,
               exercise: exercises[index],
-              onEdit: () => _showEditExerciseDialog(index),
               onDelete: () => _removeExercise(index),
             );
           },
@@ -166,14 +117,12 @@ class _SimpleExerciseTableState extends State<SimpleExerciseTable> {
 class SimpleExerciseCard extends StatelessWidget {
   final int index;
   final ExerciseData exercise;
-  final VoidCallback onEdit;
   final VoidCallback onDelete;
 
   const SimpleExerciseCard({
     super.key,
     required this.index,
     required this.exercise,
-    required this.onEdit,
     required this.onDelete,
   });
 
@@ -197,17 +146,11 @@ class SimpleExerciseCard extends StatelessWidget {
         ),
         trailing: PopupMenuButton<String>(
           onSelected: (value) {
-            if (value == 'edit') {
-              onEdit();
-            } else if (value == 'delete') {
+            if (value == 'delete') {
               onDelete();
             }
           },
           itemBuilder: (BuildContext context) => [
-            const PopupMenuItem(
-              value: 'edit',
-              child: Text('Edytuj'),
-            ),
             const PopupMenuItem(
               value: 'delete',
               child: Text('Usuń'),
