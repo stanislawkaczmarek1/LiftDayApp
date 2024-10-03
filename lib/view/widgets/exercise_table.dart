@@ -5,11 +5,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:liftday/dialogs/error_dialog.dart';
 import 'package:liftday/sevices/bloc/tap/tap_bloc.dart';
+import 'package:liftday/sevices/bloc/weight_unit/weight_unit_bloc.dart';
 import 'package:liftday/sevices/crud/exercise_service.dart';
 import 'package:liftday/sevices/crud/tables/database_date.dart';
 import 'package:liftday/sevices/crud/tables/database_exercise.dart';
+import 'package:liftday/sevices/crud/tables/database_exercise_info.dart';
 import 'package:liftday/sevices/crud/tables/database_set.dart';
 import 'package:liftday/sevices/crud/data_package/training_day_data.dart';
+import 'package:liftday/view/routes_views/add_exercise_view.dart';
+import 'package:liftday/view/routes_views/report_view.dart';
+
+typedef AddExerciseViewCallback = void Function(
+    String? name, String? type, int? exerciseInfoId);
 
 class ExerciseTable extends StatefulWidget {
   final DateTime selectedDate;
@@ -31,12 +38,6 @@ class _ExerciseTableState extends State<ExerciseTable> {
 
   void _addExercise(String? name, String? type, int? exerciseInfoId) async {
     if (_date != null) {
-      if (_exerciseCards.length >= 10) {
-        if (mounted) {
-          showErrorDialog(context);
-          return;
-        }
-      }
       final DatabaseExercise exercise;
       if (name != null && type != null && exerciseInfoId == null) {
         //wpisane
@@ -128,92 +129,15 @@ class _ExerciseTableState extends State<ExerciseTable> {
     _exercisesStreamController.add(_exerciseCards);
   }
 
-  void _showAddExerciseDialog() {
-    String exerciseName = '';
-    String exerciseType = 'reps';
-    String exerciseText = 'ciężar i powtórzenia';
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Align(
-                    alignment: Alignment.bottomLeft,
-                    child: Text(
-                      "Nazwa: ",
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ),
-                  TextField(
-                    autofocus: true,
-                    onChanged: (value) {
-                      exerciseName = value;
-                    },
-                    style: const TextStyle(fontSize: 14),
-                  ),
-                  const SizedBox(
-                    height: 24,
-                  ),
-                  Row(
-                    children: [
-                      const Text(
-                        "Rodzaj: ",
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            if (exerciseType == 'reps') {
-                              exerciseType = 'duration';
-                              exerciseText = 'ciężar i czas';
-                            } else {
-                              exerciseType = 'reps';
-                              exerciseText = 'ciężar i powtórzenia';
-                            }
-                          });
-                        },
-                        child: Text(
-                          exerciseText,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  child: const Text('Anuluj'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-                TextButton(
-                  child: const Text('Dodaj'),
-                  onPressed: () {
-                    if (exerciseName.isNotEmpty) {
-                      if (exerciseType == 'reps') {
-                        _addExercise(exerciseName, 'reps', null);
-                      } else {
-                        _addExercise(exerciseName, 'duration', null);
-                      }
-                    }
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
+  void _showAddExerciseView() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => AddExerciseView(
+          onResult: (name, type, exerciseInfoId) {
+            _addExercise(name, type, exerciseInfoId);
           },
-        );
-      },
+        ),
+      ),
     );
   }
 
@@ -268,65 +192,118 @@ class _ExerciseTableState extends State<ExerciseTable> {
     return trainingDays;
   }
 
-  void _showSelectDayRadioList() async {
-    List<TrainingDayData> days = await _fetchTrainingDaysToRadioList();
-    if (days.isEmpty) {
-      if (mounted) {
-        showErrorDialog(context);
+  Future<void> _loadDataAndShowReportView(
+      DatabaseDate date, String unit) async {
+    final List<DatabaseExercise> exercises =
+        await _exerciseService.getExercisesForDate(dateId: date.id);
+    final List<DatabaseExerciseInfo> exerciseInfos = [];
+    final List<List<DatabaseSet>> allExerciseSets = [];
+    for (var exercise in exercises) {
+      exerciseInfos.add(
+          await _exerciseService.getExerciseInfo(id: exercise.exerciseInfoId));
+      allExerciseSets.add(
+          await _exerciseService.getSetsForExercise(exerciseId: exercise.id));
+    }
+    int totalVolume = 0;
+    for (List<DatabaseSet> exerciseSets in allExerciseSets) {
+      for (DatabaseSet dbSet in exerciseSets) {
+        totalVolume += dbSet.weight * dbSet.reps;
+      }
+    }
+    if (mounted) {
+      Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => ReportView(
+          trainingTitle: date.digitDate,
+          exercises: exercises,
+          exerciseInfos: exerciseInfos,
+          allExerciseSets: allExerciseSets,
+          totalVolume: totalVolume,
+          unit: unit,
+        ),
+      ));
+    }
+  }
+
+  Future<void> _showSelectDayRadioList() async {
+    if (_date != null) {
+      List<TrainingDayData> days = await _fetchTrainingDaysToRadioList();
+      if (days.isEmpty) {
+        if (mounted) {
+          showErrorDialog(context);
+        }
+      } else {
+        if (mounted) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return StatefulBuilder(
+                  builder: (BuildContext context, StateSetter setState) {
+                return AlertDialog(
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ...days.map((day) {
+                        return RadioListTile<TrainingDayData>(
+                          title: Text(
+                            day.name,
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                          activeColor: Theme.of(context).colorScheme.secondary,
+                          value: day,
+                          groupValue: _tempSelectedDay,
+                          onChanged: (TrainingDayData? value) {
+                            setState(() {
+                              _tempSelectedDay = value;
+                            });
+                          },
+                        );
+                      })
+                    ],
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Anuluj'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        setState(
+                          () {
+                            log("$_tempSelectedDay");
+                            _selectedDay = _tempSelectedDay;
+                            _loadExercisesForSelectedDate();
+                          },
+                        );
+                      },
+                      child: const Text('Zatwierdź'),
+                    ),
+                  ],
+                );
+              });
+            },
+          );
+        }
       }
     } else {
-      if (mounted) {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return StatefulBuilder(
-                builder: (BuildContext context, StateSetter setState) {
-              return AlertDialog(
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ...days.map((day) {
-                      return RadioListTile<TrainingDayData>(
-                        title: Text(
-                          day.name,
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                        activeColor: Theme.of(context).colorScheme.secondary,
-                        value: day,
-                        groupValue: _tempSelectedDay,
-                        onChanged: (TrainingDayData? value) {
-                          setState(() {
-                            _tempSelectedDay = value;
-                          });
-                        },
-                      );
-                    })
-                  ],
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Text('Anuluj'),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      setState(
-                        () {
-                          _selectedDay = _tempSelectedDay;
-                          _loadExercisesForSelectedDate();
-                        },
-                      );
-                    },
-                    child: const Text('Zatwierdź'),
-                  ),
-                ],
-              );
-            });
-          },
-        );
+      DateTime now = DateTime.now();
+      DateTime startDate = now.subtract(const Duration(days: 14));
+      DateTime endDate = now.add(const Duration(days: 14));
+
+      if (widget.selectedDate.isAfter(startDate) &&
+          widget.selectedDate.isBefore(endDate)) {
+        _date =
+            await _exerciseService.createDate(dateTime: widget.selectedDate);
+        await _showSelectDayRadioList();
+      } else {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text('Kalendarz treningowy nie obejmuje tej daty')),
+          );
+        }
       }
     }
   }
@@ -386,7 +363,15 @@ class _ExerciseTableState extends State<ExerciseTable> {
                         child: Padding(
                           padding: const EdgeInsets.all(16.0),
                           child: TextButton(
-                              onPressed: _showAddExerciseDialog,
+                              onPressed: () {
+                                if (_exerciseCards.length >= 10) {
+                                  if (mounted) {
+                                    showErrorDialog(context);
+                                  }
+                                } else {
+                                  _showAddExerciseView();
+                                }
+                              },
                               style: TextButton.styleFrom(
                                 elevation: 3.0,
                                 backgroundColor:
@@ -413,25 +398,43 @@ class _ExerciseTableState extends State<ExerciseTable> {
                       Positioned(
                         right: 5,
                         top: 16,
-                        child: PopupMenuButton<String>(
-                          onSelected: (value) async {
-                            if (value == 'load_day') {
-                              _showSelectDayRadioList();
-                            }
-                          },
-                          itemBuilder: (BuildContext context) {
-                            return [
-                              const PopupMenuItem<String>(
-                                value: 'load_day',
-                                child: Text('Wczytaj dzień'),
+                        child: BlocBuilder<WeightUnitBloc, WeightUnitState>(
+                          builder: (context, state) {
+                            return PopupMenuButton<String>(
+                              onSelected: (value) async {
+                                if (value == 'load_day') {
+                                  await _showSelectDayRadioList();
+                                }
+                                if (value == 'generate_report') {
+                                  if (_date != null) {
+                                    await _loadDataAndShowReportView(
+                                        _date!, state.unit);
+                                  } else {
+                                    if (context.mounted) {
+                                      showErrorDialog(context);
+                                    }
+                                  }
+                                }
+                              },
+                              itemBuilder: (BuildContext context) {
+                                return [
+                                  const PopupMenuItem<String>(
+                                    value: 'load_day',
+                                    child: Text('Wczytaj dzień'),
+                                  ),
+                                  const PopupMenuItem<String>(
+                                    value: 'generate_report',
+                                    child: Text('Generuj raport'),
+                                  ),
+                                ];
+                              },
+                              icon: Icon(
+                                Icons.more_vert,
+                                color: Theme.of(context).colorScheme.secondary,
+                                size: 30,
                               ),
-                            ];
+                            );
                           },
-                          icon: Icon(
-                            Icons.more_vert,
-                            color: Theme.of(context).colorScheme.secondary,
-                            size: 30,
-                          ),
                         ),
                       ),
                     ],
@@ -663,11 +666,16 @@ class _ExerciseCardState extends State<ExerciseCard> {
                             color: Colors.grey,
                           )),
                         ),
-                        const Expanded(
+                        Expanded(
                           child: Center(
-                            child: Text('kg',
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.bold)),
+                            child: BlocBuilder<WeightUnitBloc, WeightUnitState>(
+                              builder: (context, state) {
+                                return Text(state.unit,
+                                    style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold));
+                              },
+                            ),
                           ),
                         ),
                         Expanded(

@@ -14,6 +14,7 @@ import 'package:liftday/sevices/bloc/language/language_bloc.dart';
 import 'package:liftday/sevices/bloc/tap/tap_bloc.dart';
 import 'package:liftday/sevices/bloc/theme/theme_bloc.dart';
 import 'package:liftday/sevices/bloc/theme/theme_state.dart';
+import 'package:liftday/sevices/bloc/weight_unit/weight_unit_bloc.dart';
 import 'package:liftday/view/config/4_add_first_week_plan_view.dart';
 import 'package:liftday/view/config/3_choose_training_days_view.dart';
 import 'package:liftday/view/config/2_create_plan_or_skip_view.dart';
@@ -21,7 +22,7 @@ import 'package:liftday/view/config/1_start_view.dart';
 import 'package:liftday/view/config/5_choose_duration_of_plan_view.dart';
 import 'package:liftday/view/config/3_add_training_days_view.dart';
 import 'package:liftday/view/main_view.dart';
-import 'package:liftday/view/edit/training_day_view.dart';
+import 'package:liftday/view/routes_views/training_day_view.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -56,6 +57,9 @@ void main() {
           ),
           BlocProvider<TapBloc>(
             create: (context) => TapBloc(),
+          ),
+          BlocProvider<WeightUnitBloc>(
+            create: (context) => WeightUnitBloc(),
           ),
         ],
         child: BlocListener<ThemeBloc, ThemeState>(

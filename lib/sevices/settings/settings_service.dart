@@ -12,6 +12,7 @@ class SettingsService {
   static const String _planEndingDigitDateKey = 'planEndingDigitDate';
   static const String _isDarkModeKey = 'isDarkMode';
   static const String _languageKey = 'language';
+  static const String _weightUnitKey = 'weightUnit';
 
   Future<void> init() async {
     _preferences = await SharedPreferences.getInstance();
@@ -73,5 +74,15 @@ class SettingsService {
   String? language() {
     _ensureInitialized();
     return _preferences.getString(_languageKey);
+  }
+
+  Future<void> setWeightUnit(String value) async {
+    _ensureInitialized();
+    await _preferences.setString(_weightUnitKey, value);
+  }
+
+  String? weightUnit() {
+    _ensureInitialized();
+    return _preferences.getString(_weightUnitKey);
   }
 }
