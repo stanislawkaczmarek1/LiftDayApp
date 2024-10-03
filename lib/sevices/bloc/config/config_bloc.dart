@@ -37,6 +37,7 @@ class ConfigBloc extends Bloc<ConfigEvent, ConfigState> {
 
     on<ConfigEventGoBack>(
       (event, emit) {
+        log("back");
         if (_stateHistory.isNotEmpty) {
           if (_stateHistory.last is ConfigStateChooseTrainingDays) {
             _currentDayOfPlanConfig = 0;

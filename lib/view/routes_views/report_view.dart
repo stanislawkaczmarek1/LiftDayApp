@@ -9,7 +9,7 @@ class ReportView extends StatelessWidget {
   final List<DatabaseExercise> exercises;
   final List<DatabaseExerciseInfo> exerciseInfos;
   final List<List<DatabaseSet>> allExerciseSets;
-  final int totalVolume;
+  final double totalVolume;
   final String unit;
 
   const ReportView({
@@ -21,6 +21,13 @@ class ReportView extends StatelessWidget {
     required this.totalVolume,
     required this.unit,
   });
+
+  String _formatWeight(double value) {
+    String formattedValue = value == value.toInt()
+        ? value.toInt().toString()
+        : value.toStringAsFixed(1);
+    return formattedValue;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +76,7 @@ class ReportView extends StatelessWidget {
               ...exerciseWidgets,
               const SizedBox(height: 20),
               Text(
-                "objętość: $totalVolume $unit",
+                "objętość: ${_formatWeight(totalVolume)} $unit",
                 style: const TextStyle(fontSize: 18),
               ),
             ],
@@ -81,9 +88,9 @@ class ReportView extends StatelessWidget {
 
   String formatSet(DatabaseSet dbSet, String unit) {
     if (dbSet.duration != 0) {
-      return "${dbSet.weight} $unit x ${dbSet.duration}s";
+      return "${_formatWeight(dbSet.weight)} $unit x ${dbSet.duration}s";
     } else if (dbSet.reps != 0) {
-      return "${dbSet.weight} $unit x ${dbSet.reps}";
+      return "${_formatWeight(dbSet.weight)} $unit x ${dbSet.reps}";
     } else {
       return "";
     }

@@ -38,7 +38,7 @@ const createSetsTable = """CREATE TABLE IF NOT EXISTS "sets" (
 	"id"	INTEGER NOT NULL,
 	"exercise_id"	INTEGER NOT NULL,
 	"set_index"	INTEGER NOT NULL,
-	"weight"	INTEGER NOT NULL,
+	"weight"	REAL NOT NULL,
 	"reps"	INTEGER NOT NULL,
   "duration"	INTEGER NOT NULL DEFAULT 0,
 	FOREIGN KEY("exercise_id") REFERENCES "exercises"("id"),
@@ -65,8 +65,6 @@ const createExercisesInfoTable =
 	"id"	INTEGER NOT NULL,
 	"name"	TEXT NOT NULL,
 	"type"	TEXT NOT NULL DEFAULT 'reps',
+  "muscle_group"	TEXT NOT NULL,
 	PRIMARY KEY("id" AUTOINCREMENT)
 );""";
-
-
-//"muscle_group"	TEXT NOT NULL,

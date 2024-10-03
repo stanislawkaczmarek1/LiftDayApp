@@ -138,15 +138,17 @@ class ExerciseService {
   }
 
   Future<DatabaseExerciseInfo?> checkIfExerciseInfoExistAndReturn(
-      {required String name, required String type}) async {
+      {required String name,
+      required String type,
+      required String muscleGroup}) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
 
     final exercisesInfo = await db.query(
       exercisesInfoTable,
       limit: 1,
-      where: "$nameColumn = ? AND $typeColumn = ?",
-      whereArgs: [name, type],
+      where: "$nameColumn = ? AND $typeColumn = ? AND $muscleGroupColumn = ?",
+      whereArgs: [name, type, muscleGroup],
     );
     if (exercisesInfo.isEmpty) {
       return null;
@@ -156,23 +158,37 @@ class ExerciseService {
   }
 
   Future<DatabaseExerciseInfo> createExerciseInfo(
-      {required String name, required String type}) async {
+      {required String name,
+      required String type,
+      required String muscleGroup}) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
 
     final exerciseInfoId = await db.insert(exercisesInfoTable, {
       nameColumn: name,
       typeColumn: type,
+      muscleGroupColumn: muscleGroup,
     });
     final exerciseInfo = DatabaseExerciseInfo(
       id: exerciseInfoId,
       name: name,
       type: type,
+      muscleGroup: muscleGroup,
     );
     return exerciseInfo;
   }
 
   Future<DatabaseExerciseInfo> getExerciseInfo({required int id}) async {
+    if (id >= 10000) {
+      try {
+        final exercise =
+            appExercises.firstWhere((exercise) => exercise.id == id);
+        return exercise;
+      } catch (e) {
+        throw Exception(
+            'Exercise with ID $id not found in predefined app exercises.');
+      }
+    }
     //wrzedzie gdzie uzywam tej metody zwaracm tylko id z bazy danych a powinienem tez z bazy cwiczen TO DO
     log("request fot info id: $id");
     await _ensureDbIsOpen();
@@ -249,17 +265,21 @@ class ExerciseService {
           for (var exercise in exerciseDay.exercises) {
             if (exercise.infoId == null &&
                 exercise.name != null &&
+                exercise.muscleGroup != null &&
                 exercise.type != null) {
               //uzytkownik wpisal wlasne cwiczenie
               // sprawdzenie czy wpisane cwiczenie znajduje sie juz w bazie
               final result = await checkIfExerciseInfoExistAndReturn(
                 name: exercise.name!,
                 type: exercise.type!,
+                muscleGroup: exercise.muscleGroup!,
               );
               if (result == null) {
                 //nie ma w bazie wiec tworzymy i dodajemy stworzone
                 final info = await createExerciseInfo(
-                    name: exercise.name!, type: exercise.type!);
+                    name: exercise.name!,
+                    type: exercise.type!,
+                    muscleGroup: exercise.muscleGroup!);
                 await db.insert(exercisesTable, {
                   dateIdColumn: date.id,
                   exerciseInfoIdColumn: info.id,
@@ -455,16 +475,21 @@ class ExerciseService {
     for (var exercise in trainingDayData.exercises) {
       if (exercise.infoId == null &&
           exercise.name != null &&
-          exercise.type != null) {
+          exercise.type != null &&
+          exercise.muscleGroup != null) {
         //uzytkownik wpisal wlasne cwiczenie
         final result = await checkIfExerciseInfoExistAndReturn(
           name: exercise.name!,
           type: exercise.type!,
+          muscleGroup: exercise.muscleGroup!,
         );
         if (result == null) {
           //nie ma w bazie wiec tworzymy i dodajemy stworzone
           final info = await createExerciseInfo(
-              name: exercise.name!, type: exercise.type!);
+            name: exercise.name!,
+            type: exercise.type!,
+            muscleGroup: exercise.muscleGroup!,
+          );
           await createTrainingDayExercise(
               trainingDayId: dbTrainingDay.id, exerciseInfoId: info.id);
         } else {
@@ -490,16 +515,21 @@ class ExerciseService {
     for (var newExercise in trainingDay.exercises) {
       if (newExercise.infoId == null &&
           newExercise.name != null &&
+          newExercise.muscleGroup != null &&
           newExercise.type != null) {
         //uzytkownik wpisal wlasne cwiczenie
         final result = await checkIfExerciseInfoExistAndReturn(
           name: newExercise.name!,
           type: newExercise.type!,
+          muscleGroup: newExercise.muscleGroup!,
         );
         if (result == null) {
           //nie ma w bazie wiec tworzymy i dodajemy stworzone
           final info = await createExerciseInfo(
-              name: newExercise.name!, type: newExercise.type!);
+            name: newExercise.name!,
+            type: newExercise.type!,
+            muscleGroup: newExercise.muscleGroup!,
+          );
           await createTrainingDayExercise(
               trainingDayId: dbDay.id, exerciseInfoId: info.id);
         } else {
@@ -555,6 +585,7 @@ class ExerciseService {
         exercises.add(ExerciseData(
           name: info.name,
           type: info.type,
+          muscleGroup: info.muscleGroup,
           infoId: dbExericse.exerciseInfoId,
         )); //wszystkie training Day exercises maja exercise info id
         //wiec kiedy zwracam exercise data to musi miec ID (dodaje nazwy i cala reszte aby nie trzeba bylo tego robic w ui)
@@ -579,6 +610,7 @@ class ExerciseService {
         exercises.add(ExerciseData(
           name: info.name,
           type: info.type,
+          muscleGroup: info.muscleGroup,
           infoId: dbExericse.exerciseInfoId,
         ));
       }
@@ -602,6 +634,7 @@ class ExerciseService {
         exercises.add(ExerciseData(
           name: info.name,
           type: info.type,
+          muscleGroup: info.muscleGroup,
           infoId: dbExericse.exerciseInfoId,
         ));
       }
@@ -680,17 +713,22 @@ class ExerciseService {
         // Dodaj ćwiczenie dla danej daty
         if (exercise.infoId == null &&
             exercise.name != null &&
+            exercise.muscleGroup != null &&
             exercise.type != null) {
           //uzytkownik wpisal wlasne cwiczenie
           // sprawdzenie czy wpisane cwiczenie znajduje sie juz w bazie
           final result = await checkIfExerciseInfoExistAndReturn(
             name: exercise.name!,
             type: exercise.type!,
+            muscleGroup: exercise.muscleGroup!,
           );
           if (result == null) {
             //nie ma w bazie wiec tworzymy i dodajemy stworzone
             final info = await createExerciseInfo(
-                name: exercise.name!, type: exercise.type!);
+              name: exercise.name!,
+              type: exercise.type!,
+              muscleGroup: exercise.muscleGroup!,
+            );
             await db.insert(exercisesTable, {
               dateIdColumn: dateId,
               exerciseInfoIdColumn: info.id,
@@ -842,7 +880,7 @@ class ExerciseService {
   Future<DatabaseSet> createSet(
       {required int exerciseId,
       required int setIndex,
-      required int weight,
+      required double weight,
       required int reps}) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
@@ -867,7 +905,7 @@ class ExerciseService {
   Future<DatabaseSet> createDurationSet(
       {required int exerciseId,
       required int setIndex,
-      required int weight,
+      required double weight,
       required int duration}) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
@@ -947,7 +985,7 @@ class ExerciseService {
 
   Future<DatabaseSet?> updateSet({
     required DatabaseSet setToUpdate,
-    required int? weight,
+    required double? weight,
     required int? reps,
     required int? duration,
   }) async {
@@ -958,7 +996,7 @@ class ExerciseService {
     if (weight != null) {
       updates[weightColumn] = weight;
     } else {
-      updates[weightColumn] = 0;
+      updates[weightColumn] = 0.0;
     }
     if (reps != null) {
       updates[repsColumn] = reps;
@@ -1045,7 +1083,7 @@ class ExerciseService {
       final weight = set['weight'];
       final reps = set['reps'];
       final string = '$weight x $reps';
-      if (string == '0 x 0') {
+      if (string == '0.0 x 0') {
         return null;
       } else {
         return string;
@@ -1074,7 +1112,7 @@ class ExerciseService {
       final weight = set['weight'];
       final duration = set['duration'];
       final string = '$weight x ${duration}s';
-      if (string == '0 x 0s') {
+      if (string == '0.0 x 0s') {
         return null;
       } else {
         return string;

@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:liftday/sevices/crud/data_package/exercise_data.dart';
+import 'package:liftday/view/routes_views/add_exercise_view.dart';
 import 'package:liftday/view/widgets/ui_elements.dart';
 
 typedef ExercisesCallback = void Function(
@@ -26,11 +29,10 @@ class _SimpleExerciseTableState extends State<SimpleExerciseTable> {
   }
 
   void _addExercise(ExerciseData exerciseData) {
-    if (exercises.length >= 10) {
-      return;
-    }
     setState(() {
       exercises.add(exerciseData);
+      log("added: $exerciseData");
+      _getExercises();
     });
   }
 
@@ -41,40 +43,19 @@ class _SimpleExerciseTableState extends State<SimpleExerciseTable> {
     });
   }
 
-  void _showAddExerciseDialog() {
-    String exerciseName = '';
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          content: TextField(
-            autofocus: true,
-            onChanged: (value) {
-              exerciseName = value;
-            },
-            decoration: const InputDecoration(hintText: "Nazwa ćwiczenia"),
-          ),
-          actions: [
-            TextButton(
-              child: const Text('Anuluj'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: const Text('Dodaj'),
-              onPressed: () {
-                if (exerciseName.isNotEmpty) {
-                  _addExercise(ExerciseData(
-                      name: exerciseName, type: "reps", infoId: null));
-                  _getExercises();
-                  Navigator.of(context).pop();
-                }
-              },
-            ),
-          ],
-        );
-      },
+  void _showAddExerciseView() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => AddExerciseView(
+          onResult: (name, type, muscleGroup, exerciseInfoId) {
+            _addExercise(ExerciseData(
+                name: name,
+                type: type,
+                muscleGroup: muscleGroup,
+                infoId: exerciseInfoId));
+          },
+        ),
+      ),
     );
   }
 
@@ -107,7 +88,10 @@ class _SimpleExerciseTableState extends State<SimpleExerciseTable> {
         Padding(
             padding: const EdgeInsets.all(16.0),
             child: normalButton(context, "+ Dodaj ćwiczenie", () {
-              _showAddExerciseDialog();
+              if (exercises.length >= 10) {
+                return;
+              }
+              _showAddExerciseView();
             })),
       ],
     );

@@ -4,7 +4,7 @@ class DatabaseSet {
   final int id;
   final int exerciseId;
   final int setIndex;
-  final int weight;
+  final double weight;
   final int reps;
   final int duration; //default 0
 
@@ -21,7 +21,7 @@ class DatabaseSet {
       : id = map[idColumn] as int,
         exerciseId = map[exerciseIdColumn] as int,
         setIndex = map[setIndexColumn] as int,
-        weight = map[weightColumn] as int,
+        weight = map[weightColumn] as double,
         reps = map[repsColumn] as int,
         duration = map[durationColumn] as int;
 

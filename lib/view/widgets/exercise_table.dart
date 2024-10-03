@@ -15,9 +15,6 @@ import 'package:liftday/sevices/crud/data_package/training_day_data.dart';
 import 'package:liftday/view/routes_views/add_exercise_view.dart';
 import 'package:liftday/view/routes_views/report_view.dart';
 
-typedef AddExerciseViewCallback = void Function(
-    String? name, String? type, int? exerciseInfoId);
-
 class ExerciseTable extends StatefulWidget {
   final DateTime selectedDate;
   const ExerciseTable({super.key, required this.selectedDate});
@@ -36,19 +33,24 @@ class _ExerciseTableState extends State<ExerciseTable> {
   TrainingDayData? _selectedDay;
   TrainingDayData? _tempSelectedDay;
 
-  void _addExercise(String? name, String? type, int? exerciseInfoId) async {
+  void _addExercise(String? name, String? type, String? muscleGroup,
+      int? exerciseInfoId) async {
     if (_date != null) {
       final DatabaseExercise exercise;
-      if (name != null && type != null && exerciseInfoId == null) {
+      if (name != null &&
+          type != null &&
+          muscleGroup != null &&
+          exerciseInfoId == null) {
         //wpisane
         final result = await _exerciseService.checkIfExerciseInfoExistAndReturn(
           name: name,
           type: type,
+          muscleGroup: muscleGroup,
         );
         if (result == null) {
           //nie ma w bazie wiec tworzymy i dodajemy stworzone
-          final info =
-              await _exerciseService.createExerciseInfo(name: name, type: type);
+          final info = await _exerciseService.createExerciseInfo(
+              name: name, type: type, muscleGroup: muscleGroup);
           exercise = await _exerciseService.createExercise(
             dateId: _date!.id,
             exerciseInfoId: info.id,
@@ -76,7 +78,7 @@ class _ExerciseTableState extends State<ExerciseTable> {
           ));
           _exercisesStreamController.add(_exerciseCards);
         }
-      } else if (name == null && type == null && exerciseInfoId != null) {
+      } else if (exerciseInfoId != null) {
         //z listy
         final info = await _exerciseService.getExerciseInfo(id: exerciseInfoId);
         exercise = await _exerciseService.createExercise(
@@ -101,7 +103,7 @@ class _ExerciseTableState extends State<ExerciseTable> {
           widget.selectedDate.isBefore(endDate)) {
         _date =
             await _exerciseService.createDate(dateTime: widget.selectedDate);
-        _addExercise(name, type, exerciseInfoId);
+        _addExercise(name, type, muscleGroup, exerciseInfoId);
       } else {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -133,8 +135,8 @@ class _ExerciseTableState extends State<ExerciseTable> {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => AddExerciseView(
-          onResult: (name, type, exerciseInfoId) {
-            _addExercise(name, type, exerciseInfoId);
+          onResult: (name, type, muscleGroup, exerciseInfoId) {
+            _addExercise(name, type, muscleGroup, exerciseInfoId);
           },
         ),
       ),
@@ -204,7 +206,7 @@ class _ExerciseTableState extends State<ExerciseTable> {
       allExerciseSets.add(
           await _exerciseService.getSetsForExercise(exerciseId: exercise.id));
     }
-    int totalVolume = 0;
+    double totalVolume = 0;
     for (List<DatabaseSet> exerciseSets in allExerciseSets) {
       for (DatabaseSet dbSet in exerciseSets) {
         totalVolume += dbSet.weight * dbSet.reps;
@@ -486,7 +488,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
       }
     }
 
-    int lastSetWeight = 0;
+    double lastSetWeight = 0.0;
     int lastSetReps = 0;
     int lastSetDuration = 0;
 
@@ -815,6 +817,15 @@ class _ExerciseRowState extends State<ExerciseRow> {
     }
   }
 
+  double? _convertToDouble(String text) {
+    try {
+      double number = double.parse(text);
+      return number;
+    } catch (e) {
+      return null; // Zwraca null w przypadku błędu konwersji
+    }
+  }
+
   int _convertTimeToSeconds(String time) {
     if (!time.contains(':')) return 0;
 
@@ -832,7 +843,7 @@ class _ExerciseRowState extends State<ExerciseRow> {
     if (mySet == null) {
       return;
     }
-    final weight = _convertToInt(_weightController.text);
+    final weight = _convertToDouble(_weightController.text);
     final reps = _convertToInt(_repsController.text);
 
     await _exerciseService.updateSet(
@@ -864,7 +875,7 @@ class _ExerciseRowState extends State<ExerciseRow> {
     if (mySet == null) {
       return;
     }
-    final weight = _convertToInt(_weightController.text);
+    final weight = _convertToDouble(_weightController.text);
     final duration = _convertTimeToSeconds(durationText);
 
     await _exerciseService.updateSet(
@@ -904,8 +915,12 @@ class _ExerciseRowState extends State<ExerciseRow> {
     _set = dbSet;
 
     if (dbSet != null) {
-      if (dbSet.weight != 0) {
-        _weightController.text = dbSet.weight.toString();
+      if (dbSet.weight != 0.0) {
+        final value = dbSet.weight;
+        String formattedValue = value == value.toInt()
+            ? value.toInt().toString()
+            : value.toStringAsFixed(1);
+        _weightController.text = formattedValue;
       }
       if (dbSet.reps != 0) {
         _repsController.text = dbSet.reps.toString();
