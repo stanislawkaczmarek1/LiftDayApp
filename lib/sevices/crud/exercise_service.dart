@@ -80,6 +80,79 @@ class ExerciseService {
     }
   }
 
+  Future<String?> getFirstDigitDate() async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+
+    final List<Map<String, dynamic>> result = await db.rawQuery('''
+    SELECT MIN($digitDateColumn) AS first_date 
+    FROM $datesTable
+  ''');
+
+    if (result.isNotEmpty && result.first['first_date'] != null) {
+      return result.first['first_date'] as String;
+    }
+
+    return null;
+  }
+
+  int calculateDateDifference(String firstDateStr, String lastDateStr) {
+    DateTime firstDate = DateTime.parse(firstDateStr);
+    DateTime lastDate = DateTime.parse(lastDateStr);
+
+    Duration difference = lastDate.difference(firstDate);
+
+    return difference.inDays;
+  }
+
+  Future<int?> getAllDatesDifference() async {
+    String? firstDate = await getFirstDigitDate();
+    String? lastDate = await getLastDigitDate();
+
+    if (firstDate != null && lastDate != null) {
+      return calculateDateDifference(firstDate, lastDate);
+    } else {
+      return null;
+    }
+  }
+
+  Future<String?> getLastDigitDate() async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+
+    final List<Map<String, dynamic>> result = await db.rawQuery('''
+    SELECT MAX($digitDateColumn) AS last_date 
+    FROM $datesTable
+  ''');
+
+    if (result.isNotEmpty && result.first['last_date'] != null) {
+      return result.first['last_date'] as String;
+    }
+
+    return null;
+  }
+
+  Future<List<DatabaseDate>> getRangeOfDatesFromBetweenBack(
+      DateTime start, DateTime end) async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+
+    final dateFormat = DateFormat('yyyy-MM-dd');
+    final startFormatted = dateFormat.format(start);
+    final endDateFormatted = dateFormat.format(end);
+
+    log("takining data from date: $startFormatted, to date: $endDateFormatted");
+
+    final List<Map<String, dynamic>> result = await db.rawQuery('''
+    SELECT * FROM dates
+    WHERE digit_date BETWEEN ? AND ?
+    ORDER BY digit_date DESC
+  ''', [endDateFormatted, startFormatted]);
+
+    log("range: ${result.length}");
+    return result.map((dateRow) => DatabaseDate.fromRow(dateRow)).toList();
+  }
+
   Future<List<DatabaseDate>> getRangeOfDatesFromTodayBack(int range) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
@@ -98,7 +171,6 @@ class ExerciseService {
     ORDER BY digit_date DESC
   ''', [pastDateFormatted, todayFormatted]);
 
-    log("range: ${result.length}");
     return result.map((dateRow) => DatabaseDate.fromRow(dateRow)).toList();
   }
 
@@ -1164,7 +1236,7 @@ class ExerciseService {
     final digitDate = date.digitDate;
 
     final result = await db.rawQuery('''
-    SELECT s.weight, s.reps
+    SELECT s.weight, s.duration
     FROM $setsTable s
     JOIN $exercisesTable e ON e.id = s.exercise_id
     JOIN $datesTable d ON d.id = e.date_id
@@ -1189,15 +1261,99 @@ class ExerciseService {
   }
 
   Future<List<String>> getVolumeChartBottomTitles(int range) async {
+    if (range == 7) {
+      return [];
+    } else if (range == 30) {
+      return [];
+    } else if (range == 90) {}
     return [];
   }
 
   Future<List<int>> getVolumeChartData(int range) async {
-    if (range == -1) {
-    } else if (range == 7) {
+    final List<int> volumesList = [];
+    const weekInterval = 7;
+    final now = DateTime.now();
+
+    if (range == 7) {
+      for (var i = 0; i < 7; i++) {
+        double volume = 0;
+        final date = now.subtract(Duration(days: i));
+        final rangeDates = await getRangeOfDatesFromBetweenBack(date, date);
+        for (var date in rangeDates) {
+          final exercises = await getExercisesForDate(dateId: date.id);
+          for (var exercise in exercises) {
+            final sets = await getSetsForExercise(exerciseId: exercise.id);
+            for (var oneSet in sets) {
+              volume += (oneSet.reps * oneSet.weight);
+            }
+          }
+        }
+        volumesList.add(volume.round());
+      }
     } else if (range == 30) {
-    } else if (range == 90) {}
-    return [];
+      for (var i = 0; i < 4; i++) {
+        double volume = 0;
+        final DateTime startDate;
+        final DateTime endDate;
+
+        if (i == 0) {
+          startDate = now;
+          endDate =
+              now.subtract(Duration(days: ((startDate.weekday + 7) % 7) - 1));
+        } else {
+          startDate = now.subtract(Duration(
+              days: ((i - 1) * weekInterval) +
+                  (((now.weekday + 7) % 7) - 1) +
+                  1));
+          endDate = startDate.subtract(const Duration(days: 6));
+        }
+
+        final rangeDates =
+            await getRangeOfDatesFromBetweenBack(startDate, endDate);
+        for (var date in rangeDates) {
+          final exercises = await getExercisesForDate(dateId: date.id);
+          for (var exercise in exercises) {
+            final sets = await getSetsForExercise(exerciseId: exercise.id);
+            for (var oneSet in sets) {
+              volume += (oneSet.reps * oneSet.weight);
+            }
+          }
+        }
+        volumesList.add(volume.round());
+      }
+    } else if (range == 90) {
+      for (var i = 0; i < 12; i++) {
+        double volume = 0;
+        final DateTime startDate;
+        final DateTime endDate;
+
+        if (i == 0) {
+          startDate = now;
+          endDate =
+              now.subtract(Duration(days: ((startDate.weekday + 7) % 7) - 1));
+        } else {
+          startDate = now.subtract(Duration(
+              days: ((i - 1) * weekInterval) +
+                  (((now.weekday + 7) % 7) - 1) +
+                  1));
+          endDate = startDate.subtract(const Duration(days: 6));
+        }
+        final rangeDates =
+            await getRangeOfDatesFromBetweenBack(startDate, endDate);
+        for (var date in rangeDates) {
+          final exercises = await getExercisesForDate(dateId: date.id);
+          for (var exercise in exercises) {
+            final sets = await getSetsForExercise(exerciseId: exercise.id);
+            for (var oneSet in sets) {
+              volume += (oneSet.reps * oneSet.weight);
+            }
+          }
+        }
+        volumesList.add(volume.round());
+      }
+    }
+
+    return volumesList.reversed.toList();
   }
 
   Future<Map<String, int>> getMuscleChartData(

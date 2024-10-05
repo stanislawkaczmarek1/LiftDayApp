@@ -1,6 +1,4 @@
 import 'dart:developer' as dev;
-import 'dart:math';
-
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:liftday/constants/themes.dart';
@@ -16,7 +14,7 @@ class StatisticsPage extends StatefulWidget {
 
 class _StatisticsPageState extends State<StatisticsPage> {
   int _selectedRangeForBarChart = 7;
-  final List<bool> _selectionsForBarChart = [true, false, false, false];
+  final List<bool> _selectionsForBarChart = [true, false, false];
   int _selectedRangeForRadarChart = 7;
   final List<bool> _selectionsForRadarChart = [true, false, false, false];
 
@@ -73,9 +71,12 @@ class _StatisticsPageState extends State<StatisticsPage> {
                             case ConnectionState.done:
                               if (snapshot.hasData && snapshot.data != null) {
                                 final y = _selectedRangeForBarChart;
+                                final yAxisValues = snapshot.data!.values.first;
+                                final bottomTitles = snapshot.data!.keys.first;
                                 return AppBarChart(
+                                  yAxisValues: yAxisValues,
                                   numberOfXAxisValues: y,
-                                  bottomTitles: const ["w1", "w2", "w3", "w4"],
+                                  bottomTitles: bottomTitles,
                                 );
                               } else {
                                 return const SizedBox(height: 0);
@@ -94,52 +95,49 @@ class _StatisticsPageState extends State<StatisticsPage> {
                 ),
               ),
               const SizedBox(height: 20),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: ToggleButtons(
-                  isSelected: _selectionsForBarChart,
-                  borderRadius: BorderRadius.circular(8),
-                  fillColor: Theme.of(context).colorScheme.onPrimary,
-                  children: const [
-                    //UWAGA NA RESPONSYWNOSC
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 14),
-                      child: Text("7 dni"),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 14),
-                      child: Text("30 dni"),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 14),
-                      child: Text("90 dni"),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 14),
-                      child: Text("Cały okres"),
-                    ),
-                  ],
-                  onPressed: (int newIndex) {
-                    setState(() {
-                      for (int i = 0; i < _selectionsForBarChart.length; i++) {
-                        _selectionsForBarChart[i] = i == newIndex;
-                      }
-                      switch (newIndex) {
-                        case 0:
-                          _selectedRangeForBarChart = 7;
-                          break;
-                        case 1:
-                          _selectedRangeForBarChart = 30;
-                          break;
-                        case 2:
-                          _selectedRangeForBarChart = 90;
-                          break;
-                        case 3:
-                          _selectedRangeForBarChart = -1;
-                          break;
-                      }
-                    });
-                  },
+              Center(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: ToggleButtons(
+                    isSelected: _selectionsForBarChart,
+                    borderRadius: BorderRadius.circular(8),
+                    fillColor: Theme.of(context).colorScheme.onPrimary,
+                    children: const [
+                      //UWAGA NA RESPONSYWNOSC
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 14),
+                        child: Text("7 dni"),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 14),
+                        child: Text("30 dni"),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 14),
+                        child: Text("90 dni"),
+                      ),
+                    ],
+                    onPressed: (int newIndex) {
+                      setState(() {
+                        for (int i = 0;
+                            i < _selectionsForBarChart.length;
+                            i++) {
+                          _selectionsForBarChart[i] = i == newIndex;
+                        }
+                        switch (newIndex) {
+                          case 0:
+                            _selectedRangeForBarChart = 7;
+                            break;
+                          case 1:
+                            _selectedRangeForBarChart = 30;
+                            break;
+                          case 2:
+                            _selectedRangeForBarChart = 90;
+                            break;
+                        }
+                      });
+                    },
+                  ),
                 ),
               ),
               const SizedBox(
@@ -195,54 +193,56 @@ class _StatisticsPageState extends State<StatisticsPage> {
               const SizedBox(
                 height: 20,
               ),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: ToggleButtons(
-                  isSelected: _selectionsForRadarChart,
-                  borderRadius: BorderRadius.circular(8),
-                  fillColor: Theme.of(context).colorScheme.onPrimary,
-                  children: const [
-                    //UWAGA NA RESPONSYWNOSC
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 14),
-                      child: Text("7 dni"),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 14),
-                      child: Text("30 dni"),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 14),
-                      child: Text("90 dni"),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 14),
-                      child: Text("Cały okres"),
-                    ),
-                  ],
-                  onPressed: (int newIndex) {
-                    setState(() {
-                      for (int i = 0;
-                          i < _selectionsForRadarChart.length;
-                          i++) {
-                        _selectionsForRadarChart[i] = i == newIndex;
-                      }
-                      switch (newIndex) {
-                        case 0:
-                          _selectedRangeForRadarChart = 7;
-                          break;
-                        case 1:
-                          _selectedRangeForRadarChart = 30;
-                          break;
-                        case 2:
-                          _selectedRangeForRadarChart = 90;
-                          break;
-                        case 3:
-                          _selectedRangeForRadarChart = -1;
-                          break;
-                      }
-                    });
-                  },
+              Center(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: ToggleButtons(
+                    isSelected: _selectionsForRadarChart,
+                    borderRadius: BorderRadius.circular(8),
+                    fillColor: Theme.of(context).colorScheme.onPrimary,
+                    children: const [
+                      //UWAGA NA RESPONSYWNOSC
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 14),
+                        child: Text("7 dni"),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 14),
+                        child: Text("30 dni"),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 14),
+                        child: Text("90 dni"),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 14),
+                        child: Text("Cały okres"),
+                      ),
+                    ],
+                    onPressed: (int newIndex) {
+                      setState(() {
+                        for (int i = 0;
+                            i < _selectionsForRadarChart.length;
+                            i++) {
+                          _selectionsForRadarChart[i] = i == newIndex;
+                        }
+                        switch (newIndex) {
+                          case 0:
+                            _selectedRangeForRadarChart = 7;
+                            break;
+                          case 1:
+                            _selectedRangeForRadarChart = 30;
+                            break;
+                          case 2:
+                            _selectedRangeForRadarChart = 90;
+                            break;
+                          case 3:
+                            _selectedRangeForRadarChart = -1;
+                            break;
+                        }
+                      });
+                    },
+                  ),
                 ),
               ),
               const SizedBox(
@@ -325,12 +325,14 @@ class _AppRadarChartState extends State<AppRadarChart> {
 }
 
 class AppBarChart extends StatefulWidget {
+  final List<int> yAxisValues;
   final List<String> bottomTitles;
   final int numberOfXAxisValues;
   const AppBarChart(
       {super.key,
       required this.numberOfXAxisValues,
-      required this.bottomTitles});
+      required this.bottomTitles,
+      required this.yAxisValues});
 
   final Color barColor = colorBabyBlue;
 
@@ -378,7 +380,7 @@ class BarChartSample1State extends State<AppBarChart> {
     );
   }
 
-  Widget getLeftTitles(double value, TitleMeta meta) {
+  Widget getRightTitles(double value, TitleMeta meta) {
     const maxLeftValue = 29;
 
     if (value == maxLeftValue) {
@@ -387,7 +389,7 @@ class BarChartSample1State extends State<AppBarChart> {
 
     const style = TextStyle(
       fontWeight: FontWeight.bold,
-      fontSize: 14,
+      fontSize: 8,
       color: Colors.grey,
     );
 
@@ -397,7 +399,7 @@ class BarChartSample1State extends State<AppBarChart> {
   Widget getBottomTitles(double value, TitleMeta meta) {
     const style = TextStyle(
       fontWeight: FontWeight.bold,
-      fontSize: 14,
+      fontSize: 12,
       color: Colors.grey,
     );
 
@@ -411,19 +413,23 @@ class BarChartSample1State extends State<AppBarChart> {
   }
 
   BarChartData randomData() {
-    final int x = widget.numberOfXAxisValues;
+    final int numberOfXAxisValues = widget.numberOfXAxisValues;
+    final yAxisValues = widget.yAxisValues;
+    final int maxXAxisValue = yAxisValues.reduce((a, b) => a > b ? a : b);
+    int horizontalInterval = (maxXAxisValue / 4).floor();
+
     int verticalInterval;
-    if (x == 7) {
+    if (numberOfXAxisValues == 7) {
       verticalInterval = 7;
-    } else if (x == 30) {
+    } else if (numberOfXAxisValues == 30) {
       verticalInterval = 4;
-    } else if (x == 90) {
+    } else if (numberOfXAxisValues == 90) {
       verticalInterval = 12;
     } else {
       verticalInterval = 12;
     }
 
-    dev.log("x: $x");
+    dev.log("x: $numberOfXAxisValues");
     return BarChartData(
       barTouchData: BarTouchData(
         enabled: false,
@@ -437,21 +443,21 @@ class BarChartSample1State extends State<AppBarChart> {
             getTitlesWidget: getBottomTitles,
           ),
         ),
-        leftTitles: AxisTitles(
+        leftTitles: const AxisTitles(
           sideTitles: SideTitles(
-              showTitles: true,
-              reservedSize: 30,
-              getTitlesWidget: getLeftTitles),
+            showTitles: false,
+          ),
         ),
         topTitles: const AxisTitles(
           sideTitles: SideTitles(
             showTitles: false,
           ),
         ),
-        rightTitles: const AxisTitles(
+        rightTitles: AxisTitles(
           sideTitles: SideTitles(
-            showTitles: false,
-          ),
+              showTitles: true,
+              reservedSize: 30,
+              getTitlesWidget: getRightTitles),
         ),
       ),
       borderData: FlBorderData(
@@ -461,14 +467,15 @@ class BarChartSample1State extends State<AppBarChart> {
         verticalInterval,
         (i) => makeGroupData(
           i,
-          Random().nextInt(29).toDouble() + 1,
+          widget.yAxisValues.elementAt(i).toDouble(),
         ),
       ),
       gridData: FlGridData(
         show: true,
         drawHorizontalLine: true,
         verticalInterval: verticalInterval.toDouble(),
-        horizontalInterval: 5, // Set the interval between lines (optional)
+        horizontalInterval: horizontalInterval
+            .toDouble(), // Set the interval between lines (optional)
         getDrawingHorizontalLine: (value) {
           return const FlLine(
             color: Colors.grey,
