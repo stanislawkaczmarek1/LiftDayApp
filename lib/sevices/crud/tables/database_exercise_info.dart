@@ -30,7 +30,7 @@ class DatabaseExerciseInfo {
   int get hashCode => id.hashCode;
 }
 
-const List<String> muscleGroups = [
+const List<String> appMuscleGroups = [
   "chest",
   "back",
   "arms",

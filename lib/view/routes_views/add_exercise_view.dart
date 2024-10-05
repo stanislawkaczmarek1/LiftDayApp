@@ -145,7 +145,7 @@ class _AddExerciseViewState extends State<AddExerciseView> {
             return AlertDialog(
               content: SingleChildScrollView(
                 child: ListBody(
-                  children: muscleGroups.map((group) {
+                  children: appMuscleGroups.map((group) {
                     return RadioListTile<String>(
                       title: Text(group),
                       value: group,

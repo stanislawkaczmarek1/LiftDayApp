@@ -180,6 +180,7 @@ class _PlansPageState extends State<PlansPage> {
                 ),
                 const SizedBox(height: 20),
                 Container(
+                  width: double.infinity,
                   padding: const EdgeInsets.all(16.0),
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.onPrimary,

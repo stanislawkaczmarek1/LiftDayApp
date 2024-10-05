@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:liftday/sevices/bloc/app_bar/app_bar_bloc.dart';
 import 'package:liftday/sevices/bloc/app_bar/app_bar_state.dart';
 import 'package:liftday/view/pages/settings_page.dart';
+import 'package:liftday/view/pages/statistics_page.dart';
 import 'package:liftday/view/pages/training_page.dart';
 import 'package:liftday/view/pages/plans_pages.dart';
 
@@ -17,6 +18,7 @@ class _MainViewState extends State<MainView> {
   final List<Widget> _pages = [
     const TrainingPage(),
     const PlansPage(),
+    const StatisticsPage(),
     const SettingsPage(),
   ];
 
@@ -49,6 +51,10 @@ class _MainViewState extends State<MainView> {
           BottomNavigationBarItem(
             icon: Icon(Icons.description),
             label: 'Plans',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.bar_chart),
+            label: 'Statistics',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),

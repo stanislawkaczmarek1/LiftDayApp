@@ -46,6 +46,23 @@ class ExerciseService {
     return date;
   }
 
+  Future<DatabaseDate> getDateById({required int id}) async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+    final dates = await db.query(
+      datesTable,
+      limit: 1,
+      where: "$idColumn = ?",
+      whereArgs: [id],
+    );
+    if (dates.isEmpty) {
+      throw CouldNotFindNote();
+    } else {
+      final date = DatabaseDate.fromRow(dates.first);
+      return date;
+    }
+  }
+
   Future<DatabaseDate> getDate({required String digitDate}) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
@@ -63,14 +80,36 @@ class ExerciseService {
     }
   }
 
-  Future<Iterable<DatabaseDate>> getAllDates() async {
+  Future<List<DatabaseDate>> getRangeOfDatesFromTodayBack(int range) async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+
+    final today = DateTime.now();
+
+    final pastDate = today.subtract(Duration(days: range));
+
+    final dateFormat = DateFormat('yyyy-MM-dd');
+    final todayFormatted = dateFormat.format(today);
+    final pastDateFormatted = dateFormat.format(pastDate);
+
+    final List<Map<String, dynamic>> result = await db.rawQuery('''
+    SELECT * FROM dates
+    WHERE digit_date BETWEEN ? AND ?
+    ORDER BY digit_date DESC
+  ''', [pastDateFormatted, todayFormatted]);
+
+    log("range: ${result.length}");
+    return result.map((dateRow) => DatabaseDate.fromRow(dateRow)).toList();
+  }
+
+  Future<List<DatabaseDate>> getAllDates() async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
     final dates = await db.query(
       datesTable,
     );
 
-    return dates.map((dateRow) => DatabaseDate.fromRow(dateRow));
+    return dates.map((dateRow) => DatabaseDate.fromRow(dateRow)).toList();
   }
 
   Future<void> deleteDate({required int id}) async {
@@ -176,6 +215,31 @@ class ExerciseService {
       muscleGroup: muscleGroup,
     );
     return exerciseInfo;
+  }
+
+  Future<List<DatabaseExerciseInfo>> getExerciseInfosByMuscleGroup(
+      String muscleGroup) async {
+    List<DatabaseExerciseInfo> selectedExerciseInfos = [];
+    final allAppExerciseInfos = List.of(appExercises);
+    for (var appExerciseInfo in allAppExerciseInfos) {
+      if (appExerciseInfo.muscleGroup == muscleGroup) {
+        selectedExerciseInfos.add(appExerciseInfo);
+      }
+    }
+
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+    final dbExercisesInfos = await db.query(
+      exercisesInfoTable,
+      where: "$muscleGroupColumn = ?",
+      whereArgs: [muscleGroup],
+    );
+    final exerciseInfosFromDb = dbExercisesInfos
+        .map((exerciseInfoRow) => DatabaseExerciseInfo.fromRow(exerciseInfoRow))
+        .toList();
+
+    selectedExerciseInfos.addAll(exerciseInfosFromDb);
+    return selectedExerciseInfos;
   }
 
   Future<DatabaseExerciseInfo> getExerciseInfo({required int id}) async {
@@ -857,10 +921,8 @@ class ExerciseService {
     return exercises.map((row) => DatabaseExercise.fromRow(row)).toList();
   }
 
-  Future<DatabaseExercise?> getExerciseByDateAndInfoId(
-      //potencjalny problem z duplikatami
-      {required int dateId,
-      required int infoId}) async {
+  Future<List<DatabaseExercise>> getExerciseByDateAndInfoId(
+      {required int dateId, required int infoId}) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
 
@@ -870,11 +932,7 @@ class ExerciseService {
       where: "$dateIdColumn = ? AND $exerciseInfoIdColumn = ?",
       whereArgs: [dateId, infoId],
     );
-    if (results.isEmpty) {
-      return null;
-    } else {
-      return DatabaseExercise.fromRow(results.first);
-    }
+    return results.map((row) => DatabaseExercise.fromRow(row)).toList();
   }
 
   Future<DatabaseSet> createSet(
@@ -1068,15 +1126,19 @@ class ExerciseService {
       int dateId, int exerciseInfoId, int setIndex) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
+
+    final date = await getDateById(id: dateId);
+    final digitDate = date.digitDate;
+
     final result = await db.rawQuery('''
     SELECT s.weight, s.reps
     FROM $setsTable s
     JOIN $exercisesTable e ON e.id = s.exercise_id
     JOIN $datesTable d ON d.id = e.date_id
-    WHERE d.id < ? AND e.$exerciseInfoIdColumn = ? AND s.set_index = ?
-    ORDER BY d.id DESC
+    WHERE d.digit_date < ? AND e.$exerciseInfoIdColumn = ? AND s.set_index = ?
+    ORDER BY d.digit_date DESC
     LIMIT 1;
-  ''', [dateId, exerciseInfoId, setIndex]);
+  ''', [digitDate, exerciseInfoId, setIndex]);
 
     if (result.isNotEmpty) {
       final set = result.first;
@@ -1097,15 +1159,19 @@ class ExerciseService {
       int dateId, int exerciseInfoId, int setIndex) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
+
+    final date = await getDateById(id: dateId);
+    final digitDate = date.digitDate;
+
     final result = await db.rawQuery('''
-    SELECT s.weight, s.duration
+    SELECT s.weight, s.reps
     FROM $setsTable s
     JOIN $exercisesTable e ON e.id = s.exercise_id
     JOIN $datesTable d ON d.id = e.date_id
-    WHERE d.id < ? AND e.$exerciseInfoIdColumn = ? AND s.set_index = ?
-    ORDER BY d.id DESC
+    WHERE d.digit_date < ? AND e.$exerciseInfoIdColumn = ? AND s.set_index = ?
+    ORDER BY d.digit_date DESC
     LIMIT 1;
-  ''', [dateId, exerciseInfoId, setIndex]);
+  ''', [digitDate, exerciseInfoId, setIndex]);
 
     if (result.isNotEmpty) {
       final set = result.first;
@@ -1120,6 +1186,65 @@ class ExerciseService {
     } else {
       return null;
     }
+  }
+
+  Future<List<String>> getVolumeChartBottomTitles(int range) async {
+    return [];
+  }
+
+  Future<List<int>> getVolumeChartData(int range) async {
+    if (range == -1) {
+    } else if (range == 7) {
+    } else if (range == 30) {
+    } else if (range == 90) {}
+    return [];
+  }
+
+  Future<Map<String, int>> getMuscleChartData(
+      List<String> muscleGroups, int range) async {
+    Map<String, int> data = {};
+
+    final List<DatabaseDate> rangeDates;
+    if (range == -1) {
+      rangeDates = await getAllDates();
+    } else {
+      rangeDates = await getRangeOfDatesFromTodayBack(range);
+    }
+
+    for (var muscleGroup in muscleGroups) {
+      List<DatabaseExercise> wantedExercises = [];
+
+      final wantedExerciseInfos =
+          await getExerciseInfosByMuscleGroup(muscleGroup);
+      for (var date in rangeDates) {
+        final allExercisesInDate = await getExercisesForDate(dateId: date.id);
+        //log("number of Exercises in ${date.digitDate}: ${allExercisesInDate.length}");
+        for (var exerciseInDate in allExercisesInDate) {
+          bool containsId = wantedExerciseInfos
+              .any((info) => info.id == exerciseInDate.exerciseInfoId);
+          if (containsId) {
+            //log("\nnow muscle is : $muscleGroup, looking for exercises engaging this muscle in date ${date.digitDate}: find exercise; ${exerciseInDate}, added to wantedExercises :)");
+            wantedExercises.add(exerciseInDate);
+          }
+        }
+      }
+
+      List<DatabaseSet> wantedSets = [];
+
+      for (var exercise in wantedExercises) {
+        wantedSets.addAll(await getSetsForExercise(exerciseId: exercise.id));
+      }
+
+      int repsCount = 0;
+
+      for (var wantedSet in wantedSets) {
+        repsCount += wantedSet.reps;
+      }
+
+      data.putIfAbsent(muscleGroup, () => repsCount);
+    }
+
+    return data;
   }
 
   Database _getDatabaseOrThrow() {

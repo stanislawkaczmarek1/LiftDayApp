@@ -11,29 +11,31 @@ const colorCeladon = Color.fromARGB(255, 192, 241, 243);
 const colorPurple = Color.fromARGB(255, 186, 72, 255);
 
 ThemeData lightTheme = ThemeData(
-  colorScheme: const ColorScheme.light(
-    background: colorWhite,
-    onBackground: colorBlack,
-    primary: colorBlack,
-    onPrimary: colorWhite,
-    secondary: colorBabyBlue,
-    tertiary: colorLightGrey,
-  ),
-  appBarTheme: const AppBarTheme(
-    backgroundColor: colorWhite,
-  ),
-);
+    colorScheme: const ColorScheme.light(
+      background: colorWhite,
+      onBackground: colorBlack,
+      primary: colorBlack,
+      onPrimary: colorWhite,
+      secondary: colorBabyBlue,
+      tertiary: colorLightGrey,
+    ),
+    appBarTheme: const AppBarTheme(
+      backgroundColor: colorWhite,
+    ),
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+        unselectedIconTheme: IconThemeData(color: Colors.grey)));
 
 ThemeData darkTheme = ThemeData(
-  colorScheme: const ColorScheme.dark(
-    background: colorBlack,
-    onBackground: colorWhite,
-    primary: colorWhite,
-    onPrimary: colorBlack,
-    secondary: colorBabyBlue,
-    tertiary: colorDarkGrey,
-  ),
-  appBarTheme: const AppBarTheme(
-    backgroundColor: colorBlack,
-  ),
-);
+    colorScheme: const ColorScheme.dark(
+      background: colorBlack,
+      onBackground: colorWhite,
+      primary: colorWhite,
+      onPrimary: colorBlack,
+      secondary: colorBabyBlue,
+      tertiary: colorDarkGrey,
+    ),
+    appBarTheme: const AppBarTheme(
+      backgroundColor: colorBlack,
+    ),
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+        unselectedIconTheme: IconThemeData(color: Colors.grey)));
