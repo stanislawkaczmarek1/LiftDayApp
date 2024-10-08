@@ -131,7 +131,7 @@ class ExerciseService {
     return null;
   }
 
-  Future<List<DatabaseDate>> getRangeOfDatesFromBetweenSomeDatesBackInTime(
+  Future<List<DatabaseDate>> getDatesFromBetweenTwoDatesBackInTime(
       DateTime start, DateTime end) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
@@ -149,7 +149,7 @@ class ExerciseService {
     return result.map((dateRow) => DatabaseDate.fromRow(dateRow)).toList();
   }
 
-  Future<List<DatabaseDate>> getRangeOfDatesFromTodayInSomeRangeBackInTime(
+  Future<List<DatabaseDate>> getDatesFromTodayInSomeRangeBackInTime(
       int range) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
@@ -1282,7 +1282,7 @@ class ExerciseService {
         double volume = 0;
         final date = now.subtract(Duration(days: i));
         final rangeDates =
-            await getRangeOfDatesFromBetweenSomeDatesBackInTime(date, date);
+            await getDatesFromBetweenTwoDatesBackInTime(date, date);
         for (var date in rangeDates) {
           final exercises = await getExercisesForDate(dateId: date.id);
           for (var exercise in exercises) {
@@ -1312,8 +1312,8 @@ class ExerciseService {
           endDate = startDate.subtract(const Duration(days: 6));
         }
 
-        final rangeDates = await getRangeOfDatesFromBetweenSomeDatesBackInTime(
-            startDate, endDate);
+        final rangeDates =
+            await getDatesFromBetweenTwoDatesBackInTime(startDate, endDate);
 
         for (var date in rangeDates) {
           final exercises = await getExercisesForDate(dateId: date.id);
@@ -1344,7 +1344,7 @@ class ExerciseService {
     if (range == rangeOfAllTime) {
       rangeDates = await getAllDates();
     } else {
-      rangeDates = await getRangeOfDatesFromTodayInSomeRangeBackInTime(range);
+      rangeDates = await getDatesFromTodayInSomeRangeBackInTime(range);
     }
 
     for (var muscleGroup in muscleGroups) {
