@@ -11,6 +11,7 @@ import 'package:liftday/sevices/crud/tables/database_exercise_info.dart';
 import 'package:liftday/sevices/crud/tables/database_set.dart';
 import 'package:liftday/sevices/crud/tables/database_training_day.dart';
 import 'package:liftday/sevices/crud/tables/database_training_day_exercise.dart';
+import 'package:liftday/view/widgets/charts/charts_data/volume_chart_data.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' show join;
@@ -1260,17 +1261,8 @@ class ExerciseService {
     }
   }
 
-  Future<List<String>> getVolumeChartBottomTitles(int range) async {
-    if (range == 7) {
-      return [];
-    } else if (range == 30) {
-      return [];
-    } else if (range == 90) {}
-    return [];
-  }
-
-  Future<List<int>> getVolumeChartData(int range) async {
-    final List<int> volumesList = [];
+  Future<List<VolumeChartData>> getVolumeChartData(int range) async {
+    final List<VolumeChartData> dataList = [];
     const weekInterval = 7;
     final now = DateTime.now();
 
@@ -1288,7 +1280,8 @@ class ExerciseService {
             }
           }
         }
-        volumesList.add(volume.round());
+        dataList.add(VolumeChartData(
+            volume: volume.round(), bottomTitle: "${date.weekday}"));
       }
     } else if (range == 30) {
       for (var i = 0; i < 4; i++) {
@@ -1319,7 +1312,10 @@ class ExerciseService {
             }
           }
         }
-        volumesList.add(volume.round());
+
+        String bottomTitle = startDate.month.toString();
+        dataList.add(
+            VolumeChartData(volume: volume.round(), bottomTitle: bottomTitle));
       }
     } else if (range == 90) {
       for (var i = 0; i < 12; i++) {
@@ -1349,11 +1345,14 @@ class ExerciseService {
             }
           }
         }
-        volumesList.add(volume.round());
+
+        String bottomTitle = startDate.month.toString();
+        dataList.add(
+            VolumeChartData(volume: volume.round(), bottomTitle: bottomTitle));
       }
     }
-
-    return volumesList.reversed.toList();
+    final reservedData = dataList.reversed.toList();
+    return reservedData;
   }
 
   Future<Map<String, int>> getMuscleChartData(

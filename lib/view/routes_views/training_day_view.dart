@@ -7,7 +7,7 @@ import 'package:liftday/sevices/bloc/edit/edit_state.dart';
 import 'package:liftday/sevices/crud/data_package/exercise_data.dart';
 import 'package:liftday/sevices/crud/exercise_service.dart';
 import 'package:liftday/sevices/crud/data_package/training_day_data.dart';
-import 'package:liftday/view/widgets/simple_exercise_table.dart';
+import 'package:liftday/view/widgets/tables/simple_exercise_table.dart';
 import 'package:liftday/view/widgets/ui_elements.dart';
 
 class TrainingDayView extends StatefulWidget {

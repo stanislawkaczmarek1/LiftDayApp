@@ -1,0 +1,77 @@
+import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/material.dart';
+
+class MuscleChart extends StatefulWidget {
+  final Map<String, int> muscleChartData;
+
+  const MuscleChart({
+    super.key,
+    required this.muscleChartData,
+  });
+
+  final titleColor = Colors.grey;
+
+  @override
+  State<MuscleChart> createState() => _MuscleChartState();
+}
+
+class _MuscleChartState extends State<MuscleChart> {
+  @override
+  Widget build(BuildContext context) {
+    final muscleGroupNames = widget.muscleChartData.keys.toList();
+    final setsPerMuscleGroup = widget.muscleChartData.values.toList();
+    int maxNumber;
+    if (setsPerMuscleGroup.isNotEmpty) {
+      maxNumber = setsPerMuscleGroup.reduce((a, b) => a > b ? a : b);
+    } else {
+      maxNumber = 1;
+    }
+    if (maxNumber == 0) {
+      maxNumber = 1;
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          AspectRatio(
+            aspectRatio: 1.2,
+            child: RadarChart(
+              RadarChartData(
+                dataSets: [
+                  RadarDataSet(
+                    dataEntries: setsPerMuscleGroup.map((value) {
+                      return RadarEntry(value: value.toDouble());
+                    }).toList(),
+                  ),
+                ],
+                radarBackgroundColor: Colors.transparent,
+                borderData: FlBorderData(show: false),
+                radarBorderData: const BorderSide(color: Colors.transparent),
+                titlePositionPercentageOffset: 0.2,
+                titleTextStyle:
+                    TextStyle(color: widget.titleColor, fontSize: 14),
+                getTitle: (index, angle) {
+                  if (index < muscleGroupNames.length) {
+                    return RadarChartTitle(
+                      text: muscleGroupNames[index],
+                    );
+                  }
+                  return const RadarChartTitle(text: '');
+                },
+                tickCount: maxNumber,
+                ticksTextStyle:
+                    const TextStyle(fontSize: 0, color: Colors.transparent),
+                tickBorderData: const BorderSide(color: Colors.transparent),
+                gridBorderData: BorderSide(color: widget.titleColor, width: 2),
+              ),
+              swapAnimationDuration: const Duration(milliseconds: 400),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
