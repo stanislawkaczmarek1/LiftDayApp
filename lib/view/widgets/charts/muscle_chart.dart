@@ -9,7 +9,7 @@ class MuscleChart extends StatefulWidget {
     required this.muscleChartData,
   });
 
-  final titleColor = Colors.grey;
+  final textColor = Colors.grey;
 
   @override
   State<MuscleChart> createState() => _MuscleChartState();
@@ -52,7 +52,7 @@ class _MuscleChartState extends State<MuscleChart> {
                 radarBorderData: const BorderSide(color: Colors.transparent),
                 titlePositionPercentageOffset: 0.2,
                 titleTextStyle:
-                    TextStyle(color: widget.titleColor, fontSize: 14),
+                    TextStyle(color: widget.textColor, fontSize: 14),
                 getTitle: (index, angle) {
                   if (index < muscleGroupNames.length) {
                     return RadarChartTitle(
@@ -65,7 +65,7 @@ class _MuscleChartState extends State<MuscleChart> {
                 ticksTextStyle:
                     const TextStyle(fontSize: 0, color: Colors.transparent),
                 tickBorderData: const BorderSide(color: Colors.transparent),
-                gridBorderData: BorderSide(color: widget.titleColor, width: 2),
+                gridBorderData: BorderSide(color: widget.textColor, width: 2),
               ),
               swapAnimationDuration: const Duration(milliseconds: 400),
             ),

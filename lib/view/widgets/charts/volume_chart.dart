@@ -1,15 +1,16 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:liftday/constants/themes.dart';
-import 'package:liftday/view/widgets/charts/charts_data/volume_chart_data.dart';
+import 'package:liftday/sevices/conversion/conversion_service.dart';
+import 'package:liftday/sevices/crud/data_package/volume_chart_data.dart';
 
 class VolumeChart extends StatefulWidget {
   final List<VolumeChartData> data;
-  final int numberOfXAxisValues;
+  final int range;
   const VolumeChart({
     super.key,
     required this.data,
-    required this.numberOfXAxisValues,
+    required this.range,
   });
 
   final Color barColor = colorBabyBlue;
@@ -19,93 +20,28 @@ class VolumeChart extends StatefulWidget {
 }
 
 class _VolumeChartState extends State<VolumeChart> {
-  late List<int> yAxisValues;
-  late List<String> bottomTitles;
+  late List<int> _yAxisValues;
+  late List<String> _bottomTitles;
+  late ConversionService _conversionService;
+  final int _numberOfDaysInWeek = 7;
+  final int _numberOfDaysInMonth = 30;
+  final int _numberOfDaysInThreeMonts = 90;
+
   @override
   void initState() {
-    yAxisValues = widget.data.map((data) => data.volume).toList();
-    bottomTitles = widget.data.map((data) => data.bottomTitle).toList();
-    if (widget.data.length != 7) {
-      bottomTitles = transformList(removeDuplicates(bottomTitles));
+    _conversionService = ConversionService();
+    _yAxisValues = widget.data.map((data) => data.volume).toList();
+    _bottomTitles = widget.data.map((data) => data.bottomTitle).toList();
+
+    if (widget.data.length != _numberOfDaysInWeek) {
+      final listAfterRemovingDuplicates =
+          _conversionService.removeDuplicates(_bottomTitles);
+      final listAfterTransformation =
+          _conversionService.transformList(listAfterRemovingDuplicates);
+
+      _bottomTitles = listAfterTransformation;
     }
     super.initState();
-  }
-
-  String getDayOfWeek(String day) {
-    switch (day) {
-      case "1":
-        return 'M'; // Monday
-      case "2":
-        return 'T'; // Tuesday
-      case "3":
-        return 'W'; // Wednesday
-      case "4":
-        return 'T'; // Thursday
-      case "5":
-        return 'F'; // Friday
-      case "6":
-        return 'S'; // Saturday
-      case "7":
-        return 'S'; // Sunday
-      default:
-        return ''; // Zwróć błąd dla niewłaściwego dnia
-    }
-  }
-
-  String getDayOfMonth(String month) {
-    switch (month) {
-      case "1":
-        return 'Jan'; // January
-      case "2":
-        return 'Feb'; // February
-      case "3":
-        return 'Mar'; // March
-      case "4":
-        return 'Apr'; // April
-      case "5":
-        return 'May'; // May
-      case "6":
-        return 'Jun'; // June
-      case "7":
-        return 'Jul'; // July
-      case "8":
-        return 'Aug'; // August
-      case "9":
-        return 'Sep'; // September
-      case "10":
-        return 'Oct'; // October
-      case "11":
-        return 'Nov'; // November
-      case "12":
-        return 'Dec'; // December
-      default:
-        return ''; // Zwróć błąd dla niewłaściwego miesiąca
-    }
-  }
-
-  List<String> transformList(List<String> input) {
-    for (int i = 0; i < input.length - 1; i++) {
-      if (input[i] != "" && input[i + 1] != "") {
-        input[i] = "";
-      }
-    }
-    return input;
-  }
-
-  List<String> removeDuplicates(List<String> list) {
-    List<String> result = [];
-    Set<String> seen = {};
-
-    for (String s in list) {
-      if (seen.contains(s)) {
-        result.add("");
-      } else {
-        result.add(s);
-        seen.add(s);
-      }
-    }
-
-    return result;
   }
 
   @override
@@ -147,30 +83,15 @@ class _VolumeChartState extends State<VolumeChart> {
     );
   }
 
-  String formatNumber(double number) {
-    if (number < 1000) {
-      return number.toStringAsFixed(0);
-    } else if (number < 1000000) {
-      return '${(number / 1000).toStringAsFixed(1)}k';
-    } else {
-      return '${(number / 1000000).toStringAsFixed(1)}m';
-    }
-  }
-
   Widget getRightTitles(double value, TitleMeta meta) {
-    const maxLeftValue = 29;
-
-    if (value == maxLeftValue) {
-      return const Text("");
-    }
-
     const style = TextStyle(
       fontWeight: FontWeight.bold,
       fontSize: 12,
       color: Colors.grey,
     );
 
-    return Text(formatNumber(value), style: style);
+    final convertedText = _conversionService.formatNumberInYAxis(value);
+    return Text(convertedText, style: style);
   }
 
   Widget getBottomTitles(double value, TitleMeta meta) {
@@ -182,11 +103,17 @@ class _VolumeChartState extends State<VolumeChart> {
 
     int index = value.toInt();
 
-    if (index >= 0 && index < bottomTitles.length) {
-      if (widget.data.length == 7) {
-        return Text(getDayOfWeek(bottomTitles[index]), style: style);
+    if (index >= 0 && index < _bottomTitles.length) {
+      if (widget.data.length == _numberOfDaysInWeek) {
+        final covertedText =
+            _conversionService.getDayOfWeekOneLetter(_bottomTitles[index]);
+
+        return Text(covertedText, style: style);
       } else {
-        return Text(getDayOfMonth(bottomTitles[index]), style: style);
+        final convertedText =
+            _conversionService.getDayOfMonthThreeLetters(_bottomTitles[index]);
+
+        return Text(convertedText, style: style);
       }
     } else {
       return const Text("");
@@ -194,8 +121,8 @@ class _VolumeChartState extends State<VolumeChart> {
   }
 
   BarChartData randomData() {
-    final int numberOfXAxisValues = widget.numberOfXAxisValues;
-    final yAxisValuesData = yAxisValues;
+    final int numberOfXAxisValues = widget.range;
+    final yAxisValuesData = _yAxisValues;
     int maxXAxisValue;
     int horizontalInterval;
     if (yAxisValuesData.isNotEmpty) {
@@ -211,11 +138,11 @@ class _VolumeChartState extends State<VolumeChart> {
     }
 
     int verticalInterval;
-    if (numberOfXAxisValues == 7) {
+    if (numberOfXAxisValues == _numberOfDaysInWeek) {
       verticalInterval = 7;
-    } else if (numberOfXAxisValues == 30) {
+    } else if (numberOfXAxisValues == _numberOfDaysInMonth) {
       verticalInterval = 4;
-    } else if (numberOfXAxisValues == 90) {
+    } else if (numberOfXAxisValues == _numberOfDaysInThreeMonts) {
       verticalInterval = 12;
     } else {
       verticalInterval = 12;
@@ -246,9 +173,10 @@ class _VolumeChartState extends State<VolumeChart> {
         ),
         rightTitles: AxisTitles(
           sideTitles: SideTitles(
-              showTitles: true,
-              reservedSize: 30,
-              getTitlesWidget: getRightTitles),
+            showTitles: true,
+            reservedSize: 30,
+            getTitlesWidget: getRightTitles,
+          ),
         ),
       ),
       borderData: FlBorderData(
@@ -265,8 +193,7 @@ class _VolumeChartState extends State<VolumeChart> {
         show: true,
         drawHorizontalLine: true,
         verticalInterval: verticalInterval.toDouble(),
-        horizontalInterval: horizontalInterval
-            .toDouble(), // Set the interval between lines (optional)
+        horizontalInterval: horizontalInterval.toDouble(),
         getDrawingHorizontalLine: (value) {
           return const FlLine(
             color: Colors.grey,

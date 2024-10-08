@@ -11,12 +11,10 @@ import 'package:liftday/sevices/crud/tables/database_exercise_info.dart';
 import 'package:liftday/sevices/crud/tables/database_set.dart';
 import 'package:liftday/sevices/crud/tables/database_training_day.dart';
 import 'package:liftday/sevices/crud/tables/database_training_day_exercise.dart';
-import 'package:liftday/view/widgets/charts/charts_data/volume_chart_data.dart';
+import 'package:liftday/sevices/crud/data_package/volume_chart_data.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' show join;
-
-//uzupelnic wszedzie muscle group
 
 class ExerciseService {
   Database? _db;
@@ -133,7 +131,7 @@ class ExerciseService {
     return null;
   }
 
-  Future<List<DatabaseDate>> getRangeOfDatesFromBetweenBack(
+  Future<List<DatabaseDate>> getRangeOfDatesFromBetweenSomeDatesBackInTime(
       DateTime start, DateTime end) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
@@ -142,19 +140,17 @@ class ExerciseService {
     final startFormatted = dateFormat.format(start);
     final endDateFormatted = dateFormat.format(end);
 
-    log("takining data from date: $startFormatted, to date: $endDateFormatted");
-
     final List<Map<String, dynamic>> result = await db.rawQuery('''
     SELECT * FROM dates
     WHERE digit_date BETWEEN ? AND ?
     ORDER BY digit_date DESC
   ''', [endDateFormatted, startFormatted]);
 
-    log("range: ${result.length}");
     return result.map((dateRow) => DatabaseDate.fromRow(dateRow)).toList();
   }
 
-  Future<List<DatabaseDate>> getRangeOfDatesFromTodayBack(int range) async {
+  Future<List<DatabaseDate>> getRangeOfDatesFromTodayInSomeRangeBackInTime(
+      int range) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
 
@@ -1264,13 +1260,29 @@ class ExerciseService {
   Future<List<VolumeChartData>> getVolumeChartData(int range) async {
     final List<VolumeChartData> dataList = [];
     const weekInterval = 7;
+    const int numberOfDaysInWeek = 7;
+    const int numberOfDaysInMonth = 30;
+    const int numberOfDaysInThreeMonts = 90;
     final now = DateTime.now();
 
-    if (range == 7) {
-      for (var i = 0; i < 7; i++) {
+    final int numberOfIterations;
+
+    if (range == numberOfDaysInWeek) {
+      numberOfIterations = 7;
+    } else if (range == numberOfDaysInMonth) {
+      numberOfIterations = 4;
+    } else if (range == numberOfDaysInThreeMonts) {
+      numberOfIterations = 12;
+    } else {
+      return [];
+    }
+
+    if (range == numberOfDaysInWeek) {
+      for (var i = 0; i < numberOfIterations; i++) {
         double volume = 0;
         final date = now.subtract(Duration(days: i));
-        final rangeDates = await getRangeOfDatesFromBetweenBack(date, date);
+        final rangeDates =
+            await getRangeOfDatesFromBetweenSomeDatesBackInTime(date, date);
         for (var date in rangeDates) {
           final exercises = await getExercisesForDate(dateId: date.id);
           for (var exercise in exercises) {
@@ -1283,11 +1295,10 @@ class ExerciseService {
         dataList.add(VolumeChartData(
             volume: volume.round(), bottomTitle: "${date.weekday}"));
       }
-    } else if (range == 30) {
-      for (var i = 0; i < 4; i++) {
+    } else {
+      for (var i = 0; i < numberOfIterations; i++) {
         double volume = 0;
-        final DateTime startDate;
-        final DateTime endDate;
+        final DateTime startDate, endDate;
 
         if (i == 0) {
           startDate = now;
@@ -1301,41 +1312,9 @@ class ExerciseService {
           endDate = startDate.subtract(const Duration(days: 6));
         }
 
-        final rangeDates =
-            await getRangeOfDatesFromBetweenBack(startDate, endDate);
-        for (var date in rangeDates) {
-          final exercises = await getExercisesForDate(dateId: date.id);
-          for (var exercise in exercises) {
-            final sets = await getSetsForExercise(exerciseId: exercise.id);
-            for (var oneSet in sets) {
-              volume += (oneSet.reps * oneSet.weight);
-            }
-          }
-        }
+        final rangeDates = await getRangeOfDatesFromBetweenSomeDatesBackInTime(
+            startDate, endDate);
 
-        String bottomTitle = startDate.month.toString();
-        dataList.add(
-            VolumeChartData(volume: volume.round(), bottomTitle: bottomTitle));
-      }
-    } else if (range == 90) {
-      for (var i = 0; i < 12; i++) {
-        double volume = 0;
-        final DateTime startDate;
-        final DateTime endDate;
-
-        if (i == 0) {
-          startDate = now;
-          endDate =
-              now.subtract(Duration(days: ((startDate.weekday + 7) % 7) - 1));
-        } else {
-          startDate = now.subtract(Duration(
-              days: ((i - 1) * weekInterval) +
-                  (((now.weekday + 7) % 7) - 1) +
-                  1));
-          endDate = startDate.subtract(const Duration(days: 6));
-        }
-        final rangeDates =
-            await getRangeOfDatesFromBetweenBack(startDate, endDate);
         for (var date in rangeDates) {
           final exercises = await getExercisesForDate(dateId: date.id);
           for (var exercise in exercises) {
@@ -1351,19 +1330,21 @@ class ExerciseService {
             VolumeChartData(volume: volume.round(), bottomTitle: bottomTitle));
       }
     }
-    final reservedData = dataList.reversed.toList();
-    return reservedData;
+
+    final reservedDataList = dataList.reversed.toList();
+    return reservedDataList;
   }
 
   Future<Map<String, int>> getMuscleChartData(
       List<String> muscleGroups, int range) async {
     Map<String, int> data = {};
+    const rangeOfAllTime = -1;
 
     final List<DatabaseDate> rangeDates;
-    if (range == -1) {
+    if (range == rangeOfAllTime) {
       rangeDates = await getAllDates();
     } else {
-      rangeDates = await getRangeOfDatesFromTodayBack(range);
+      rangeDates = await getRangeOfDatesFromTodayInSomeRangeBackInTime(range);
     }
 
     for (var muscleGroup in muscleGroups) {
