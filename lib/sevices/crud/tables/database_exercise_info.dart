@@ -42,5 +42,5 @@ const List<String> appMuscleGroups = [
 
 final List<DatabaseExerciseInfo> appExercises = [
   DatabaseExerciseInfo(
-      id: 10000, name: "wyciskanie na ławce płaskiej", muscleGroup: "chest")
+      id: -1, name: "wyciskanie na ławce płaskiej", muscleGroup: "chest")
 ];

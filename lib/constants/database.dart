@@ -1,4 +1,4 @@
-const dbName = 'app_database.db';
+const dbName = 'liftday_database.db';
 const datesTable = 'dates';
 const exercisesTable = 'exercises';
 const setsTable = 'sets';

@@ -135,7 +135,7 @@ class _PlansPageState extends State<PlansPage> {
                                   return Text(
                                     (daysUntilEnd != null && hasPlan)
                                         ? '$daysUntilEnd dni do końca'
-                                        : 'Brak planu',
+                                        : '',
                                     style: const TextStyle(fontSize: 14.0),
                                   );
 

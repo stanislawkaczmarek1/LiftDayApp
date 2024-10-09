@@ -312,7 +312,7 @@ class ExerciseService {
   }
 
   Future<DatabaseExerciseInfo> getExerciseInfo({required int id}) async {
-    if (id >= 10000) {
+    if (id < 0) {
       try {
         final exercise =
             appExercises.firstWhere((exercise) => exercise.id == id);
@@ -549,6 +549,15 @@ class ExerciseService {
     );
     if (deletedCount == 0) {
       throw CouldNotDeleteNote();
+    }
+  }
+
+  Future<bool> checkIfThereIsPlanInRestoredDB() async {
+    final days = await getTrainingDaysFromPlan();
+    if (days.isNotEmpty) {
+      return true;
+    } else {
+      return false;
     }
   }
 
