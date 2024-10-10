@@ -92,7 +92,7 @@ class ExerciseService {
            SUM(CASE WHEN sets.reps > 0 OR sets.duration > 0 OR sets.weight > 0 THEN 1 ELSE 0 END) AS valid_sets_count
     FROM dates
     JOIN exercises ON dates.id = exercises.date_id
-    JOIN sets ON exercises.id = sets.exercise_id
+    LEFT JOIN sets ON exercises.id = sets.exercise_id
     WHERE dates.digit_date BETWEEN ? AND ?
     GROUP BY dates.id
   ''', [startDate, endDate]);

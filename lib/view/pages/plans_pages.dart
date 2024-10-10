@@ -226,8 +226,8 @@ class _PlansTabState extends State<PlansTab> {
               foregroundColor: Colors.grey,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
-                  side: const BorderSide(
-                    color: Colors.grey,
+                  side: BorderSide(
+                    color: Theme.of(context).colorScheme.onTertiary,
                   )),
               minimumSize: const Size(double.infinity, 0)),
           child: Row(
@@ -460,7 +460,7 @@ class _RoutinesTabState extends State<RoutinesTab> {
                       "+ Dodaj rutynę",
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 14,
                         fontWeight: FontWeight.normal,
                         color: Theme.of(context).colorScheme.secondary,
                       ),

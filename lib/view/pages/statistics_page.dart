@@ -17,15 +17,29 @@ class _StatisticsPageState extends State<StatisticsPage> {
     return Container(
       color: Theme.of(context).colorScheme.onPrimary,
       height: MediaQuery.of(context).size.height,
-      child: const SingleChildScrollView(
+      child: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(8.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              VolumeChartWidget(),
-              SizedBox(height: 20),
-              MuscleChartWidget(),
+              Divider(
+                color: Theme.of(context).colorScheme.tertiary,
+                thickness: 2,
+                height: 20,
+              ),
+              const VolumeChartWidget(),
+              Divider(
+                color: Theme.of(context).colorScheme.tertiary,
+                thickness: 2,
+                height: 60,
+              ),
+              const MuscleChartWidget(),
+              Divider(
+                color: Theme.of(context).colorScheme.tertiary,
+                thickness: 2,
+                height: 60,
+              ),
             ],
           ),
         ),
@@ -59,7 +73,8 @@ class _VolumeChartWidgetState extends State<VolumeChartWidget> {
         Container(
           padding: const EdgeInsets.all(16.0),
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.onTertiary,
+            borderRadius: BorderRadius.circular(8),
+            color: Theme.of(context).colorScheme.onPrimary,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -95,7 +110,7 @@ class _VolumeChartWidgetState extends State<VolumeChartWidget> {
                       default:
                         return Container(
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12.0),
+                            borderRadius: BorderRadius.circular(8.0),
                           ),
                         );
                     }
@@ -105,13 +120,15 @@ class _VolumeChartWidgetState extends State<VolumeChartWidget> {
             ],
           ),
         ),
-        const SizedBox(height: 20),
         Center(
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: ToggleButtons(
+              textStyle: const TextStyle(fontSize: 13),
               isSelected: _selectionsForBarChart,
+              borderRadius: BorderRadius.circular(8),
               fillColor: Theme.of(context).colorScheme.onTertiary,
+              borderColor: Theme.of(context).colorScheme.tertiary,
               children: const [
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 14),
@@ -185,7 +202,8 @@ class _MuscleChartWidgetState extends State<MuscleChartWidget> {
         Container(
           padding: const EdgeInsets.all(16.0),
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.onTertiary,
+            borderRadius: BorderRadius.circular(8),
+            color: Theme.of(context).colorScheme.onPrimary,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -226,17 +244,23 @@ class _MuscleChartWidgetState extends State<MuscleChartWidget> {
             ],
           ),
         ),
-        const SizedBox(height: 20),
         Center(
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: ToggleButtons(
+              textStyle: const TextStyle(
+                fontSize: 13,
+              ),
               isSelected: _selectionsForRadarChart,
+              borderRadius: BorderRadius.circular(8),
               fillColor: Theme.of(context).colorScheme.onTertiary,
+              borderColor: Theme.of(context).colorScheme.onTertiary,
               children: const [
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 14),
-                  child: Text("7 dni"),
+                  child: Text(
+                    "7 dni",
+                  ),
                 ),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 14),
