@@ -87,12 +87,17 @@ class _SimpleExerciseTableState extends State<SimpleExerciseTable> {
         ),
         Padding(
             padding: const EdgeInsets.all(16.0),
-            child: normalButton(context, "+ Dodaj ćwiczenie", () {
-              if (exercises.length >= 10) {
-                return;
-              }
-              _showAddExerciseView();
-            })),
+            child: normalButton(
+              "+ Dodaj ćwiczenie",
+              () {
+                if (exercises.length >= 10) {
+                  return;
+                }
+                _showAddExerciseView();
+              },
+              Theme.of(context).colorScheme.tertiary,
+              Theme.of(context).colorScheme.primary,
+            )),
       ],
     );
   }

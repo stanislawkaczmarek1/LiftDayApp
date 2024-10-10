@@ -129,7 +129,6 @@ class _ChooseTrainingDaysViewState extends State<ChooseTrainingDaysView> {
               height: 30.0,
             ),
             normalButton(
-              context,
               "Dalej",
               () {
                 final List<String> confirmedDays = _convertDaysBoolToString();
@@ -141,6 +140,8 @@ class _ChooseTrainingDaysViewState extends State<ChooseTrainingDaysView> {
                   showHaveToChooseTrainingDays(context);
                 }
               },
+              Theme.of(context).colorScheme.tertiary,
+              Theme.of(context).colorScheme.primary,
             ),
             const SizedBox(
               height: 30.0,

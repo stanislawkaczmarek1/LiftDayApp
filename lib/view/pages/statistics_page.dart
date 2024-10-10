@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:liftday/sevices/crud/exercise_service.dart';
-import 'package:liftday/sevices/crud/tables/database_exercise_info.dart';
 import 'package:liftday/view/widgets/charts/muscle_chart.dart';
 import 'package:liftday/view/widgets/charts/volume_chart.dart';
 import 'package:liftday/sevices/crud/data_package/volume_chart_data.dart';
@@ -168,8 +167,15 @@ class _MuscleChartWidgetState extends State<MuscleChartWidget> {
 
   Future<Map<String, int>> _loadMuscleChartData(int range) async {
     ExerciseService exerciseService = ExerciseService();
-    final data =
-        await exerciseService.getMuscleChartData(appMuscleGroups, range);
+    const List<String> muscleGroups = [
+      "chest",
+      "back",
+      "arms",
+      "shoulders",
+      "legs",
+      "core",
+    ];
+    final data = await exerciseService.getMuscleChartData(muscleGroups, range);
     return data;
   }
 

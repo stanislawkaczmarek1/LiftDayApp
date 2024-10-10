@@ -32,9 +32,16 @@ class _StartViewState extends State<StartView> {
           Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              normalButton(context, "Rozpocznij", () {
-                context.read<ConfigBloc>().add(const ConfigEventStartButton());
-              }),
+              normalButton(
+                "Rozpocznij",
+                () {
+                  context
+                      .read<ConfigBloc>()
+                      .add(const ConfigEventStartButton());
+                },
+                Theme.of(context).colorScheme.tertiary,
+                Theme.of(context).colorScheme.primary,
+              ),
               const SizedBox(
                 height: 20.0,
               ),

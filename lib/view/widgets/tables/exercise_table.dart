@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:liftday/dialogs/error_dialog.dart';
@@ -600,10 +601,15 @@ class _ExerciseCardState extends State<ExerciseCard> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          widget.exerciseName,
-                          style: const TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
+                        Expanded(
+                          child: Text(
+                            widget.exerciseName,
+                            softWrap: true, //TODO: dodac gdzie potrzeba
+                            maxLines: 2, //
+                            overflow: TextOverflow.ellipsis, //
+                            style: const TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
                         ),
                         PopupMenuButton<String>(
                           onSelected: (value) async {
@@ -727,7 +733,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
                         style: TextButton.styleFrom(
                           elevation: 3.0,
                           backgroundColor:
-                              Theme.of(context).colorScheme.tertiary,
+                              Theme.of(context).colorScheme.onTertiary,
                           foregroundColor:
                               Theme.of(context).colorScheme.primary,
                           shape: RoundedRectangleBorder(

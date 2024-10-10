@@ -6,16 +6,17 @@ import 'package:liftday/sevices/bloc/app_bar/app_bar_state.dart';
 typedef OnPressedFunction = void Function();
 
 TextButton normalButton(
-  BuildContext context,
   String text,
   OnPressedFunction onPressed,
+  Color backgroundColor,
+  Color foregroundColor,
 ) {
   return TextButton(
     onPressed: onPressed,
     style: TextButton.styleFrom(
       elevation: 3.0,
-      backgroundColor: Theme.of(context).colorScheme.tertiary,
-      foregroundColor: Theme.of(context).colorScheme.primary,
+      backgroundColor: backgroundColor,
+      foregroundColor: foregroundColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),

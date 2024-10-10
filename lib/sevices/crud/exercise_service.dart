@@ -79,6 +79,46 @@ class ExerciseService {
     }
   }
 
+  Future<Map<String, Set<DateTime>>> getDatesByTypeAndRange(
+      DateTime start, DateTime end) async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+
+    String startDate = start.toIso8601String().split('T')[0];
+    String endDate = end.toIso8601String().split('T')[0];
+
+    final result = await db.rawQuery('''
+    SELECT dates.digit_date, 
+           SUM(CASE WHEN sets.reps > 0 OR sets.duration > 0 OR sets.weight > 0 THEN 1 ELSE 0 END) AS valid_sets_count
+    FROM dates
+    JOIN exercises ON dates.id = exercises.date_id
+    JOIN sets ON exercises.id = sets.exercise_id
+    WHERE dates.digit_date BETWEEN ? AND ?
+    GROUP BY dates.id
+  ''', [startDate, endDate]);
+
+    Set<DateTime> greenDates = {}; // Ćwiczenia z ważnymi setami
+    Set<DateTime> grayDates = {}; // Ćwiczenia, ale brak ważnych setów
+
+    for (var row in result) {
+      DateTime date = DateTime.parse(row['digit_date'] as String);
+      DateTime normalizedDate = DateTime(date.year, date.month, date.day);
+
+      int validSetsCount = row['valid_sets_count'] as int;
+
+      if (validSetsCount > 0) {
+        greenDates.add(normalizedDate); // Zielone kropki
+      } else {
+        grayDates.add(normalizedDate); // Szare kropki
+      }
+    }
+
+    return {
+      'green': greenDates,
+      'gray': grayDates,
+    };
+  }
+
   Future<String?> getFirstDigitDate() async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
@@ -951,7 +991,7 @@ class ExerciseService {
     }
   }
 
-  Future<Iterable<DatabaseExercise>> getAllExercises() async {
+  Future<List<DatabaseExercise>> getAllExercises() async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
     final exercises = await db.query(
@@ -959,7 +999,8 @@ class ExerciseService {
     );
 
     return exercises
-        .map((exercisesRow) => DatabaseExercise.fromRow(exercisesRow));
+        .map((exercisesRow) => DatabaseExercise.fromRow(exercisesRow))
+        .toList();
   }
 
   Future<void> deleteExercise({required int id}) async {

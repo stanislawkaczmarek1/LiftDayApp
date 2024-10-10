@@ -1,5 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:liftday/constants/themes.dart';
+import 'package:liftday/dialogs/error_dialog.dart';
 import 'package:liftday/sevices/crud/tables/database_exercise_info.dart';
 import 'package:liftday/view/routes_views/exercise_list_view.dart';
 import 'package:liftday/view/widgets/ui_elements.dart';
@@ -21,8 +24,8 @@ class _AddExerciseViewState extends State<AddExerciseView> {
   String exerciseType = 'reps';
   String exerciseText = 'ciężar i powtórzenia';
 
-  String selectedMuscleGroup = 'other';
-  String tempSelectedGroup = 'other';
+  String selectedMuscleGroup = 'wybierz';
+  String tempSelectedGroup = 'wybierz';
 
   @override
   Widget build(BuildContext context) {
@@ -40,92 +43,144 @@ class _AddExerciseViewState extends State<AddExerciseView> {
         );
       }),
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Nazwa: ",
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  TextField(
-                    autofocus: true,
-                    onChanged: (value) {
-                      setState(() {
-                        exerciseName = value;
-                      });
-                    },
-                    style: const TextStyle(fontSize: 15),
-                  ),
-                  const SizedBox(height: 24),
-                  const Text(
-                    "Rodzaj: ",
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  const SizedBox(height: 14),
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        if (exerciseType == 'reps') {
-                          exerciseType = 'duration';
-                          exerciseText = 'ciężar i czas';
-                        } else {
-                          exerciseType = 'reps';
-                          exerciseText = 'ciężar i powtórzenia';
-                        }
-                      });
-                    },
-                    child: Text(
-                      exerciseText,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: colorBabyBlue,
-                        fontSize: 14,
-                      ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16.0),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.onPrimary,
+                  borderRadius: BorderRadius.circular(12.0),
+                ),
+                alignment: Alignment.topLeft,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Nazwa: ",
+                      style: TextStyle(fontSize: 18),
                     ),
-                  ),
-                  const SizedBox(height: 24),
-                  const Text(
-                    "Główna grupa mięśniowa: ",
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  const SizedBox(height: 14),
-                  GestureDetector(
-                    onTap: () async {
-                      _showMuscleGroupDialog();
-                    },
-                    child: Text(
-                      selectedMuscleGroup,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                        color: colorBabyBlue,
+                    TextField(
+                      autofocus: true,
+                      onChanged: (value) {
+                        setState(() {
+                          exerciseName = value;
+                        });
+                      },
+                      decoration: InputDecoration(
+                        hintText: '',
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                              width: 2,
+                              color: Theme.of(context).colorScheme.primary),
+                        ),
                       ),
+                      style: const TextStyle(fontSize: 15),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+              const SizedBox(height: 24),
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    if (exerciseType == 'reps') {
+                      exerciseType = 'duration';
+                      exerciseText = 'ciężar i czas';
+                    } else {
+                      exerciseType = 'reps';
+                      exerciseText = 'ciężar i powtórzenia';
+                    }
+                  });
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.onTertiary,
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                  alignment: Alignment.topLeft,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Rodzaj: ",
+                        style: TextStyle(fontSize: 14),
+                      ),
+                      const SizedBox(height: 14),
+                      Text(
+                        exerciseText,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: colorBabyBlue,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              GestureDetector(
+                onTap: () async {
+                  _showMuscleGroupDialog("CHANGE");
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.onTertiary,
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                  alignment: Alignment.topLeft,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Główna grupa mięśniowa: ",
+                        style: TextStyle(fontSize: 14),
+                      ),
+                      const SizedBox(height: 14),
+                      Text(
+                        selectedMuscleGroup,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                          color: colorBabyBlue,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: Padding(
         padding: const EdgeInsets.symmetric(vertical: 20),
         child: FloatingActionButton(
-          backgroundColor: colorBabyBlue,
+          backgroundColor: colorLightGreen,
           heroTag: 'addBtn',
           onPressed: () {
-            if (exerciseName.isNotEmpty) {
+            if (exerciseName.isEmpty && selectedMuscleGroup == 'wybierz') {
+              showErrorDialog(context);
+            } else if (exerciseName.isNotEmpty &&
+                selectedMuscleGroup == 'wybierz') {
+              _showMuscleGroupDialog("SAVE");
+            } else if ((exerciseName.isEmpty &&
+                selectedMuscleGroup != 'wybierz')) {
+              showErrorDialog(context);
+            } else {
               Navigator.of(context).pop();
               widget.onResult(
                   exerciseName, exerciseType, selectedMuscleGroup, null);
-            } else {
-              Navigator.of(context).pop();
             }
           },
           tooltip: 'Dodaj',
@@ -135,7 +190,7 @@ class _AddExerciseViewState extends State<AddExerciseView> {
     );
   }
 
-  void _showMuscleGroupDialog() async {
+  void _showMuscleGroupDialog(String whenPressed) async {
     showDialog(
       context: context,
       builder: (context) {
@@ -143,6 +198,10 @@ class _AddExerciseViewState extends State<AddExerciseView> {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setRadioState) {
             return AlertDialog(
+              title: const Text(
+                "Główna grupa mięśniowa",
+                style: TextStyle(fontSize: 16),
+              ),
               content: SingleChildScrollView(
                 child: ListBody(
                   children: appMuscleGroups.map((group) {
@@ -152,13 +211,21 @@ class _AddExerciseViewState extends State<AddExerciseView> {
                       groupValue: tempSelectedGroup,
                       onChanged: (String? value) {
                         if (value != null) {
-                          setRadioState(() {
-                            tempSelectedGroup = value;
-                          });
-                          setState(() {
-                            selectedMuscleGroup = tempSelectedGroup;
-                          });
-                          Navigator.of(context).pop();
+                          if (whenPressed == "CHANGE") {
+                            setRadioState(() {
+                              tempSelectedGroup = value;
+                            });
+                            setState(() {
+                              selectedMuscleGroup = tempSelectedGroup;
+                            });
+                            Navigator.of(context).pop();
+                          }
+                          if (whenPressed == "SAVE") {
+                            Navigator.of(context).pop();
+                            Navigator.of(context).pop();
+                            widget.onResult(exerciseName, exerciseType,
+                                selectedMuscleGroup, null);
+                          }
                         }
                       },
                     );

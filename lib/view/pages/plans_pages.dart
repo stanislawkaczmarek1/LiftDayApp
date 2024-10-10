@@ -12,7 +12,6 @@ import 'package:liftday/sevices/crud/data_package/exercise_data.dart';
 import 'package:liftday/sevices/crud/data_package/training_day_data.dart';
 import 'package:liftday/sevices/crud/exercise_service.dart';
 import 'package:liftday/sevices/settings/settings_service.dart';
-import 'package:liftday/view/widgets/ui_elements.dart';
 //caly plans page sie rozjechal podczas testow, reszta wydaje sie ok
 //TO DO
 
@@ -99,7 +98,7 @@ class _PlansPageState extends State<PlansPage> {
         }
       },
       child: Container(
-        color: Theme.of(context).colorScheme.tertiary,
+        color: Theme.of(context).colorScheme.onPrimary,
         height: MediaQuery.of(context).size.height,
         child: SingleChildScrollView(
           child: Padding(
@@ -151,28 +150,43 @@ class _PlansPageState extends State<PlansPage> {
                           ? Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                _buildTextButton("Zastąp", Icons.autorenew, () {
-                                  context.read<ConfigBloc>().add(
-                                      const ConfigEventChangePlanFromMainView());
-                                }),
-                                _buildTextButton("Usuń", Icons.delete,
-                                    () async {
-                                  final delete =
-                                      await showAreYouSureToDeletePlan(context);
-                                  if (delete && context.mounted) {
-                                    context.read<EditBloc>().add(
-                                        const EditEventPushDeletePlanButton());
-                                  }
-                                }),
+                                _buildTextButton(
+                                  "Zastąp",
+                                  Icons.autorenew,
+                                  () {
+                                    context.read<ConfigBloc>().add(
+                                        const ConfigEventChangePlanFromMainView());
+                                  },
+                                  Theme.of(context).colorScheme.secondary,
+                                ),
+                                _buildTextButton(
+                                  "Usuń",
+                                  Icons.delete,
+                                  () async {
+                                    final delete =
+                                        await showAreYouSureToDeletePlan(
+                                            context);
+                                    if (delete && context.mounted) {
+                                      context.read<EditBloc>().add(
+                                          const EditEventPushDeletePlanButton());
+                                    }
+                                  },
+                                  Theme.of(context).colorScheme.secondary,
+                                ),
                               ],
                             )
                           : Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                _buildTextButton("Dodaj plan", Icons.add, () {
-                                  context.read<ConfigBloc>().add(
-                                      const ConfigEventAddPlanFromMainView());
-                                }),
+                                _buildTextButton(
+                                  "Dodaj plan",
+                                  Icons.add,
+                                  () {
+                                    context.read<ConfigBloc>().add(
+                                        const ConfigEventAddPlanFromMainView());
+                                  },
+                                  Theme.of(context).colorScheme.secondary,
+                                ),
                               ],
                             ),
                     ],
@@ -259,10 +273,8 @@ class _PlansPageState extends State<PlansPage> {
                             }
                           }),
                       const SizedBox(height: 10),
-                      normalButton(
-                        context,
-                        "+ Dodaj inny dzień",
-                        () {
+                      GestureDetector(
+                        onTap: () {
                           if (!maximumOfOtherTrainingDays) {
                             context
                                 .read<EditBloc>()
@@ -271,6 +283,27 @@ class _PlansPageState extends State<PlansPage> {
                             showErrorDialog(context);
                           }
                         },
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(vertical: 8.0),
+                          padding: const EdgeInsets.all(16.0),
+                          decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.onPrimary,
+                              borderRadius: BorderRadius.circular(12.0),
+                              border: Border.all(
+                                color: Theme.of(context).colorScheme.secondary,
+                              )),
+                          child: Center(
+                            child: Text(
+                              "+ Dodaj dzień treningowy",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.normal,
+                                color: Theme.of(context).colorScheme.secondary,
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -317,7 +350,7 @@ class _PlansPageState extends State<PlansPage> {
   }
 
   Widget _buildTextButton(
-      String title, IconData icon, void Function() onPressed) {
+      String title, IconData icon, void Function() onPressed, Color color) {
     return Expanded(
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 5),
@@ -325,21 +358,27 @@ class _PlansPageState extends State<PlansPage> {
           onPressed: onPressed,
           style: TextButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 16),
-              backgroundColor: Theme.of(context).colorScheme.tertiary,
-              foregroundColor: Theme.of(context).colorScheme.primary,
+              backgroundColor: Theme.of(context).colorScheme.onPrimary,
+              foregroundColor: Theme.of(context).colorScheme.secondary,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
+                  borderRadius: BorderRadius.circular(12),
+                  side: BorderSide(
+                    color: Theme.of(context).colorScheme.secondary,
+                  )),
               minimumSize: const Size(double.infinity, 0)),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, size: 32),
+              Icon(
+                icon,
+                size: 32,
+              ),
               const SizedBox(height: 8),
               Text(
                 title,
                 textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 14),
+                style: const TextStyle(
+                    fontSize: 14, fontWeight: FontWeight.normal),
               ),
             ],
           ),
@@ -355,7 +394,7 @@ Widget _buildExerciseDayTile(
     margin: const EdgeInsets.symmetric(vertical: 8.0),
     padding: const EdgeInsets.all(16.0),
     decoration: BoxDecoration(
-      color: Theme.of(context).colorScheme.tertiary,
+      color: Theme.of(context).colorScheme.onTertiary,
       borderRadius: BorderRadius.circular(12.0),
     ),
     child: Column(
@@ -404,7 +443,9 @@ Widget _buildExerciseDayTile(
                     ),
                 ];
               },
-              icon: const Icon(Icons.more_vert),
+              icon: const Icon(
+                Icons.more_vert,
+              ),
             ),
           ],
         ),
