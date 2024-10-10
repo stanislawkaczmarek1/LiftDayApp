@@ -15,7 +15,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Theme.of(context).colorScheme.tertiary,
+      color: Theme.of(context).colorScheme.onPrimary,
       height: MediaQuery.of(context).size.height,
       child: const SingleChildScrollView(
         child: Padding(
@@ -59,8 +59,7 @@ class _VolumeChartWidgetState extends State<VolumeChartWidget> {
         Container(
           padding: const EdgeInsets.all(16.0),
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.onPrimary,
-            borderRadius: BorderRadius.circular(12.0),
+            color: Theme.of(context).colorScheme.onTertiary,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -112,8 +111,7 @@ class _VolumeChartWidgetState extends State<VolumeChartWidget> {
             scrollDirection: Axis.horizontal,
             child: ToggleButtons(
               isSelected: _selectionsForBarChart,
-              borderRadius: BorderRadius.circular(8),
-              fillColor: Theme.of(context).colorScheme.onPrimary,
+              fillColor: Theme.of(context).colorScheme.onTertiary,
               children: const [
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 14),
@@ -187,8 +185,7 @@ class _MuscleChartWidgetState extends State<MuscleChartWidget> {
         Container(
           padding: const EdgeInsets.all(16.0),
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.onPrimary,
-            borderRadius: BorderRadius.circular(12.0),
+            color: Theme.of(context).colorScheme.onTertiary,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -235,8 +232,7 @@ class _MuscleChartWidgetState extends State<MuscleChartWidget> {
             scrollDirection: Axis.horizontal,
             child: ToggleButtons(
               isSelected: _selectionsForRadarChart,
-              borderRadius: BorderRadius.circular(8),
-              fillColor: Theme.of(context).colorScheme.onPrimary,
+              fillColor: Theme.of(context).colorScheme.onTertiary,
               children: const [
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 14),

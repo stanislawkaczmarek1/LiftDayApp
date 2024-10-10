@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:liftday/sevices/bloc/tap/tap_bloc.dart';
 import 'package:liftday/view/widgets/calendar.dart';
@@ -14,7 +15,6 @@ class TrainingPage extends StatefulWidget {
 
 class _TrainingPageState extends State<TrainingPage> {
   DateTime? _selectedDay = DateTime.now();
-  //late final ExerciseService _exerciseService;
 
   void _onDaySelected(DateTime selectedDay) {
     setState(() {
@@ -24,39 +24,44 @@ class _TrainingPageState extends State<TrainingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox.expand(
-      child: Container(
-        color: Theme.of(context).colorScheme.tertiary,
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.onPrimary,
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(20.0),
-                    bottomRight: Radius.circular(20.0),
-                  ),
-                ),
-                child: AppCalendar(onDaySelected: _onDaySelected),
+    return Column(
+      children: [
+        Container(
+          color: Theme.of(context).colorScheme.tertiary,
+          child: Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.onPrimary,
+              borderRadius: const BorderRadius.only(
+                bottomLeft: Radius.circular(20.0),
+                bottomRight: Radius.circular(20.0),
               ),
-              const SizedBox(height: 20),
-              if (_selectedDay != null)
-                GestureDetector(
-                  onTap: () {
-                    log("tapped");
-                    context.read<TapBloc>().add(Tap());
-                  },
-                  child: ExerciseTable(
-                    key: ValueKey(_selectedDay),
-                    selectedDate: _selectedDay!,
-                  ),
-                ),
-            ],
+            ),
+            child: AppCalendar(onDaySelected: _onDaySelected),
           ),
         ),
-      ),
+        Expanded(
+          child: Container(
+            color: Theme.of(context).colorScheme.tertiary,
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  if (_selectedDay != null)
+                    GestureDetector(
+                      onTap: () {
+                        log("tapped");
+                        context.read<TapBloc>().add(Tap());
+                      },
+                      child: ExerciseTable(
+                        key: ValueKey(_selectedDay),
+                        selectedDate: _selectedDay!,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

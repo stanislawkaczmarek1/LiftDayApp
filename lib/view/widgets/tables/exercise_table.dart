@@ -242,26 +242,29 @@ class _ExerciseTableState extends State<ExerciseTable> {
               return StatefulBuilder(
                   builder: (BuildContext context, StateSetter setState) {
                 return AlertDialog(
-                  content: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      ...days.map((day) {
-                        return RadioListTile<TrainingDayData>(
-                          title: Text(
-                            day.name,
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                          activeColor: Theme.of(context).colorScheme.secondary,
-                          value: day,
-                          groupValue: _tempSelectedDay,
-                          onChanged: (TrainingDayData? value) {
-                            setState(() {
-                              _tempSelectedDay = value;
-                            });
-                          },
-                        );
-                      })
-                    ],
+                  content: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ...days.map((day) {
+                          return RadioListTile<TrainingDayData>(
+                            title: Text(
+                              day.name,
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                            activeColor:
+                                Theme.of(context).colorScheme.secondary,
+                            value: day,
+                            groupValue: _tempSelectedDay,
+                            onChanged: (TrainingDayData? value) {
+                              setState(() {
+                                _tempSelectedDay = value;
+                              });
+                            },
+                          );
+                        })
+                      ],
+                    ),
                   ),
                   actions: [
                     TextButton(

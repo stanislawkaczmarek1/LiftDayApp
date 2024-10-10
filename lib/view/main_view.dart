@@ -17,7 +17,7 @@ class MainView extends StatefulWidget {
 class _MainViewState extends State<MainView> {
   final List<Widget> _pages = [
     const TrainingPage(),
-    const PlansPage(),
+    const PlansTab(),
     const StatisticsPage(),
     const SettingsPage(),
   ];
@@ -32,40 +32,76 @@ class _MainViewState extends State<MainView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: BlocBuilder<AppBarBloc, AppBarState>(
-          builder: (context, state) => state.title,
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: _selectedIndex == 1
+            ? AppBar(
+                title: BlocBuilder<AppBarBloc, AppBarState>(
+                  builder: (context, state) => state.title,
+                ),
+                centerTitle: true,
+                elevation: 0,
+                scrolledUnderElevation: 0.0,
+                bottom: TabBar(
+                  indicatorColor: Theme.of(context).colorScheme.secondary,
+                  labelColor: Theme.of(context).colorScheme.secondary,
+                  unselectedLabelColor: Colors.grey,
+                  labelStyle: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.bold),
+                  unselectedLabelStyle: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.normal),
+                  tabs: const [
+                    Tab(
+                      text: 'Plan',
+                    ),
+                    Tab(text: 'Rutyny'),
+                  ],
+                ),
+              )
+            : AppBar(
+                title: BlocBuilder<AppBarBloc, AppBarState>(
+                  builder: (context, state) => state.title,
+                ),
+                centerTitle: true,
+                elevation: 0,
+                scrolledUnderElevation: 0.0,
+              ),
+
+        body: _selectedIndex == 1
+            ? const TabBarView(
+                children: [
+                  PlansTab(),
+                  RoutinesTab(),
+                ],
+              )
+            : _pages[_selectedIndex], // Inne strony
+
+        bottomNavigationBar: BottomNavigationBar(
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.description),
+              label: 'Plans',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.bar_chart),
+              label: 'Statistics',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.settings),
+              label: 'Settings',
+            ),
+          ],
+          currentIndex: _selectedIndex,
+          selectedItemColor: Theme.of(context).colorScheme.secondary,
+          onTap: _onItemTapped,
+          showSelectedLabels: false,
+          showUnselectedLabels: false,
         ),
-        centerTitle: true,
-        elevation: 0,
-        scrolledUnderElevation: 0.0,
-      ),
-      body: _pages[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.description),
-            label: 'Plans',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.bar_chart),
-            label: 'Statistics',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Theme.of(context).colorScheme.secondary,
-        onTap: _onItemTapped,
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
       ),
     );
   }
