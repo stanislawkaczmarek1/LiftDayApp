@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:liftday/constants/themes.dart';
 import 'package:liftday/sevices/crud/exercise_service.dart';
 import 'package:liftday/sevices/crud/tables/database_exercise_info.dart';
 
@@ -23,11 +24,65 @@ class _ExerciseListViewState extends State<ExerciseListView>
   late TabController _tabController;
   late Future<List<DatabaseExerciseInfo>> _customExercises;
 
+  String _searchTerm = '';
+  List<DatabaseExerciseInfo> _filteredAppExercises = [];
+  List<DatabaseExerciseInfo> _filteredCustomExercises = [];
+  List<String> _selectedMuscleGroups = [];
+  List<DatabaseExerciseInfo> _customExercisesData = [];
+
+  DatabaseExerciseInfo? _selectedExercise;
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    _customExercises = getAllExerciseInfos(); // Fetch custom exercises
+    _customExercises = getAllExerciseInfos();
+    _filteredAppExercises = appExercises;
+  }
+
+  void _filterAppExercises() {
+    setState(() {
+      _filteredAppExercises = appExercises.where((exercise) {
+        final matchesSearchTerm =
+            exercise.name.toLowerCase().contains(_searchTerm.toLowerCase());
+
+        final matchesMuscleGroup = _selectedMuscleGroups.isEmpty ||
+            _selectedMuscleGroups.contains(exercise.muscleGroup);
+
+        return matchesSearchTerm && matchesMuscleGroup;
+      }).toList();
+    });
+  }
+
+  void _filterCustomExercises() {
+    setState(() {
+      _filteredCustomExercises = _customExercisesData.where((exercise) {
+        final matchesSearchTerm =
+            exercise.name.toLowerCase().contains(_searchTerm.toLowerCase());
+
+        final matchesMuscleGroup = _selectedMuscleGroups.isEmpty ||
+            _selectedMuscleGroups.contains(exercise.muscleGroup);
+
+        return matchesSearchTerm && matchesMuscleGroup;
+      }).toList();
+    });
+  }
+
+  void _selectExercise(DatabaseExerciseInfo exercise) {
+    setState(() {
+      if (_selectedExercise == exercise) {
+        _selectedExercise = null;
+      } else {
+        _selectedExercise = exercise;
+      }
+    });
+  }
+
+  void _addSelectedExercise() {
+    if (_selectedExercise != null) {
+      widget.onResult(_selectedExercise!.id);
+      Navigator.of(context).pop();
+    }
   }
 
   @override
@@ -36,14 +91,117 @@ class _ExerciseListViewState extends State<ExerciseListView>
       appBar: AppBar(
         title: const Text(
           'Lista ćwiczeń',
-          style: TextStyle(fontSize: 20),
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(text: 'Z aplikacji'),
-            Tab(text: 'Własne'),
-          ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(190), // sum of all boxes
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(
+                  height: 10,
+                ),
+                SizedBox(
+                  height: 60,
+                  child: TextField(
+                    decoration: const InputDecoration(
+                      labelText: 'Szukaj ćwiczenia',
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey),
+                      ),
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        _searchTerm = value;
+                        _filterAppExercises();
+                        _filterCustomExercises();
+                      });
+                    },
+                  ),
+                ),
+                Stack(
+                  children: [
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: SizedBox(
+                        height: 70,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: appMuscleGroups.map((group) {
+                            final isSelected =
+                                _selectedMuscleGroups.contains(group);
+                            return Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 4.0),
+                              child: TextButton(
+                                onPressed: () {
+                                  setState(() {
+                                    if (isSelected) {
+                                      _selectedMuscleGroups.remove(group);
+                                    } else {
+                                      _selectedMuscleGroups.add(group);
+                                    }
+                                    _filterAppExercises();
+                                    _filterCustomExercises();
+                                  });
+                                },
+                                child: Text(
+                                  group,
+                                  style: TextStyle(
+                                    color: isSelected
+                                        ? Theme.of(context)
+                                            .colorScheme
+                                            .secondary
+                                        : Theme.of(context).colorScheme.primary,
+                                    fontWeight: isSelected
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
+                                  ),
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ),
+                    const Positioned(
+                      right: 0,
+                      top: 0,
+                      bottom: 0,
+                      child: Icon(
+                        Icons.read_more,
+                        size: 20,
+                      ),
+                    )
+                  ],
+                ),
+                // TabBar
+                SizedBox(
+                  height: 40,
+                  child: TabBar(
+                    indicatorColor: Theme.of(context).colorScheme.secondary,
+                    labelColor: Theme.of(context).colorScheme.secondary,
+                    unselectedLabelColor: Colors.grey,
+                    labelStyle: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.bold),
+                    unselectedLabelStyle: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.normal),
+                    controller: _tabController,
+                    tabs: const [
+                      Tab(text: 'Z aplikacji'),
+                      Tab(text: 'Własne'),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 10)
+              ],
+            ),
+          ),
         ),
       ),
       body: TabBarView(
@@ -51,7 +209,13 @@ class _ExerciseListViewState extends State<ExerciseListView>
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: _buildExerciseList(appExercises),
+            child: Column(
+              children: [
+                Expanded(
+                  child: _buildExerciseList(_filteredAppExercises),
+                ),
+              ],
+            ),
           ),
           FutureBuilder<List<DatabaseExerciseInfo>>(
             future: _customExercises,
@@ -63,30 +227,64 @@ class _ExerciseListViewState extends State<ExerciseListView>
               } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                 return const Center(child: Text('Brak własnych ćwiczeń'));
               } else {
+                _customExercisesData = snapshot.data!;
+
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  _filterCustomExercises();
+                });
+
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: _buildExerciseList(snapshot.data!),
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: _buildExerciseList(_filteredCustomExercises),
+                      ),
+                    ],
+                  ),
                 );
               }
             },
           ),
         ],
       ),
+      floatingActionButton: _selectedExercise != null
+          ? FloatingActionButton(
+              backgroundColor: colorLightGreen,
+              heroTag: 'addBtn2',
+              onPressed: _addSelectedExercise,
+              child: const Icon(Icons.check),
+            )
+          : null,
     );
   }
 
-  // Method to build the list of exercises
   Widget _buildExerciseList(List<DatabaseExerciseInfo> exercises) {
-    return ListView.builder(
+    return ListView.separated(
       itemCount: exercises.length,
       itemBuilder: (context, index) {
         final exercise = exercises[index];
+        final isSelected = _selectedExercise == exercise;
+
         return ListTile(
-          title: Text(exercise.name),
+          title: Text(
+            exercise.name,
+            style: const TextStyle(fontSize: 18),
+          ),
+          subtitle: Text(
+            exercise.muscleGroup,
+            style: const TextStyle(fontSize: 12, color: Colors.grey),
+          ),
+          tileColor: isSelected ? Colors.grey.withOpacity(0.3) : null,
           onTap: () {
-            widget.onResult(exercise.id);
-            Navigator.of(context).pop();
+            _selectExercise(exercise);
           },
+        );
+      },
+      separatorBuilder: (context, index) {
+        return const Divider(
+          thickness: 0.3,
+          color: Colors.grey,
         );
       },
     );

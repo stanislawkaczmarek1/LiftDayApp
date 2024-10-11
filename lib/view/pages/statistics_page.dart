@@ -90,31 +90,33 @@ class _VolumeChartWidgetState extends State<VolumeChartWidget> {
                 ),
               ),
               const SizedBox(height: 24.0),
-              SizedBox(
-                height: 300,
-                child: FutureBuilder<List<VolumeChartData>>(
-                  future: _loadVolumeChartData(_selectedRangeForBarChart),
-                  builder: (context, snapshot) {
-                    switch (snapshot.connectionState) {
-                      case ConnectionState.done:
-                        if (snapshot.hasData && snapshot.data != null) {
-                          final range = _selectedRangeForBarChart;
-                          final data = snapshot.data!;
-                          return VolumeChart(
-                            data: data,
-                            range: range,
+              Center(
+                child: SizedBox(
+                  height: 300,
+                  child: FutureBuilder<List<VolumeChartData>>(
+                    future: _loadVolumeChartData(_selectedRangeForBarChart),
+                    builder: (context, snapshot) {
+                      switch (snapshot.connectionState) {
+                        case ConnectionState.done:
+                          if (snapshot.hasData && snapshot.data != null) {
+                            final range = _selectedRangeForBarChart;
+                            final data = snapshot.data!;
+                            return VolumeChart(
+                              data: data,
+                              range: range,
+                            );
+                          } else {
+                            return const SizedBox(height: 0);
+                          }
+                        default:
+                          return Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
                           );
-                        } else {
-                          return const SizedBox(height: 0);
-                        }
-                      default:
-                        return Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                        );
-                    }
-                  },
+                      }
+                    },
+                  ),
                 ),
               ),
             ],
@@ -219,26 +221,28 @@ class _MuscleChartWidgetState extends State<MuscleChartWidget> {
                 ),
               ),
               const SizedBox(height: 24.0),
-              SizedBox(
-                height: 300,
-                child: FutureBuilder<Map<String, int>>(
-                  future: _loadMuscleChartData(_selectedRangeForRadarChart),
-                  builder: (context, snapshot) {
-                    switch (snapshot.connectionState) {
-                      case ConnectionState.done:
-                        if (snapshot.hasData && snapshot.data != null) {
-                          return MuscleChart(muscleChartData: snapshot.data!);
-                        } else {
-                          return const SizedBox(height: 0);
-                        }
-                      default:
-                        return Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12.0),
-                          ),
-                        );
-                    }
-                  },
+              Center(
+                child: SizedBox(
+                  height: 300,
+                  child: FutureBuilder<Map<String, int>>(
+                    future: _loadMuscleChartData(_selectedRangeForRadarChart),
+                    builder: (context, snapshot) {
+                      switch (snapshot.connectionState) {
+                        case ConnectionState.done:
+                          if (snapshot.hasData && snapshot.data != null) {
+                            return MuscleChart(muscleChartData: snapshot.data!);
+                          } else {
+                            return const SizedBox(height: 0);
+                          }
+                        default:
+                          return Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12.0),
+                            ),
+                          );
+                      }
+                    },
+                  ),
                 ),
               ),
             ],

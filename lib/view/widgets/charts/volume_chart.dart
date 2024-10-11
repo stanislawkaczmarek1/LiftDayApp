@@ -46,20 +46,16 @@ class _VolumeChartState extends State<VolumeChart> {
 
   @override
   Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: 1,
+    return FittedBox(
+      fit: BoxFit.contain,
       child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            Expanded(
-              child: BarChart(
-                randomData(),
-              ),
-            ),
-          ],
+        padding: const EdgeInsets.all(8),
+        child: SizedBox(
+          height: 300,
+          width: 400,
+          child: BarChart(
+            randomData(),
+          ),
         ),
       ),
     );
@@ -157,7 +153,7 @@ class _VolumeChartState extends State<VolumeChart> {
         bottomTitles: AxisTitles(
           sideTitles: SideTitles(
             showTitles: true,
-            reservedSize: 38,
+            reservedSize: 30,
             getTitlesWidget: getBottomTitles,
           ),
         ),

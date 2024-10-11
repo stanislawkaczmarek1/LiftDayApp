@@ -26,7 +26,6 @@ class _AppCalendarState extends State<AppCalendar> {
   Timer? _resetTitleTimer;
   Map<DateTime, List<String>> _events = {};
 
-  //TODO: dots not working after exercise config
   void _loadEventsForRange(DateTime start, DateTime end) async {
     ExerciseService exerciseService = ExerciseService();
     Map<String, Set<DateTime>> categorizedDates =

@@ -594,7 +594,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
             return Card(
               color: Theme.of(context).colorScheme.onPrimary,
               surfaceTintColor: Theme.of(context).colorScheme.onPrimary,
-              margin: const EdgeInsets.all(8.0),
+              margin: const EdgeInsets.all(16.0),
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(

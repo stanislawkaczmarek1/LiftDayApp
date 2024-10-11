@@ -32,8 +32,8 @@ class _TrainingPageState extends State<TrainingPage> {
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.onPrimary,
               borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(12.0),
-                bottomRight: Radius.circular(12.0),
+                bottomLeft: Radius.circular(20.0),
+                bottomRight: Radius.circular(20.0),
               ),
             ),
             child: AppCalendar(onDaySelected: _onDaySelected),
