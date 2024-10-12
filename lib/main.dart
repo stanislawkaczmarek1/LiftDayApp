@@ -64,9 +64,8 @@ void main() {
         ],
         child: BlocListener<ThemeBloc, ThemeState>(
           listener: (context, state) {
-            context
-                .read<AppBarBloc>()
-                .add(AppBarEventUpdateTitleBasedOnTheme(state.themeMode));
+            context.read<AppBarBloc>().add(
+                AppBarEventSetDefaultTitle(state.themeMode == ThemeMode.dark));
           },
           child: BlocBuilder<ThemeBloc, ThemeState>(
             builder: (context, themeState) {

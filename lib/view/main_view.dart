@@ -37,9 +37,9 @@ class _MainViewState extends State<MainView> {
       child: Scaffold(
         appBar: _selectedIndex == 1
             ? AppBar(
-                title: BlocBuilder<AppBarBloc, AppBarState>(
-                  builder: (context, state) => state.title,
-                ),
+                title: Theme.of(context).brightness == Brightness.dark
+                    ? Image.asset('assets/liftday_logo_dark.png', height: 25.0)
+                    : Image.asset('assets/liftday_logo.png', height: 25.0),
                 centerTitle: true,
                 elevation: 0,
                 scrolledUnderElevation: 0.0,
@@ -59,14 +59,26 @@ class _MainViewState extends State<MainView> {
                   ],
                 ),
               )
-            : AppBar(
-                title: BlocBuilder<AppBarBloc, AppBarState>(
-                  builder: (context, state) => state.title,
-                ),
-                centerTitle: true,
-                elevation: 0,
-                scrolledUnderElevation: 0.0,
-              ),
+            : _selectedIndex == 0
+                ? AppBar(
+                    title: BlocBuilder<AppBarBloc, AppBarState>(
+                      builder: (context, state) => state.title,
+                    ),
+                    centerTitle: true,
+                    elevation: 0,
+                    scrolledUnderElevation: 0.0,
+                    backgroundColor: Theme.of(context).colorScheme.tertiary,
+                  )
+                : AppBar(
+                    title: Theme.of(context).brightness == Brightness.dark
+                        ? Image.asset('assets/liftday_logo_dark.png',
+                            height: 25.0)
+                        : Image.asset('assets/liftday_logo.png', height: 25.0),
+                    centerTitle: true,
+                    backgroundColor: Theme.of(context).colorScheme.onPrimary,
+                    elevation: 0,
+                    scrolledUnderElevation: 0.0,
+                  ),
 
         body: _selectedIndex == 1
             ? const TabBarView(
@@ -80,24 +92,26 @@ class _MainViewState extends State<MainView> {
         bottomNavigationBar: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
+              icon: Icon(Icons.calendar_month),
+              label: 'Trening',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.description),
-              label: 'Plans',
+              label: 'Plan',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.bar_chart),
-              label: 'Statistics',
+              label: 'Statystyki',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.settings),
-              label: 'Settings',
+              label: 'Ustawienia',
             ),
           ],
           currentIndex: _selectedIndex,
+          backgroundColor: Theme.of(context).colorScheme.onPrimary,
           selectedItemColor: Theme.of(context).colorScheme.secondary,
+          type: BottomNavigationBarType.fixed,
           onTap: _onItemTapped,
           showSelectedLabels: false,
           showUnselectedLabels: false,

@@ -119,8 +119,7 @@ class _AppCalendarState extends State<AppCalendar> {
                 if (events.contains('green')) {
                   dotColor = colorLightGreen; // Zielona kropka
                 } else if (events.contains('gray')) {
-                  dotColor =
-                      Theme.of(context).colorScheme.tertiary; // Szara kropka
+                  dotColor = Colors.grey; // Szara kropka
                 } else {
                   dotColor = Colors.transparent; // Brak kropki
                 }
@@ -168,9 +167,8 @@ class _AppCalendarState extends State<AppCalendar> {
               _resetTitleTimer?.cancel();
               _resetTitleTimer = Timer(const Duration(seconds: 1), () {
                 if (mounted) {
-                  context
-                      .read<AppBarBloc>()
-                      .add(const AppBarEventSetDefaultTitle());
+                  context.read<AppBarBloc>().add(AppBarEventSetDefaultTitle(
+                      Theme.of(context).brightness == Brightness.dark));
                 }
               });
             });

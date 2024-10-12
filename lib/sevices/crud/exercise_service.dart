@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:liftday/constants/database.dart';
 import 'package:liftday/sevices/crud/crud_exceptions.dart';
 import 'package:liftday/sevices/crud/data_package/exercise_data.dart';
+import 'package:liftday/sevices/crud/data_package/snapshot_data.dart';
 import 'package:liftday/sevices/crud/tables/database_date.dart';
 import 'package:liftday/sevices/crud/data_package/training_day_data.dart';
 import 'package:liftday/sevices/crud/tables/database_exercise.dart';
@@ -1305,6 +1306,49 @@ class ExerciseService {
     } else {
       return null;
     }
+  }
+
+  Future<MySnapshotData> getWeeklySnapshotData() async {
+    final now = DateTime.now();
+    double volume = 0;
+    int workouts = 0;
+
+    final DateTime startDate, endDate;
+
+    startDate = now;
+    endDate = now.subtract(Duration(days: ((startDate.weekday + 7) % 7) - 1));
+
+    final rangeDates =
+        await getDatesFromBetweenTwoDatesBackInTime(startDate, endDate);
+
+    for (var date in rangeDates) {
+      final exercises = await getExercisesForDate(dateId: date.id);
+      for (var exercise in exercises) {
+        final sets = await getSetsForExercise(exerciseId: exercise.id);
+        for (var oneSet in sets) {
+          volume += (oneSet.reps * oneSet.weight);
+        }
+      }
+    }
+
+    String startDateDigitDate = startDate.toIso8601String().split('T')[0];
+    String endDateDigitDate = endDate.toIso8601String().split('T')[0];
+
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+    final result = await db.rawQuery('''
+    SELECT dates.digit_date, 
+           COUNT(sets.id) AS valid_sets_count
+    FROM dates
+    JOIN exercises ON dates.id = exercises.date_id
+    JOIN sets ON exercises.id = sets.exercise_id
+    WHERE dates.digit_date BETWEEN ? AND ?
+      AND (sets.reps > 0 OR sets.duration > 0 OR sets.weight > 0)
+    GROUP BY dates.digit_date
+  ''', [endDateDigitDate, startDateDigitDate]);
+
+    workouts = result.length;
+    return MySnapshotData(workouts: workouts, volume: volume);
   }
 
   Future<List<VolumeChartData>> getVolumeChartData(int range) async {

@@ -453,6 +453,7 @@ class _RoutinesTabState extends State<RoutinesTab> {
                       color: Theme.of(context).colorScheme.onPrimary,
                       borderRadius: BorderRadius.circular(12.0),
                       border: Border.all(
+                        width: 0.3,
                         color: Theme.of(context).colorScheme.secondary,
                       )),
                   child: Center(

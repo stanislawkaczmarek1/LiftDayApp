@@ -27,13 +27,13 @@ class _TrainingPageState extends State<TrainingPage> {
     return Column(
       children: [
         Container(
-          color: Theme.of(context).colorScheme.tertiary,
+          color: Theme.of(context).colorScheme.onPrimary,
           child: Container(
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.onPrimary,
+              color: Theme.of(context).colorScheme.tertiary,
               borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(20.0),
-                bottomRight: Radius.circular(20.0),
+                bottomLeft: Radius.circular(30.0),
+                bottomRight: Radius.circular(30.0),
               ),
             ),
             child: AppCalendar(onDaySelected: _onDaySelected),
@@ -41,7 +41,7 @@ class _TrainingPageState extends State<TrainingPage> {
         ),
         Expanded(
           child: Container(
-            color: Theme.of(context).colorScheme.tertiary,
+            color: Theme.of(context).colorScheme.onPrimary,
             child: SingleChildScrollView(
               child: Column(
                 children: [

@@ -83,6 +83,8 @@ flutter:
      - assets/liftday_logo.png
      - assets/liftday_logo_dark.png
      - assets/liftday_logo_babyblue.png
+     - assets/liftday_logo_cal_lm.png
+     - assets/liftday_logo_cal_dm.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

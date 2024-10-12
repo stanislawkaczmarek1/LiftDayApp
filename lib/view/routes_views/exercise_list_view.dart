@@ -91,7 +91,7 @@ class _ExerciseListViewState extends State<ExerciseListView>
       appBar: AppBar(
         title: const Text(
           'Lista ćwiczeń',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.normal),
         ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(190), // sum of all boxes
@@ -104,26 +104,41 @@ class _ExerciseListViewState extends State<ExerciseListView>
                   height: 10,
                 ),
                 SizedBox(
-                  height: 60,
-                  child: TextField(
-                    decoration: const InputDecoration(
-                      labelText: 'Szukaj ćwiczenia',
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.grey),
+                    height: 60,
+                    child: TextField(
+                      decoration: InputDecoration(
+                        hintText: 'Szukaj ćwiczenia',
+                        hintStyle: TextStyle(
+                            fontWeight: FontWeight.normal,
+                            color: Colors.grey.withOpacity(0.7)),
+                        prefixIcon:
+                            const Icon(Icons.search, color: Colors.grey),
+                        filled: true,
+                        fillColor: Theme.of(context).colorScheme.onTertiary,
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 0, horizontal: 20),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                          borderSide: BorderSide(
+                              color: Theme.of(context).colorScheme.onPrimary,
+                              width: 1.5),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                          borderSide: BorderSide(
+                              color: Theme.of(context).colorScheme.onPrimary,
+                              width: 1.5),
+                        ),
+                        enabled: true,
                       ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.grey),
-                      ),
-                    ),
-                    onChanged: (value) {
-                      setState(() {
-                        _searchTerm = value;
-                        _filterAppExercises();
-                        _filterCustomExercises();
-                      });
-                    },
-                  ),
-                ),
+                      onChanged: (value) {
+                        setState(() {
+                          _searchTerm = value;
+                          _filterAppExercises();
+                          _filterCustomExercises();
+                        });
+                      },
+                    )),
                 Stack(
                   children: [
                     SingleChildScrollView(
@@ -188,7 +203,7 @@ class _ExerciseListViewState extends State<ExerciseListView>
                     labelColor: Theme.of(context).colorScheme.secondary,
                     unselectedLabelColor: Colors.grey,
                     labelStyle: const TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.bold),
+                        fontSize: 16, fontWeight: FontWeight.normal),
                     unselectedLabelStyle: const TextStyle(
                         fontSize: 16, fontWeight: FontWeight.normal),
                     controller: _tabController,

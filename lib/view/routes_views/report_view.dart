@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:liftday/sevices/crud/tables/database_exercise.dart';
 import 'package:liftday/sevices/crud/tables/database_exercise_info.dart';
 import 'package:liftday/sevices/crud/tables/database_set.dart';
-import 'package:liftday/view/widgets/ui_elements.dart';
 
 class ReportView extends StatelessWidget {
   final String trainingTitle;
@@ -61,7 +60,14 @@ class ReportView extends StatelessWidget {
     }).toList();
 
     return Scaffold(
-      appBar: appBar(context),
+      appBar: AppBar(
+        title: Theme.of(context).brightness == Brightness.dark
+            ? Image.asset('assets/liftday_logo_dark.png', height: 25.0)
+            : Image.asset('assets/liftday_logo.png', height: 25.0),
+        backgroundColor: Theme.of(context).colorScheme.onPrimary,
+        elevation: 0,
+        scrolledUnderElevation: 0.0,
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 const colorWhite = Colors.white;
-const colorWhiteGray = Color.fromARGB(255, 244, 244, 244);
-const colorLightGrey = Color.fromARGB(255, 237, 237, 237);
+const colorWhiteGray = Color.fromARGB(255, 243, 243, 243);
+const colorLightGrey = Color.fromARGB(255, 227, 227, 227);
 const colorBlack = Colors.black;
 const colorBlackGray = Color.fromARGB(255, 37, 37, 37);
 const colorDarkGrey = Color.fromARGB(255, 53, 53, 53);
@@ -15,33 +15,31 @@ const colorPurple = Color.fromARGB(255, 186, 72, 255);
 const colorLightGreen = Color.fromRGBO(82, 255, 25, 1);
 
 ThemeData lightTheme = ThemeData(
-    colorScheme: const ColorScheme.light(
-      background: colorWhite,
-      onBackground: colorBlack,
-      primary: colorBlack,
-      onPrimary: colorWhite,
-      secondary: colorBabyBlue,
-      tertiary: colorLightGrey,
-      onTertiary: colorWhiteGray,
-    ),
-    appBarTheme: const AppBarTheme(
-      backgroundColor: colorWhite,
-    ),
-    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-        unselectedIconTheme: IconThemeData(color: Colors.grey)));
+  colorScheme: const ColorScheme.light(
+    background: colorWhite,
+    onBackground: colorBlack,
+    primary: colorBlack,
+    onPrimary: colorWhite,
+    secondary: colorBabyBlue,
+    tertiary: colorLightGrey,
+    onTertiary: colorWhiteGray,
+  ),
+  appBarTheme: const AppBarTheme(
+    backgroundColor: colorWhite,
+  ),
+);
 
 ThemeData darkTheme = ThemeData(
-    colorScheme: const ColorScheme.dark(
-      background: colorBlack,
-      onBackground: colorWhite,
-      primary: colorWhite,
-      onPrimary: colorBlack,
-      secondary: colorBabyBlue,
-      tertiary: colorDarkGrey,
-      onTertiary: colorBlackGray,
-    ),
-    appBarTheme: const AppBarTheme(
-      backgroundColor: colorBlack,
-    ),
-    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-        unselectedIconTheme: IconThemeData(color: Colors.grey)));
+  colorScheme: const ColorScheme.dark(
+    background: colorBlack,
+    onBackground: colorWhite,
+    primary: colorWhite,
+    onPrimary: colorBlack,
+    secondary: colorBabyBlue,
+    tertiary: colorDarkGrey,
+    onTertiary: colorBlackGray,
+  ),
+  appBarTheme: const AppBarTheme(
+    backgroundColor: colorBlack,
+  ),
+);

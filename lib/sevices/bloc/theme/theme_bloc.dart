@@ -5,7 +5,7 @@ import 'package:liftday/sevices/bloc/theme/theme_state.dart';
 import 'package:liftday/sevices/settings/settings_service.dart';
 
 class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
-  ThemeBloc() : super(const ThemeState(themeMode: ThemeMode.light)) {
+  ThemeBloc() : super(const ThemeState(themeMode: ThemeMode.dark)) {
     _loadThemePreference();
     on<ThemeEventChange>((event, emit) {
       final themeMode = event.isDarkMode ? ThemeMode.dark : ThemeMode.light;

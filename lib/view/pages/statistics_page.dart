@@ -1,4 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:liftday/sevices/conversion/conversion_service.dart';
+import 'package:liftday/sevices/crud/data_package/snapshot_data.dart';
 import 'package:liftday/sevices/crud/exercise_service.dart';
 import 'package:liftday/view/widgets/charts/muscle_chart.dart';
 import 'package:liftday/view/widgets/charts/volume_chart.dart';
@@ -19,31 +22,266 @@ class _StatisticsPageState extends State<StatisticsPage> {
       height: MediaQuery.of(context).size.height,
       child: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(8.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Divider(
-                color: Theme.of(context).colorScheme.tertiary,
-                thickness: 2,
+              const WeeklySnapshot(),
+              const SizedBox(
                 height: 20,
+              ),
+              Container(
+                padding: const EdgeInsets.all(16.0),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  color: Theme.of(context).colorScheme.onPrimary,
+                ),
+                child: const Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Align(
+                      alignment: Alignment.bottomLeft,
+                      child: Text(
+                        "Statystyki treningowe",
+                        style: TextStyle(
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
               const VolumeChartWidget(),
               Divider(
                 color: Theme.of(context).colorScheme.tertiary,
-                thickness: 2,
+                thickness: 1,
                 height: 60,
               ),
               const MuscleChartWidget(),
               Divider(
                 color: Theme.of(context).colorScheme.tertiary,
-                thickness: 2,
+                thickness: 1,
                 height: 60,
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class WeeklySnapshot extends StatefulWidget {
+  const WeeklySnapshot({super.key});
+
+  @override
+  State<WeeklySnapshot> createState() => _WeeklySnapshotState();
+}
+
+class _WeeklySnapshotState extends State<WeeklySnapshot> {
+  Future<MySnapshotData> _loadData() async {
+    ExerciseService exerciseService = ExerciseService();
+    return await exerciseService.getWeeklySnapshotData();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: _loadData(),
+      builder: (context, snapshot) {
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            const placeholderContent = Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Align(
+                  alignment: Alignment.bottomLeft,
+                  child: Text(
+                    "Migawka z tygodnia",
+                    style: TextStyle(
+                      fontSize: 14.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 24.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text(
+                          "treningi",
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.normal,
+                            color: Colors.transparent,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          "", // Placeholder
+                          style: TextStyle(
+                            fontSize: 26,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      width: 20,
+                    ),
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text(
+                          "objętość",
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.normal,
+                            color: Colors.transparent,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          "", // Placeholder
+                          style: TextStyle(
+                            fontSize: 26,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            );
+
+            switch (snapshot.connectionState) {
+              case ConnectionState.done:
+                if (snapshot.hasData && snapshot.data != null) {
+                  final int workouts = snapshot.data!.workouts;
+                  final double volume = snapshot.data!.volume;
+                  ConversionService conversionService = ConversionService();
+                  final volumeString =
+                      conversionService.formatNumberInYAxis(volume);
+
+                  return Container(
+                    padding: const EdgeInsets.all(16.0),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.onTertiary,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Align(
+                          alignment: Alignment.bottomLeft,
+                          child: Text(
+                            "Migawka z tygodnia",
+                            style: TextStyle(
+                              fontSize: 14.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 24.0),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Column(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  "treningi",
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.normal,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Text(
+                                  "$workouts",
+                                  style: const TextStyle(
+                                    fontSize: 26,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(
+                              width: 20,
+                            ),
+                            Column(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  "objętość",
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.normal,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Text(
+                                  volumeString,
+                                  style: const TextStyle(
+                                    fontSize: 26,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  );
+                } else {
+                  return Container(
+                    padding: const EdgeInsets.all(16.0),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.onTertiary,
+                    ),
+                    child: placeholderContent,
+                  );
+                }
+              default:
+                return Container(
+                  padding: const EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.onTertiary,
+                  ),
+                  child: const Opacity(
+                    opacity: 1.0,
+                    child: placeholderContent,
+                  ),
+                );
+            }
+          },
+        );
+      },
     );
   }
 }
@@ -84,9 +322,9 @@ class _VolumeChartWidgetState extends State<VolumeChartWidget> {
                 child: Text(
                   "Objętość treningowa",
                   style: TextStyle(
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.bold,
-                  ),
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.normal,
+                      color: Colors.grey),
                 ),
               ),
               const SizedBox(height: 24.0),
@@ -130,7 +368,7 @@ class _VolumeChartWidgetState extends State<VolumeChartWidget> {
               isSelected: _selectionsForBarChart,
               borderRadius: BorderRadius.circular(8),
               fillColor: Theme.of(context).colorScheme.onTertiary,
-              borderColor: Theme.of(context).colorScheme.tertiary,
+              borderColor: Theme.of(context).colorScheme.onTertiary,
               children: const [
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 14),
@@ -215,9 +453,9 @@ class _MuscleChartWidgetState extends State<MuscleChartWidget> {
                 child: Text(
                   "Dystrybucja mięśni",
                   style: TextStyle(
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.bold,
-                  ),
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.normal,
+                      color: Colors.grey),
                 ),
               ),
               const SizedBox(height: 24.0),

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -363,87 +364,94 @@ class _ExerciseTableState extends State<ExerciseTable> {
                             return const SizedBox(height: 0.0);
                         }
                       }),
-                  Stack(
-                    children: [
-                      Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: TextButton(
-                              onPressed: () {
-                                if (_exerciseCards.length >= 10) {
-                                  if (mounted) {
-                                    showErrorDialog(context);
-                                  }
-                                } else {
-                                  _showAddExerciseView();
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Flexible(
+                          flex: 9,
+                          child: GestureDetector(
+                            onTap: () {
+                              if (_exerciseCards.length >= 10) {
+                                if (mounted) {
+                                  showErrorDialog(context);
                                 }
-                              },
-                              style: TextButton.styleFrom(
-                                elevation: 3.0,
-                                backgroundColor:
-                                    Theme.of(context).colorScheme.onPrimary,
-                                foregroundColor:
-                                    Theme.of(context).colorScheme.primary,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              child: const Padding(
-                                padding: EdgeInsets.all(5.0),
+                              } else {
+                                _showAddExerciseView();
+                              }
+                            },
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(vertical: 8.0),
+                              padding: const EdgeInsets.all(16.0),
+                              decoration: BoxDecoration(
+                                  color:
+                                      Theme.of(context).colorScheme.onTertiary,
+                                  borderRadius: BorderRadius.circular(12.0),
+                                  border: Border.all(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onTertiary,
+                                  )),
+                              child: Center(
                                 child: Text(
                                   "+ Dodaj ćwiczenie",
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.normal,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
                                   ),
                                 ),
-                              )),
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                      Positioned(
-                        right: 5,
-                        top: 16,
-                        child: BlocBuilder<WeightUnitBloc, WeightUnitState>(
-                          builder: (context, state) {
-                            return PopupMenuButton<String>(
-                              onSelected: (value) async {
-                                if (value == 'load_day') {
-                                  await _showSelectDayRadioList();
-                                }
-                                if (value == 'generate_report') {
-                                  if (_date != null) {
-                                    await _loadDataAndShowReportView(
-                                        _date!, state.unit);
-                                  } else {
-                                    if (context.mounted) {
-                                      showErrorDialog(context);
+                        Flexible(
+                          flex: 1,
+                          child: BlocBuilder<WeightUnitBloc, WeightUnitState>(
+                            builder: (context, state) {
+                              return PopupMenuButton<String>(
+                                onSelected: (value) async {
+                                  if (value == 'load_day') {
+                                    await _showSelectDayRadioList();
+                                  }
+                                  if (value == 'generate_report') {
+                                    if (_date != null) {
+                                      await _loadDataAndShowReportView(
+                                          _date!, state.unit);
+                                    } else {
+                                      if (context.mounted) {
+                                        showErrorDialog(context);
+                                      }
                                     }
                                   }
-                                }
-                              },
-                              itemBuilder: (BuildContext context) {
-                                return [
-                                  const PopupMenuItem<String>(
-                                    value: 'load_day',
-                                    child: Text('Wczytaj dzień'),
-                                  ),
-                                  const PopupMenuItem<String>(
-                                    value: 'generate_report',
-                                    child: Text('Generuj raport'),
-                                  ),
-                                ];
-                              },
-                              icon: Icon(
-                                Icons.more_vert,
-                                color: Theme.of(context).colorScheme.secondary,
-                                size: 30,
-                              ),
-                            );
-                          },
+                                },
+                                itemBuilder: (BuildContext context) {
+                                  return [
+                                    const PopupMenuItem<String>(
+                                      value: 'load_day',
+                                      child: Text('Wczytaj dzień'),
+                                    ),
+                                    const PopupMenuItem<String>(
+                                      value: 'generate_report',
+                                      child: Text('Generuj raport'),
+                                    ),
+                                  ];
+                                },
+                                icon: Icon(
+                                  Icons.more_vert,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                  size: 30,
+                                ),
+                              );
+                            },
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ],
               );
@@ -594,70 +602,75 @@ class _ExerciseCardState extends State<ExerciseCard> {
             return Card(
               color: Theme.of(context).colorScheme.onPrimary,
               surfaceTintColor: Theme.of(context).colorScheme.onPrimary,
-              margin: const EdgeInsets.all(16.0),
+              shadowColor: Colors.transparent,
+              margin: const EdgeInsets.all(0),
+              shape: const ContinuousRectangleBorder(),
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            widget.exerciseName,
-                            softWrap: true, //TODO: dodac gdzie potrzeba
-                            maxLines: 2, //
-                            overflow: TextOverflow.ellipsis, //
-                            style: const TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              widget.exerciseName,
+                              softWrap: true, //TODO: dodac gdzie potrzeba
+                              maxLines: 2, //
+                              overflow: TextOverflow.ellipsis, //
+                              style: const TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.bold),
+                            ),
                           ),
-                        ),
-                        PopupMenuButton<String>(
-                          onSelected: (value) async {
-                            if (value == 'delete') {
-                              final confirm = await showDialog<bool>(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  title: const Text('Usuń ćwiczenie'),
-                                  content: const Text(
-                                      'Czy na pewno chcesz usunąć to ćwiczenie?'),
-                                  actions: [
-                                    TextButton(
-                                      child: const Text('Anuluj'),
-                                      onPressed: () {
-                                        Navigator.of(context).pop(false);
-                                      },
-                                    ),
-                                    TextButton(
-                                      child: const Text('Usuń'),
-                                      onPressed: () {
-                                        Navigator.of(context).pop(true);
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              );
-                              if (confirm == true) {
-                                widget.onDeleteCard(
-                                    widget.exercise.id, widget.exerciseName);
-                                // Informowanie o usunięciu ćwiczenia
-                                // Zaktualizuj widok po usunięciu
+                          PopupMenuButton<String>(
+                            onSelected: (value) async {
+                              if (value == 'delete') {
+                                final confirm = await showDialog<bool>(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    title: const Text('Usuń ćwiczenie'),
+                                    content: const Text(
+                                        'Czy na pewno chcesz usunąć to ćwiczenie?'),
+                                    actions: [
+                                      TextButton(
+                                        child: const Text('Anuluj'),
+                                        onPressed: () {
+                                          Navigator.of(context).pop(false);
+                                        },
+                                      ),
+                                      TextButton(
+                                        child: const Text('Usuń'),
+                                        onPressed: () {
+                                          Navigator.of(context).pop(true);
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                );
+                                if (confirm == true) {
+                                  widget.onDeleteCard(
+                                      widget.exercise.id, widget.exerciseName);
+                                  // Informowanie o usunięciu ćwiczenia
+                                  // Zaktualizuj widok po usunięciu
+                                }
                               }
-                            }
-                          },
-                          itemBuilder: (BuildContext context) {
-                            return [
-                              const PopupMenuItem<String>(
-                                value: 'delete',
-                                child: Text('Usuń'),
-                              ),
-                            ];
-                          },
-                          icon: const Icon(Icons.more_vert),
-                        ),
-                      ],
+                            },
+                            itemBuilder: (BuildContext context) {
+                              return [
+                                const PopupMenuItem<String>(
+                                  value: 'delete',
+                                  child: Text('Usuń'),
+                                ),
+                              ];
+                            },
+                            icon: const Icon(Icons.more_vert),
+                          ),
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 16.0),
                     Row(
@@ -728,29 +741,29 @@ class _ExerciseCardState extends State<ExerciseCard> {
                         }),
                     Padding(
                       padding: const EdgeInsets.all(16.0),
-                      child: TextButton(
-                        onPressed: () {
+                      child: GestureDetector(
+                        onTap: () {
                           _addSet(++_setCounter);
                           context.read<TapBloc>().add(Tap());
                         },
-                        style: TextButton.styleFrom(
-                          elevation: 3.0,
-                          backgroundColor:
-                              Theme.of(context).colorScheme.onTertiary,
-                          foregroundColor:
-                              Theme.of(context).colorScheme.primary,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Padding(
-                          padding: EdgeInsets.all(5.0),
-                          child: Text(
-                            "+ Dodaj serię",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.normal,
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(vertical: 8.0),
+                          padding: const EdgeInsets.all(16.0),
+                          decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.onTertiary,
+                              borderRadius: BorderRadius.circular(12.0),
+                              border: Border.all(
+                                color: Theme.of(context).colorScheme.onTertiary,
+                              )),
+                          child: Center(
+                            child: Text(
+                              "+ Dodaj serię",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.normal,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
                             ),
                           ),
                         ),

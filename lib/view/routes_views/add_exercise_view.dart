@@ -1,11 +1,8 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:liftday/constants/themes.dart';
 import 'package:liftday/dialogs/error_dialog.dart';
 import 'package:liftday/sevices/crud/tables/database_exercise_info.dart';
 import 'package:liftday/view/routes_views/exercise_list_view.dart';
-import 'package:liftday/view/widgets/ui_elements.dart';
 
 typedef AddExerciseViewCallback = void Function(
     String? name, String? type, String? muscleGroup, int? exerciseInfoId);
@@ -30,18 +27,36 @@ class _AddExerciseViewState extends State<AddExerciseView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBarWithButton(context, "Lista ćwiczeń", () {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => ExerciseListView(
-              onResult: (exerciseInfoId) {
-                Navigator.of(context).pop();
-                widget.onResult(null, null, null, exerciseInfoId);
-              },
+      appBar: AppBar(
+        title: const Text(
+          "",
+        ),
+        backgroundColor: Theme.of(context).colorScheme.onPrimary,
+        elevation: 0,
+        scrolledUnderElevation: 0.0,
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => ExerciseListView(
+                    onResult: (exerciseInfoId) {
+                      Navigator.of(context).pop();
+                      widget.onResult(null, null, null, exerciseInfoId);
+                    },
+                  ),
+                ),
+              );
+            },
+            style: TextButton.styleFrom(
+                foregroundColor: Theme.of(context).colorScheme.secondary),
+            child: const Text(
+              "Lista ćwiczeń",
+              style: TextStyle(fontSize: 18.0),
             ),
-          ),
-        );
-      }),
+          )
+        ],
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -50,7 +65,7 @@ class _AddExerciseViewState extends State<AddExerciseView> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.only(left: 16, right: 16),
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.onPrimary,
                   borderRadius: BorderRadius.circular(12.0),
@@ -61,8 +76,13 @@ class _AddExerciseViewState extends State<AddExerciseView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
+                      "Dodaj ćwiczenie",
+                      style: TextStyle(fontSize: 20),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
                       "Nazwa: ",
-                      style: TextStyle(fontSize: 18),
+                      style: TextStyle(fontSize: 14),
                     ),
                     TextField(
                       autofocus: true,

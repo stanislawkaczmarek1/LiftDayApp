@@ -13,11 +13,6 @@ class AppBarEventUpdateTitle extends AppBarEvent {
 }
 
 class AppBarEventSetDefaultTitle extends AppBarEvent {
-  const AppBarEventSetDefaultTitle();
-}
-
-class AppBarEventUpdateTitleBasedOnTheme extends AppBarEvent {
-  final ThemeMode themeMode;
-
-  const AppBarEventUpdateTitleBasedOnTheme(this.themeMode);
+  final bool isDarkMode;
+  const AppBarEventSetDefaultTitle(this.isDarkMode);
 }
