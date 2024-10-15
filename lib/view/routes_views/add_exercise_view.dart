@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:liftday/constants/themes.dart';
-import 'package:liftday/dialogs/error_dialog.dart';
+import 'package:liftday/dialogs/entry_exerciese_name.dart';
+import 'package:liftday/dialogs/entry_exercise_musle.dart';
 import 'package:liftday/sevices/crud/tables/database_exercise_info.dart';
 import 'package:liftday/view/routes_views/exercise_list_view.dart';
 
@@ -190,13 +191,13 @@ class _AddExerciseViewState extends State<AddExerciseView> {
           heroTag: 'addBtn',
           onPressed: () {
             if (exerciseName.isEmpty && selectedMuscleGroup == 'wybierz') {
-              showErrorDialog(context);
+              showEntryExerciseNameAndMuscleDialog(context);
             } else if (exerciseName.isNotEmpty &&
                 selectedMuscleGroup == 'wybierz') {
               _showMuscleGroupDialog("SAVE");
             } else if ((exerciseName.isEmpty &&
                 selectedMuscleGroup != 'wybierz')) {
-              showErrorDialog(context);
+              showEntryExerciseNameDialog(context);
             } else {
               Navigator.of(context).pop();
               widget.onResult(

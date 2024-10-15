@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 
 typedef DialogOptionBuilder<T> = Map<String, T?> Function();
 
-Future<T?> showGenericTitleDialog<T>({
+Future<T?> showGenericDialog<T>({
   required BuildContext context,
-  required String title,
   required String content,
   required DialogOptionBuilder optionBuilder,
 }) {
@@ -13,12 +12,16 @@ Future<T?> showGenericTitleDialog<T>({
     context: context,
     builder: (context) {
       return AlertDialog(
-        title: Text(
-          title,
-          textAlign: TextAlign.left,
-          style: const TextStyle(fontSize: 18.0),
+        content: SingleChildScrollView(
+          child: Text(
+            content,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.normal,
+            ),
+          ),
         ),
-        content: Text(content),
         actions: options.keys.map((optionTitle) {
           final T value = options[optionTitle];
           return TextButton(

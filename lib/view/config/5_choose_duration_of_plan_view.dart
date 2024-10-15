@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:liftday/sevices/bloc/app_bar/app_bar_bloc.dart';
-import 'package:liftday/sevices/bloc/app_bar/app_bar_state.dart';
 import 'package:liftday/dialogs/have_to_choose_plan_duration.dart';
 import 'package:liftday/sevices/bloc/config/config_bloc.dart';
 import 'package:liftday/sevices/bloc/config/config_event.dart';
+import 'package:liftday/view/widgets/ui_elements.dart';
 
 class PlanDurationView extends StatefulWidget {
   const PlanDurationView({super.key});
@@ -32,32 +31,15 @@ class _PlanDurationViewState extends State<PlanDurationView> {
         }
       },
       child: Scaffold(
-        appBar: AppBar(
-          title: BlocBuilder<AppBarBloc, AppBarState>(
-            builder: (context, state) {
-              return state.title;
-            },
-          ),
-          actions: [
-            TextButton(
-              onPressed: () async {
-                if (_selectedDuration != null) {
-                  context
-                      .read<ConfigBloc>()
-                      .add(ConfigEventConfirmPlanDuration(_selectedDuration!));
-                } else {
-                  await showHaveToChoosePlanDuration(context);
-                }
-              },
-              style: TextButton.styleFrom(
-                  foregroundColor: Theme.of(context).colorScheme.secondary),
-              child: const Text(
-                "Dalej",
-                style: TextStyle(fontSize: 18.0),
-              ),
-            )
-          ],
-        ),
+        appBar: appBarWithButton(context, "Dalej", () async {
+          if (_selectedDuration != null) {
+            context
+                .read<ConfigBloc>()
+                .add(ConfigEventConfirmPlanDuration(_selectedDuration!));
+          } else {
+            await showHaveToChoosePlanDurationDialog(context);
+          }
+        }),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[

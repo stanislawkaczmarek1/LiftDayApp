@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:liftday/dialogs/generic/generic_dialog.dart';
 
-Future<void> showErrorDialog(BuildContext context) {
+Future<void> showEntryExerciseNameAndMuscleDialog(BuildContext context) {
   return showGenericDialog<void>(
     context: context,
-    content: "Błąd",
+    content: "Proszę wpisz nazwę ćwiczenia i wybierz główną grupę mięśniową",
     optionBuilder: () => {
       "Ok": null,
     },

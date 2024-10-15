@@ -1,9 +1,9 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:liftday/dialogs/error_dialog.dart';
+import 'package:liftday/dialogs/reach_maxiumum_of_days.dart';
 import 'package:liftday/dialogs/training_days_delete_in_config.dart';
-import 'package:liftday/sevices/bloc/app_bar/app_bar_bloc.dart';
-import 'package:liftday/sevices/bloc/app_bar/app_bar_state.dart';
+import 'package:liftday/dialogs/wrong_name.dart';
 import 'package:liftday/sevices/bloc/config/config_bloc.dart';
 import 'package:liftday/sevices/bloc/config/config_event.dart';
 import 'package:liftday/sevices/bloc/config/config_state.dart';
@@ -70,8 +70,10 @@ class _AddTrainingDaysViewState extends State<AddTrainingDaysView> {
       child: PopScope(
         canPop: false,
         onPopInvoked: (didPop) async {
+          log("message");
           if (!didPop) {
-            final decision = await showAreYouSureToGoBackInConfig(context);
+            final decision =
+                await showAreYouSureToGoBackInConfigDialog(context);
             if (decision && context.mounted) {
               context.read<ConfigBloc>().add(const ConfigEventGoBack());
               setState(() {
@@ -91,11 +93,9 @@ class _AddTrainingDaysViewState extends State<AddTrainingDaysView> {
         },
         child: Scaffold(
           appBar: AppBar(
-            title: BlocBuilder<AppBarBloc, AppBarState>(
-              builder: (context, state) {
-                return state.title;
-              },
-            ),
+            title: Theme.of(context).brightness == Brightness.dark
+                ? Image.asset('assets/liftday_logo_dark.png', height: 25.0)
+                : Image.asset('assets/liftday_logo.png', height: 25.0),
             backgroundColor: Colors.white,
             elevation: 0,
             scrolledUnderElevation: 0.0,
@@ -109,7 +109,7 @@ class _AddTrainingDaysViewState extends State<AddTrainingDaysView> {
                             exercises: exercises,
                             isFromPlan: 0)));
                   } else {
-                    showErrorDialog(context);
+                    showWrongNameDialog(context);
                   }
                 },
                 style: TextButton.styleFrom(
@@ -141,7 +141,7 @@ class _AddTrainingDaysViewState extends State<AddTrainingDaysView> {
                         _dayController.clear();
                       });
                     } else {
-                      showErrorDialog(context);
+                      showWrongNameDialog(context);
                     }
                   },
                   style: TextButton.styleFrom(
@@ -154,7 +154,7 @@ class _AddTrainingDaysViewState extends State<AddTrainingDaysView> {
               else
                 IconButton(
                     onPressed: () {
-                      showErrorDialog(context);
+                      showReachMaxiumumOfRoutinesDialog(context);
                     },
                     icon: const Icon(
                       Icons.info,

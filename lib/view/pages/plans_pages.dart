@@ -4,7 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:liftday/dialogs/are_you_sure_to_delate_plan.dart';
-import 'package:liftday/dialogs/error_dialog.dart';
+import 'package:liftday/dialogs/reach_maxiumum_of_days.dart';
 import 'package:liftday/sevices/bloc/config/config_bloc.dart';
 import 'package:liftday/sevices/bloc/config/config_event.dart';
 import 'package:liftday/sevices/bloc/edit/edit_bloc.dart';
@@ -14,8 +14,6 @@ import 'package:liftday/sevices/crud/data_package/exercise_data.dart';
 import 'package:liftday/sevices/crud/data_package/training_day_data.dart';
 import 'package:liftday/sevices/crud/exercise_service.dart';
 import 'package:liftday/sevices/settings/settings_service.dart';
-//caly plans page sie rozjechal podczas testow, reszta wydaje sie ok
-//TO DO
 
 class PlansTab extends StatefulWidget {
   const PlansTab({super.key});
@@ -182,7 +180,7 @@ class _PlansTabState extends State<PlansTab> {
                           Icons.delete,
                           () async {
                             final delete =
-                                await showAreYouSureToDeletePlan(context);
+                                await showAreYouSureToDeletePlanDialog(context);
                             if (delete && context.mounted) {
                               context
                                   .read<EditBloc>()
@@ -443,7 +441,7 @@ class _RoutinesTabState extends State<RoutinesTab> {
                         .read<EditBloc>()
                         .add(EditEventAddOtherTrainingDay(context));
                   } else {
-                    showErrorDialog(context);
+                    showReachMaxiumumOfRoutinesDialog(context);
                   }
                 },
                 child: Container(

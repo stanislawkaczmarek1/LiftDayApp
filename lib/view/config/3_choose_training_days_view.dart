@@ -137,7 +137,7 @@ class _ChooseTrainingDaysViewState extends State<ChooseTrainingDaysView> {
                       .read<ConfigBloc>()
                       .add(ConfigEventConfirmTrainingDays(confirmedDays));
                 } else {
-                  showHaveToChooseTrainingDays(context);
+                  showHaveToChooseTrainingDaysDialog(context);
                 }
               },
               Theme.of(context).colorScheme.tertiary,

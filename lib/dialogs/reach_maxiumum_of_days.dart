@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:liftday/dialogs/generic/generic_dialog.dart';
 
-Future<void> showErrorDialog(BuildContext context) {
+Future<void> showReachMaxiumumOfRoutinesDialog(BuildContext context) {
   return showGenericDialog<void>(
     context: context,
-    content: "Błąd",
+    content: "Wprowadzono maksymalną liczbę rutyn",
     optionBuilder: () => {
       "Ok": null,
     },

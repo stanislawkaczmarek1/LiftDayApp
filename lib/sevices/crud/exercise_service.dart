@@ -1257,7 +1257,7 @@ class ExerciseService {
     JOIN $exercisesTable e ON e.$idColumn = s.$exerciseIdColumn
     JOIN $datesTable d ON d.$idColumn = e.$dateIdColumn
     WHERE d.$digitDateColumn < ? AND e.$exerciseInfoIdColumn = ? AND s.$setIndexColumn = ?
-    ORDER BY d$digitDateColumn DESC
+    ORDER BY d.$digitDateColumn DESC
     LIMIT 1;
   ''', [digitDate, exerciseInfoId, setIndex]);
 

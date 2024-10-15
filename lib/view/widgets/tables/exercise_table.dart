@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:liftday/dialogs/error_dialog.dart';
+import 'package:liftday/dialogs/no_days_to_load.dart';
 import 'package:liftday/sevices/bloc/tap/tap_bloc.dart';
 import 'package:liftday/sevices/bloc/weight_unit/weight_unit_bloc.dart';
 import 'package:liftday/sevices/crud/exercise_service.dart';
@@ -233,7 +234,7 @@ class _ExerciseTableState extends State<ExerciseTable> {
       List<TrainingDayData> days = await _fetchTrainingDaysToRadioList();
       if (days.isEmpty) {
         if (mounted) {
-          showErrorDialog(context);
+          showNoDaysToLoadDialog(context);
         }
       } else {
         if (mounted) {

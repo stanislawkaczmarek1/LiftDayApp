@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:liftday/dialogs/error_dialog.dart';
+import 'package:liftday/dialogs/wrong_name.dart';
 import 'package:liftday/sevices/bloc/edit/edit_bloc.dart';
 import 'package:liftday/sevices/bloc/edit/edit_event.dart';
 import 'package:liftday/sevices/bloc/edit/edit_state.dart';
 import 'package:liftday/sevices/crud/data_package/exercise_data.dart';
-import 'package:liftday/sevices/crud/exercise_service.dart';
 import 'package:liftday/sevices/crud/data_package/training_day_data.dart';
 import 'package:liftday/view/widgets/tables/simple_exercise_table.dart';
 import 'package:liftday/view/widgets/ui_elements.dart';
@@ -20,7 +19,6 @@ class TrainingDayView extends StatefulWidget {
 class _TrainingDayViewState extends State<TrainingDayView> {
   List<ExerciseData> exercises = [];
   final TextEditingController _dayController = TextEditingController();
-  late ExerciseService _exerciseService;
   String _currentName = "";
 
   Future<bool> _chceckDayName(String name) async {
@@ -32,12 +30,6 @@ class _TrainingDayViewState extends State<TrainingDayView> {
         name != 'Friday' &&
         name != 'Saturday' &&
         name != 'Sunday') {
-      final otherDays = await _exerciseService.getTrainingDaysNotFromPlanData();
-      for (var i = 0; i < otherDays.length; i++) {
-        if (otherDays.elementAt(i).name == name && _currentName != name) {
-          return false;
-        }
-      }
       return true;
     } else {
       return false;
@@ -67,7 +59,6 @@ class _TrainingDayViewState extends State<TrainingDayView> {
 
   @override
   void initState() {
-    _exerciseService = ExerciseService();
     super.initState();
   }
 
@@ -145,7 +136,7 @@ class _TrainingDayViewState extends State<TrainingDayView> {
                   }
                 } else {
                   if (context.mounted) {
-                    showErrorDialog(context);
+                    showWrongNameDialog(context);
                   }
                 }
               },
@@ -203,7 +194,7 @@ class _TrainingDayViewState extends State<TrainingDayView> {
                   }
                 } else {
                   if (context.mounted) {
-                    showErrorDialog(context);
+                    showWrongNameDialog(context);
                   }
                 }
               },
