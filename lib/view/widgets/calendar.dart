@@ -31,14 +31,16 @@ class _AppCalendarState extends State<AppCalendar> {
     Map<String, Set<DateTime>> categorizedDates =
         await exerciseService.getDatesByTypeAndRange(start, end);
 
-    setState(() {
-      for (var date in categorizedDates['green']!) {
-        _events[date] = ['green'];
-      }
-      for (var date in categorizedDates['gray']!) {
-        _events[date] = ['gray'];
-      }
-    });
+    if (mounted) {
+      setState(() {
+        for (var date in categorizedDates['green']!) {
+          _events[date] = ['green'];
+        }
+        for (var date in categorizedDates['gray']!) {
+          _events[date] = ['gray'];
+        }
+      });
+    }
   }
 
   Text _getMonthText(DateTime date) {

@@ -13,7 +13,7 @@ class DatabaseTrainingDay {
 
   DatabaseTrainingDay.fromRow(Map<String, Object?> map)
       : id = map[idColumn] as int,
-        name = map[nameColumn] as String,
+        name = map[dayNameColumn] as String,
         isFromPlan = map[isFromPlanColumn] as int;
 
   @override

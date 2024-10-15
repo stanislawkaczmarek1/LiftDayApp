@@ -89,20 +89,20 @@ class ExerciseService {
     String endDate = end.toIso8601String().split('T')[0];
 
     final result = await db.rawQuery('''
-    SELECT dates.digit_date, 
-           SUM(CASE WHEN sets.reps > 0 OR sets.duration > 0 OR sets.weight > 0 THEN 1 ELSE 0 END) AS valid_sets_count
-    FROM dates
-    JOIN exercises ON dates.id = exercises.date_id
-    LEFT JOIN sets ON exercises.id = sets.exercise_id
-    WHERE dates.digit_date BETWEEN ? AND ?
-    GROUP BY dates.id
+    SELECT $datesTable.$digitDateColumn, 
+           SUM(CASE WHEN $setsTable.$repsColumn > 0 OR $setsTable.$durationColumn > 0 OR $setsTable.$weightColumn > 0 THEN 1 ELSE 0 END) AS valid_sets_count
+    FROM $datesTable
+    JOIN $exercisesTable ON $datesTable.$idColumn = $exercisesTable.$dateIdColumn
+    LEFT JOIN $setsTable ON $exercisesTable.$idColumn = $setsTable.$exerciseIdColumn
+    WHERE $datesTable.$digitDateColumn BETWEEN ? AND ?
+    GROUP BY $datesTable.$idColumn
   ''', [startDate, endDate]);
 
     Set<DateTime> greenDates = {}; // Ćwiczenia z ważnymi setami
     Set<DateTime> grayDates = {}; // Ćwiczenia, ale brak ważnych setów
 
     for (var row in result) {
-      DateTime date = DateTime.parse(row['digit_date'] as String);
+      DateTime date = DateTime.parse(row[digitDateColumn] as String);
       DateTime normalizedDate = DateTime(date.year, date.month, date.day);
 
       int validSetsCount = row['valid_sets_count'] as int;
@@ -182,9 +182,9 @@ class ExerciseService {
     final endDateFormatted = dateFormat.format(end);
 
     final List<Map<String, dynamic>> result = await db.rawQuery('''
-    SELECT * FROM dates
-    WHERE digit_date BETWEEN ? AND ?
-    ORDER BY digit_date DESC
+    SELECT * FROM $datesTable
+    WHERE $digitDateColumn BETWEEN ? AND ?
+    ORDER BY $digitDateColumn DESC
   ''', [endDateFormatted, startFormatted]);
 
     return result.map((dateRow) => DatabaseDate.fromRow(dateRow)).toList();
@@ -204,9 +204,9 @@ class ExerciseService {
     final pastDateFormatted = dateFormat.format(pastDate);
 
     final List<Map<String, dynamic>> result = await db.rawQuery('''
-    SELECT * FROM dates
-    WHERE digit_date BETWEEN ? AND ?
-    ORDER BY digit_date DESC
+    SELECT * FROM $datesTable
+    WHERE $digitDateColumn BETWEEN ? AND ?
+    ORDER BY $digitDateColumn DESC
   ''', [pastDateFormatted, todayFormatted]);
 
     return result.map((dateRow) => DatabaseDate.fromRow(dateRow)).toList();
@@ -296,7 +296,8 @@ class ExerciseService {
     final exercisesInfo = await db.query(
       exercisesInfoTable,
       limit: 1,
-      where: "$nameColumn = ? AND $typeColumn = ? AND $muscleGroupColumn = ?",
+      where:
+          "$dayNameColumn = ? AND $typeColumn = ? AND $muscleGroupColumn = ?",
       whereArgs: [name, type, muscleGroup],
     );
     if (exercisesInfo.isEmpty) {
@@ -314,7 +315,7 @@ class ExerciseService {
     final db = _getDatabaseOrThrow();
 
     final exerciseInfoId = await db.insert(exercisesInfoTable, {
-      nameColumn: name,
+      dayNameColumn: name,
       typeColumn: type,
       muscleGroupColumn: muscleGroup,
     });
@@ -488,12 +489,12 @@ class ExerciseService {
     if (isFromPlan) {
       isFromPlanInt = 1;
       trainingDayId = await db.insert(trainingDaysTable, {
-        nameColumn: name,
+        dayNameColumn: name,
       });
     } else {
       isFromPlanInt = 0;
       trainingDayId = await db.insert(trainingDaysTable, {
-        nameColumn: name,
+        dayNameColumn: name,
         isFromPlanColumn: isFromPlanInt,
       });
     }
@@ -511,7 +512,7 @@ class ExerciseService {
     final trainingDays = await db.query(
       trainingDaysTable,
       limit: 1,
-      where: "$nameColumn = ?",
+      where: "$dayNameColumn = ?",
       whereArgs: [name],
     );
     if (trainingDays.isEmpty) {
@@ -569,7 +570,7 @@ class ExerciseService {
     final updatesCount = await db.update(
       trainingDaysTable,
       {
-        nameColumn: name,
+        dayNameColumn: name,
       },
       where: "name = ?",
       whereArgs: [name],
@@ -585,7 +586,7 @@ class ExerciseService {
     final db = _getDatabaseOrThrow();
     final deletedCount = await db.delete(
       trainingDaysTable,
-      where: "$nameColumn = ?",
+      where: "$dayNameColumn = ?",
       whereArgs: [name],
     );
     if (deletedCount == 0) {
@@ -982,7 +983,7 @@ class ExerciseService {
     final results = await db.query(
       exercisesTable,
       limit: 1,
-      where: "id = ?",
+      where: "$idColumn = ?",
       whereArgs: [id],
     );
     if (results.isEmpty) {
@@ -1009,7 +1010,7 @@ class ExerciseService {
     final db = _getDatabaseOrThrow();
     final deletedCount = await db.delete(
       exercisesTable,
-      where: "id = ?",
+      where: "$idColumn = ?",
       whereArgs: [id],
     );
     if (deletedCount == 0) {
@@ -1113,7 +1114,7 @@ class ExerciseService {
     final results = await db.query(
       setsTable,
       limit: 1,
-      where: "id = ?",
+      where: "$idColumn = ?",
       whereArgs: [id],
     );
     if (results.isEmpty) {
@@ -1207,7 +1208,7 @@ class ExerciseService {
     final db = _getDatabaseOrThrow();
     final deletedCount = await db.delete(
       setsTable,
-      where: "id = ?",
+      where: "$idColumn = ?",
       whereArgs: [id],
     );
     if (deletedCount == 0) {
@@ -1251,19 +1252,19 @@ class ExerciseService {
     final digitDate = date.digitDate;
 
     final result = await db.rawQuery('''
-    SELECT s.weight, s.reps
+    SELECT s.$weightColumn, s.$repsColumn
     FROM $setsTable s
-    JOIN $exercisesTable e ON e.id = s.exercise_id
-    JOIN $datesTable d ON d.id = e.date_id
-    WHERE d.digit_date < ? AND e.$exerciseInfoIdColumn = ? AND s.set_index = ?
-    ORDER BY d.digit_date DESC
+    JOIN $exercisesTable e ON e.$idColumn = s.$exerciseIdColumn
+    JOIN $datesTable d ON d.$idColumn = e.$dateIdColumn
+    WHERE d.$digitDateColumn < ? AND e.$exerciseInfoIdColumn = ? AND s.$setIndexColumn = ?
+    ORDER BY d$digitDateColumn DESC
     LIMIT 1;
   ''', [digitDate, exerciseInfoId, setIndex]);
 
     if (result.isNotEmpty) {
       final set = result.first;
-      final weight = set['weight'];
-      final reps = set['reps'];
+      final weight = set[weightColumn];
+      final reps = set[repsColumn];
       final string = '$weight x $reps';
       if (string == '0.0 x 0') {
         return null;
@@ -1284,19 +1285,19 @@ class ExerciseService {
     final digitDate = date.digitDate;
 
     final result = await db.rawQuery('''
-    SELECT s.weight, s.duration
+    SELECT s.$weightColumn, s.$durationColumn
     FROM $setsTable s
-    JOIN $exercisesTable e ON e.id = s.exercise_id
-    JOIN $datesTable d ON d.id = e.date_id
-    WHERE d.digit_date < ? AND e.$exerciseInfoIdColumn = ? AND s.set_index = ?
-    ORDER BY d.digit_date DESC
+    JOIN $exercisesTable e ON e.$idColumn = s.$exerciseIdColumn
+    JOIN $datesTable d ON d.$idColumn = e.$dateIdColumn
+    WHERE d.$digitDateColumn < ? AND e.$exerciseInfoIdColumn = ? AND s.$setIndexColumn = ?
+    ORDER BY d.$digitDateColumn DESC
     LIMIT 1;
   ''', [digitDate, exerciseInfoId, setIndex]);
 
     if (result.isNotEmpty) {
       final set = result.first;
-      final weight = set['weight'];
-      final duration = set['duration'];
+      final weight = set[weightColumn];
+      final duration = set[durationColumn];
       final string = '$weight x ${duration}s';
       if (string == '0.0 x 0s') {
         return null;
@@ -1337,14 +1338,14 @@ class ExerciseService {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
     final result = await db.rawQuery('''
-    SELECT dates.digit_date, 
-           COUNT(sets.id) AS valid_sets_count
-    FROM dates
-    JOIN exercises ON dates.id = exercises.date_id
-    JOIN sets ON exercises.id = sets.exercise_id
-    WHERE dates.digit_date BETWEEN ? AND ?
-      AND (sets.reps > 0 OR sets.duration > 0 OR sets.weight > 0)
-    GROUP BY dates.digit_date
+    SELECT $datesTable.$digitDateColumn, 
+           COUNT($setsTable.$idColumn) AS valid_sets_count
+    FROM $datesTable
+    JOIN $exercisesTable ON $datesTable.$idColumn = $exercisesTable.$dateIdColumn
+    JOIN $setsTable ON $exercisesTable.$idColumn = $setsTable.$exerciseIdColumn
+    WHERE $datesTable.$digitDateColumn BETWEEN ? AND ?
+      AND ($setsTable.$repsColumn > 0 OR $setsTable.$durationColumn > 0 OR $setsTable.$weightColumn > 0)
+    GROUP BY $datesTable.$digitDateColumn
   ''', [endDateDigitDate, startDateDigitDate]);
 
     workouts = result.length;

@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:liftday/sevices/bloc/app_bar/app_bar_bloc.dart';
-import 'package:liftday/sevices/bloc/app_bar/app_bar_state.dart';
 
 typedef OnPressedFunction = void Function();
 
@@ -37,11 +34,9 @@ TextButton normalButton(
 
 AppBar appBar(BuildContext context) {
   return AppBar(
-    title: BlocBuilder<AppBarBloc, AppBarState>(
-      builder: (context, state) {
-        return state.title;
-      },
-    ),
+    title: Theme.of(context).brightness == Brightness.dark
+        ? Image.asset('assets/liftday_logo_dark.png', height: 25.0)
+        : Image.asset('assets/liftday_logo.png', height: 25.0),
     backgroundColor: Theme.of(context).colorScheme.onPrimary,
     elevation: 0,
     scrolledUnderElevation: 0.0,
@@ -54,11 +49,9 @@ AppBar appBarWithButton(
   void Function() onPressed,
 ) {
   return AppBar(
-    title: BlocBuilder<AppBarBloc, AppBarState>(
-      builder: (context, state) {
-        return state.title;
-      },
-    ),
+    title: Theme.of(context).brightness == Brightness.dark
+        ? Image.asset('assets/liftday_logo_dark.png', height: 25.0)
+        : Image.asset('assets/liftday_logo.png', height: 25.0),
     backgroundColor: Theme.of(context).colorScheme.onPrimary,
     elevation: 0,
     scrolledUnderElevation: 0.0,

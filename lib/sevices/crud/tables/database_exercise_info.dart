@@ -15,7 +15,7 @@ class DatabaseExerciseInfo {
 
   DatabaseExerciseInfo.fromRow(Map<String, Object?> map)
       : id = map[idColumn] as int,
-        name = map[nameColumn] as String,
+        name = map[dayNameColumn] as String,
         type = map[typeColumn] as String,
         muscleGroup = map[muscleGroupColumn] as String;
 
