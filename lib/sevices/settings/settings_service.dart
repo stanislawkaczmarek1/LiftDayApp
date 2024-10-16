@@ -4,6 +4,7 @@ class SettingsService {
   static final SettingsService _shared = SettingsService._sharedInstance();
   SettingsService._sharedInstance();
   factory SettingsService() => _shared;
+
   late SharedPreferences _preferences;
   bool _isInitialized = false;
 

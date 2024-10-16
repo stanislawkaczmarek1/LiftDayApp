@@ -1,19 +1,15 @@
+//handle in exercise service
+
 class DatabaseAlreadyOpenException implements Exception {}
+
+//to handle in ui
 
 class UnableToGetDocumentsDirectory implements Exception {}
 
 class DatabaseNotOpen implements Exception {}
 
-class CouldNotDeleteUser implements Exception {}
+class CouldNotDeleteFromDb implements Exception {}
 
-class UserAlreadyExists implements Exception {}
+class CouldNotFindInDb implements Exception {}
 
-class CouldNotFindUser implements Exception {}
-
-class CouldNotDeleteNote implements Exception {}
-
-class CouldNotFindNote implements Exception {}
-
-class CouldNotUpdateNote implements Exception {}
-
-class UserShouldBeSetBeforeReadingAllNotes implements Exception {}
+class CouldNotUpdateInDb implements Exception {}

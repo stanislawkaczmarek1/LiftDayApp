@@ -3,7 +3,7 @@ import 'package:liftday/sevices/crud/data_package/exercise_data.dart';
 class TrainingDayData {
   final String name;
   final List<ExerciseData> exercises;
-  final int isFromPlan; // 1 dla dni z planu, 0 dla dni niestandardowych
+  final int isFromPlan; // 1 for days from plan, 0 for routines
 
   TrainingDayData({
     required this.name,
@@ -13,6 +13,6 @@ class TrainingDayData {
 
   @override
   String toString() {
-    return "name: $name, exercises: $exercises, isFromPlan: $isFromPlan";
+    return "TrainingDayData, name: $name, exercises: $exercises, isFromPlan: $isFromPlan";
   }
 }

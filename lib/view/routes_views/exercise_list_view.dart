@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:liftday/constants/app_exercises.dart';
 import 'package:liftday/constants/themes.dart';
 import 'package:liftday/sevices/crud/exercise_service.dart';
 import 'package:liftday/sevices/crud/tables/database_exercise_info.dart';

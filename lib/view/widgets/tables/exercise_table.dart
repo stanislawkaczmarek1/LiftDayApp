@@ -3,8 +3,8 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:liftday/dialogs/error_dialog.dart';
 import 'package:liftday/dialogs/no_days_to_load.dart';
+import 'package:liftday/dialogs/unavailable_operation.dart';
 import 'package:liftday/sevices/bloc/settings/settings_bloc.dart';
 import 'package:liftday/sevices/bloc/settings/settings_state.dart';
 import 'package:liftday/sevices/bloc/tap/tap_bloc.dart';
@@ -188,7 +188,7 @@ class _ExerciseTableState extends State<ExerciseTable> {
         _selectedDay = null;
       }
       _exercisesStreamController.add(_exerciseCards);
-    }
+    } //else nic sie nie dzieje czekamy na akcje uzytkownika np dodanie cwiczenia
   }
 
   Future<List<TrainingDayData>> _fetchTrainingDaysToRadioList() async {
@@ -375,7 +375,7 @@ class _ExerciseTableState extends State<ExerciseTable> {
                             onTap: () {
                               if (_exerciseCards.length >= 10) {
                                 if (mounted) {
-                                  showErrorDialog(context);
+                                  showUnavailableOperationDialog(context);
                                 }
                               } else {
                                 _showAddExerciseView();
@@ -423,7 +423,7 @@ class _ExerciseTableState extends State<ExerciseTable> {
                                           _date!, state.unit);
                                     } else {
                                       if (context.mounted) {
-                                        showErrorDialog(context);
+                                        showUnavailableOperationDialog(context);
                                       }
                                     }
                                   }
@@ -495,7 +495,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
   Future<void> _addSet(int setIndex) async {
     if (_setRows.length >= 10) {
       if (mounted) {
-        showErrorDialog(context);
+        showUnavailableOperationDialog(context);
         return;
       }
     }

@@ -17,7 +17,7 @@ class DatabaseDate {
         day = map[dayColumn] as String;
 
   @override
-  String toString() => "Date, ID = $id, date = $digitDate, day = $day";
+  String toString() => "Date, ID = $id, digitDate = $digitDate, day = $day";
 
   @override
   bool operator ==(covariant DatabaseDate other) => id == other.id;

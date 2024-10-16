@@ -3,7 +3,7 @@ import 'package:liftday/constants/database.dart';
 class DatabaseTrainingDay {
   final int id;
   final String name;
-  final int isFromPlan; // 1 dla dni z planu, 0 dla dni niestandardowych
+  final int isFromPlan; // 1 for days from plan, 0 for routines
 
   DatabaseTrainingDay({
     required this.id,
@@ -18,7 +18,7 @@ class DatabaseTrainingDay {
 
   @override
   String toString() {
-    return "Training Day, id: $id, name: $name, isFromPlan: $isFromPlan";
+    return "TrainingDay, id: $id, name: $name, isFromPlan: $isFromPlan";
   }
 
   @override

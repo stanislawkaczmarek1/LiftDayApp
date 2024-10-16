@@ -3,7 +3,7 @@ import 'package:liftday/constants/database.dart';
 class DatabaseExerciseInfo {
   final int id;
   final String name;
-  final String type; //"reps" lub "duration"
+  final String type; //"reps" or "duration"
   final String muscleGroup;
 
   DatabaseExerciseInfo({
@@ -38,9 +38,4 @@ const List<String> appMuscleGroups = [
   "legs",
   "core",
   "other"
-];
-
-final List<DatabaseExerciseInfo> appExercises = [
-  DatabaseExerciseInfo(
-      id: -1, name: "wyciskanie na ławce płaskiej", muscleGroup: "chest")
 ];

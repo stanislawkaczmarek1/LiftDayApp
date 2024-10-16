@@ -173,9 +173,8 @@ class _WeeklySnapshotState extends State<WeeklySnapshot> {
                 if (snapshot.hasData && snapshot.data != null) {
                   final int workouts = snapshot.data!.workouts;
                   final double volume = snapshot.data!.volume;
-                  ConversionService conversionService = ConversionService();
                   final volumeString =
-                      conversionService.formatNumberInYAxis(volume);
+                      ConversionService.formatNumberInYAxis(volume);
 
                   return Container(
                     padding: const EdgeInsets.all(16.0),

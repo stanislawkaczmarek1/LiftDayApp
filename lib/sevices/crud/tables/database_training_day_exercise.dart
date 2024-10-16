@@ -18,7 +18,7 @@ class DatabaseTrainingDayExercise {
 
   @override
   String toString() =>
-      "Exercise, ID = $id, trainingDayId = $trainingDayId, exerciseInfoId = $exerciseInfoId";
+      "TrainingDayExercise, ID = $id, trainingDayId = $trainingDayId, exerciseInfoId = $exerciseInfoId";
 
   @override
   bool operator ==(covariant DatabaseTrainingDayExercise other) =>

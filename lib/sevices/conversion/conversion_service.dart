@@ -1,9 +1,5 @@
 class ConversionService {
-  static final ConversionService _shared = ConversionService._sharedInstance();
-  ConversionService._sharedInstance();
-  factory ConversionService() => _shared;
-
-  String getDayOfWeekOneLetter(String day) {
+  static String getDayOfWeekOneLetter(String day) {
     switch (day) {
       case "1":
         return 'M';
@@ -24,7 +20,7 @@ class ConversionService {
     }
   }
 
-  String getDayOfMonthThreeLetters(String month) {
+  static String getDayOfMonthThreeLetters(String month) {
     switch (month) {
       case "1":
         return 'Jan';
@@ -55,8 +51,8 @@ class ConversionService {
     }
   }
 
-  List<String> transformList(List<String> input) {
-    //zamienia "a", "b" , "", "" , "c", "" na->>>> "", "b" , "", "" , "c", ""
+  static List<String> transformList(List<String> input) {
+    //changes "a", "b" , "", "" , "c", "" in->>>> "", "b" , "", "" , "c", ""
     for (int i = 0; i < input.length - 1; i++) {
       if (input[i] != "" && input[i + 1] != "") {
         input[i] = "";
@@ -65,8 +61,8 @@ class ConversionService {
     return input;
   }
 
-  List<String> removeDuplicates(List<String> list) {
-    //zamienia ["tom", "tom", "max", "max", "max", "max", "eliza"] na ->>>> [tom, "", max, "", "", "", eliza]
+  static List<String> removeDuplicates(List<String> list) {
+    //changes ["tom", "tom", "max", "max", "max", "max", "eliza"] in ->>>> [tom, "", max, "", "", "", eliza]
     List<String> result = [];
     Set<String> seen = {};
 
@@ -82,7 +78,7 @@ class ConversionService {
     return result;
   }
 
-  String formatNumberInYAxis(double number) {
+  static String formatNumberInYAxis(double number) {
     if (number < 1000) {
       return number.toStringAsFixed(0);
     } else if (number < 1000000) {

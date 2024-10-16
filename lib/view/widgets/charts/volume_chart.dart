@@ -22,22 +22,20 @@ class VolumeChart extends StatefulWidget {
 class _VolumeChartState extends State<VolumeChart> {
   late List<int> _yAxisValues;
   late List<String> _bottomTitles;
-  late ConversionService _conversionService;
   final int _numberOfDaysInWeek = 7;
   final int _numberOfDaysInMonth = 30;
   final int _numberOfDaysInThreeMonts = 90;
 
   @override
   void initState() {
-    _conversionService = ConversionService();
     _yAxisValues = widget.data.map((data) => data.volume).toList();
     _bottomTitles = widget.data.map((data) => data.bottomTitle).toList();
 
     if (widget.data.length != _numberOfDaysInWeek) {
       final listAfterRemovingDuplicates =
-          _conversionService.removeDuplicates(_bottomTitles);
+          ConversionService.removeDuplicates(_bottomTitles);
       final listAfterTransformation =
-          _conversionService.transformList(listAfterRemovingDuplicates);
+          ConversionService.transformList(listAfterRemovingDuplicates);
 
       _bottomTitles = listAfterTransformation;
     }
@@ -86,7 +84,7 @@ class _VolumeChartState extends State<VolumeChart> {
       color: Colors.grey,
     );
 
-    final convertedText = _conversionService.formatNumberInYAxis(value);
+    final convertedText = ConversionService.formatNumberInYAxis(value);
     return Text(convertedText, style: style);
   }
 
@@ -102,12 +100,12 @@ class _VolumeChartState extends State<VolumeChart> {
     if (index >= 0 && index < _bottomTitles.length) {
       if (widget.data.length == _numberOfDaysInWeek) {
         final covertedText =
-            _conversionService.getDayOfWeekOneLetter(_bottomTitles[index]);
+            ConversionService.getDayOfWeekOneLetter(_bottomTitles[index]);
 
         return Text(covertedText, style: style);
       } else {
         final convertedText =
-            _conversionService.getDayOfMonthThreeLetters(_bottomTitles[index]);
+            ConversionService.getDayOfMonthThreeLetters(_bottomTitles[index]);
 
         return Text(convertedText, style: style);
       }

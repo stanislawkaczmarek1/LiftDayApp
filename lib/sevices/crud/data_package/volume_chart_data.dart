@@ -6,6 +6,6 @@ class VolumeChartData {
 
   @override
   String toString() {
-    return "VolumeChartData: volume: $volume, bottomTitle: $bottomTitle";
+    return "VolumeChartData, volume: $volume, bottomTitle: $bottomTitle";
   }
 }

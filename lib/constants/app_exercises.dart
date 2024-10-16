@@ -1,0 +1,6 @@
+import 'package:liftday/sevices/crud/tables/database_exercise_info.dart';
+
+final List<DatabaseExerciseInfo> appExercises = [
+  DatabaseExerciseInfo(
+      id: -1, name: "wyciskanie na ławce płaskiej", muscleGroup: "chest")
+];

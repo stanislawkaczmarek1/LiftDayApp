@@ -6,6 +6,6 @@ class MySnapshotData {
 
   @override
   String toString() {
-    return "VolumeChartData: workouts: $workouts, volume: $volume";
+    return "MySnapshotData, workouts: $workouts, volume: $volume";
   }
 }

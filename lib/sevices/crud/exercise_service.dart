@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 import 'package:intl/intl.dart';
+import 'package:liftday/constants/app_exercises.dart';
 import 'package:liftday/constants/database.dart';
 import 'package:liftday/sevices/crud/crud_exceptions.dart';
 import 'package:liftday/sevices/crud/data_package/exercise_data.dart';
@@ -24,6 +25,78 @@ class ExerciseService {
   ExerciseService._sharedInstance();
   factory ExerciseService() => _shared;
   //singleton
+
+  Database _getDatabaseOrThrow() {
+    final db = _db;
+    if (db == null) {
+      throw DatabaseNotOpen();
+    } else {
+      return db;
+    }
+  }
+
+  Future<void> _ensureDbIsOpen() async {
+    try {
+      await _open();
+    } on DatabaseAlreadyOpenException {
+      //empty
+    }
+  }
+
+  Future<void> _open() async {
+    if (_db != null) {
+      throw DatabaseAlreadyOpenException();
+    }
+    try {
+      final docsPath = await getApplicationDocumentsDirectory();
+      final dbPath = join(docsPath.path, dbName);
+      final db = await openDatabase(dbPath);
+      _db = db;
+
+      await db.execute(createDatesTable);
+      await db.execute(createExercisesInfoTable);
+      await db.execute(createExerciseTable);
+      await db.execute(createSetsTable);
+      await db.execute(createTrainingDaysTable);
+      await db.execute(createTrainingDayExercisesTable);
+    } on MissingPlatformDirectoryException {
+      throw UnableToGetDocumentsDirectory();
+    }
+  }
+
+  Future<void> close() async {
+    final db = _db;
+    if (db == null) {
+      throw DatabaseNotOpen();
+    } else {
+      await db.close();
+      _db = null;
+    }
+  }
+
+  //-----navigation----
+  //dates
+  //exercise infos
+  //exercises
+  //sets
+  //training days
+  //training day exercises
+  //traing day data
+  //charts data
+
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  //dates
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
 
   Future<DatabaseDate> createDate({required DateTime dateTime}) async {
     await _ensureDbIsOpen();
@@ -56,7 +129,7 @@ class ExerciseService {
       whereArgs: [id],
     );
     if (dates.isEmpty) {
-      throw CouldNotFindNote();
+      throw CouldNotFindInDb();
     } else {
       final date = DatabaseDate.fromRow(dates.first);
       return date;
@@ -73,11 +146,23 @@ class ExerciseService {
       whereArgs: [digitDate],
     );
     if (dates.isEmpty) {
-      throw CouldNotFindNote();
+      throw CouldNotFindInDb();
     } else {
       final date = DatabaseDate.fromRow(dates.first);
       return date;
     }
+  }
+
+  Future<DatabaseDate?> getDateByDigitDate({required String digitDate}) async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+    final dates = await db.query(
+      datesTable,
+      where: "$digitDateColumn = ?",
+      whereArgs: [digitDate],
+    );
+    if (dates.isEmpty) return null;
+    return DatabaseDate.fromRow(dates.first);
   }
 
   Future<Map<String, Set<DateTime>>> getDatesByTypeAndRange(
@@ -98,8 +183,8 @@ class ExerciseService {
     GROUP BY $datesTable.$idColumn
   ''', [startDate, endDate]);
 
-    Set<DateTime> greenDates = {}; // Ćwiczenia z ważnymi setami
-    Set<DateTime> grayDates = {}; // Ćwiczenia, ale brak ważnych setów
+    Set<DateTime> greenDates = {};
+    Set<DateTime> grayDates = {};
 
     for (var row in result) {
       DateTime date = DateTime.parse(row[digitDateColumn] as String);
@@ -108,9 +193,9 @@ class ExerciseService {
       int validSetsCount = row['valid_sets_count'] as int;
 
       if (validSetsCount > 0) {
-        greenDates.add(normalizedDate); // Zielone kropki
+        greenDates.add(normalizedDate);
       } else {
-        grayDates.add(normalizedDate); // Szare kropki
+        grayDates.add(normalizedDate);
       }
     }
 
@@ -134,26 +219,6 @@ class ExerciseService {
     }
 
     return null;
-  }
-
-  int calculateDateDifference(String firstDateStr, String lastDateStr) {
-    DateTime firstDate = DateTime.parse(firstDateStr);
-    DateTime lastDate = DateTime.parse(lastDateStr);
-
-    Duration difference = lastDate.difference(firstDate);
-
-    return difference.inDays;
-  }
-
-  Future<int?> getAllDatesDifference() async {
-    String? firstDate = await getFirstDigitDate();
-    String? lastDate = await getLastDigitDate();
-
-    if (firstDate != null && lastDate != null) {
-      return calculateDateDifference(firstDate, lastDate);
-    } else {
-      return null;
-    }
   }
 
   Future<String?> getLastDigitDate() async {
@@ -231,7 +296,7 @@ class ExerciseService {
       whereArgs: [id],
     );
     if (deletedCount == 0) {
-      throw CouldNotDeleteNote();
+      throw CouldNotDeleteFromDb();
     }
   }
 
@@ -285,6 +350,21 @@ class ExerciseService {
 
     return dates;
   }
+
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  //dates
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  //exercise infos
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
 
   Future<DatabaseExerciseInfo?> checkIfExerciseInfoExistAndReturn(
       {required String name,
@@ -364,7 +444,7 @@ class ExerciseService {
             'Exercise with ID $id not found in predefined app exercises.');
       }
     }
-    //wrzedzie gdzie uzywam tej metody zwaracm tylko id z bazy danych a powinienem tez z bazy cwiczen TO DO
+
     log("request fot info id: $id");
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
@@ -375,7 +455,7 @@ class ExerciseService {
       whereArgs: [id],
     );
     if (exercisesInfo.isEmpty) {
-      throw CouldNotFindNote();
+      throw CouldNotFindInDb();
     } else {
       final exerciseInfo = DatabaseExerciseInfo.fromRow(exercisesInfo.first);
       return exerciseInfo;
@@ -394,6 +474,21 @@ class ExerciseService {
         .toList();
   }
 
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  //exercise infos
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  //exercises
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+
   Future<DatabaseExercise> createExercise(
       {required int dateId, required int exerciseInfoId}) async {
     await _ensureDbIsOpen();
@@ -411,6 +506,45 @@ class ExerciseService {
     );
 
     return exercise;
+  }
+
+  Future<List<DatabaseExercise>> getExercisesForDate(
+      {required int dateId}) async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+    final exercises = await db.query(
+      exercisesTable,
+      where: "$dateIdColumn = ?",
+      whereArgs: [dateId],
+    );
+    return exercises.map((row) => DatabaseExercise.fromRow(row)).toList();
+  }
+
+  Future<List<DatabaseExercise>> getExerciseByDateAndInfoId(
+      {required int dateId, required int infoId}) async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+
+    final results = await db.query(
+      exercisesTable,
+      limit: 1,
+      where: "$dateIdColumn = ? AND $exerciseInfoIdColumn = ?",
+      whereArgs: [dateId, infoId],
+    );
+    return results.map((row) => DatabaseExercise.fromRow(row)).toList();
+  }
+
+  Future<void> deleteExercise({required int id}) async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+    final deletedCount = await db.delete(
+      exercisesTable,
+      where: "$idColumn = ?",
+      whereArgs: [id],
+    );
+    if (deletedCount == 0) {
+      throw CouldNotDeleteFromDb();
+    }
   }
 
   Future<void> createExercisesConfig({
@@ -479,6 +613,348 @@ class ExerciseService {
     }
   }
 
+  Future<List<DatabaseExercise>> createExercisesFromTrainingDayInGivenDate({
+    required TrainingDayData trainingDay,
+    required int dateId,
+  }) async {
+    List<DatabaseExercise> exercises = [];
+
+    for (var i = 0; i < trainingDay.exercises.length; i++) {
+      final exerciseInfoId = trainingDay.exercises.elementAt(i).infoId;
+      if (exerciseInfoId != null) {
+        //nie moze byc null bo w radio liscie sa ExerciseData w takim formacie (name, type, id)
+        exercises.add(await createExercise(
+            dateId: dateId, exerciseInfoId: exerciseInfoId));
+      }
+    }
+    return exercises;
+  }
+
+  Future<void> deleteExercisesAndSetsFromTomorrowToEndOfDates() async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+
+    final tomorrow = DateTime.now().add(const Duration(days: 1));
+    final tomorrowString = tomorrow.toIso8601String().split('T')[0];
+
+    await db.transaction((txn) async {
+      // 1. Pobierz wszystkie daty od jutra do końca z tabeli `dates`
+      final datesToRemove = await txn.query(
+        datesTable,
+        where: "$digitDateColumn >= ?",
+        whereArgs: [tomorrowString], // Porównujemy na podstawie stringa ISO8601
+      );
+
+      // Jeśli nie ma dat do usunięcia, zakończ operację
+      if (datesToRemove.isEmpty) {
+        return;
+      }
+
+      // 2. Dla każdej daty usuń wszystkie ćwiczenia i powiązane zestawy
+      for (var date in datesToRemove) {
+        final dateId = date[idColumn];
+
+        // Usuń zestawy powiązane z ćwiczeniami
+        await txn.delete(
+          setsTable,
+          where:
+              "$exerciseIdColumn IN (SELECT $idColumn FROM $exercisesTable WHERE $dateIdColumn = ?)",
+          whereArgs: [dateId],
+        );
+
+        // Usuń ćwiczenia dla danej daty
+        await txn.delete(
+          exercisesTable,
+          where: "$dateIdColumn = ?",
+          whereArgs: [dateId],
+        );
+      }
+    });
+  }
+
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  //exercises
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  //sets
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+
+  Future<DatabaseSet> createSet(
+      {required int exerciseId,
+      required int setIndex,
+      required double weight,
+      required int reps}) async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+
+    final setId = await db.insert(setsTable, {
+      exerciseIdColumn: exerciseId,
+      setIndexColumn: setIndex,
+      weightColumn: weight,
+      repsColumn: reps,
+    });
+    final newSet = DatabaseSet(
+      id: setId,
+      exerciseId: exerciseId,
+      setIndex: setIndex,
+      weight: weight,
+      reps: reps,
+    );
+
+    return newSet;
+  }
+
+  Future<DatabaseSet> createDurationSet(
+      {required int exerciseId,
+      required int setIndex,
+      required double weight,
+      required int duration}) async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+
+    final setId = await db.insert(setsTable, {
+      exerciseIdColumn: exerciseId,
+      setIndexColumn: setIndex,
+      weightColumn: weight,
+      repsColumn: 0,
+      durationColumn: duration,
+    });
+    final newSet = DatabaseSet(
+      id: setId,
+      exerciseId: exerciseId,
+      setIndex: setIndex,
+      weight: weight,
+      reps: 0,
+      duration: duration,
+    );
+
+    return newSet;
+  }
+
+  Future<DatabaseSet> getSet({required int id}) async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+    final results = await db.query(
+      setsTable,
+      limit: 1,
+      where: "$idColumn = ?",
+      whereArgs: [id],
+    );
+    if (results.isEmpty) {
+      throw CouldNotFindInDb();
+    } else {
+      return DatabaseSet.fromRow(results.first);
+    }
+  }
+
+  Future<List<DatabaseSet>> getSetsForExercise(
+      {required int exerciseId}) async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+
+    final sets = await db.query(
+      setsTable,
+      where: "$exerciseIdColumn = ?",
+      whereArgs: [exerciseId],
+    );
+    if (sets.isEmpty) {
+      return [];
+    } else {
+      return sets.map((row) {
+        final set = DatabaseSet.fromRow(row);
+        return set;
+      }).toList();
+    }
+  }
+
+  Future<DatabaseSet?> getSetByExerciseAndIndex(
+      {required int exerciseId, required int setIndex}) async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+    final sets = await db.query(
+      setsTable,
+      limit: 1,
+      where: "$exerciseIdColumn = ? AND $setIndexColumn = ?",
+      whereArgs: [exerciseId, setIndex],
+    );
+    if (sets.isEmpty) {
+      return null;
+    } else {
+      final existingSet = DatabaseSet.fromRow(sets.first);
+      return existingSet;
+    }
+  }
+
+  Future<DatabaseSet?> updateSet({
+    required DatabaseSet setToUpdate,
+    required double? weight,
+    required int? reps,
+    required int? duration,
+  }) async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+
+    final updates = <String, Object?>{};
+    if (weight != null) {
+      updates[weightColumn] = weight;
+    } else {
+      updates[weightColumn] = 0.0;
+    }
+    if (reps != null) {
+      updates[repsColumn] = reps;
+    } else {
+      updates[repsColumn] = 0;
+    }
+    if (duration != null) {
+      updates[durationColumn] = duration;
+    }
+
+    if (updates.isEmpty) {
+      return null;
+    }
+    final updatesCount = await db.update(
+      setsTable,
+      updates,
+      where: "$idColumn = ?",
+      whereArgs: [setToUpdate.id],
+    );
+    if (updatesCount == 0) {
+      return null;
+    }
+
+    final updatedSet = await getSet(id: setToUpdate.id);
+    return updatedSet;
+  }
+
+  Future<void> deleteSet({required int id}) async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+    final deletedCount = await db.delete(
+      setsTable,
+      where: "$idColumn = ?",
+      whereArgs: [id],
+    );
+    if (deletedCount == 0) {
+      throw CouldNotDeleteFromDb();
+    }
+  }
+
+  Future<void> deleteSetByIndexForExercise(
+      {required int setIndex, required int exerciseId}) async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+    final deletedCount = await db.delete(
+      setsTable,
+      where: "$exerciseIdColumn = ? AND $setIndexColumn = ?",
+      whereArgs: [exerciseId, setIndex],
+    );
+    if (deletedCount == 0) {
+      throw CouldNotDeleteFromDb();
+    }
+  }
+
+  Future<void> deleteSetsForExercise({required int exerciseid}) async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+    final deletedCount = await db.delete(
+      setsTable,
+      where: "$exerciseIdColumn = ?",
+      whereArgs: [exerciseid],
+    );
+    if (deletedCount == 0) {
+      throw CouldNotDeleteFromDb();
+    }
+  }
+
+  Future<String?> getPreviousRepsSetData(
+      int dateId, int exerciseInfoId, int setIndex) async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+
+    final date = await getDateById(id: dateId);
+    final digitDate = date.digitDate;
+
+    final result = await db.rawQuery('''
+    SELECT s.$weightColumn, s.$repsColumn
+    FROM $setsTable s
+    JOIN $exercisesTable e ON e.$idColumn = s.$exerciseIdColumn
+    JOIN $datesTable d ON d.$idColumn = e.$dateIdColumn
+    WHERE d.$digitDateColumn < ? AND e.$exerciseInfoIdColumn = ? AND s.$setIndexColumn = ?
+    ORDER BY d.$digitDateColumn DESC
+    LIMIT 1;
+  ''', [digitDate, exerciseInfoId, setIndex]);
+
+    if (result.isNotEmpty) {
+      final set = result.first;
+      final weight = set[weightColumn];
+      final reps = set[repsColumn];
+      final string = '$weight x $reps';
+      if (string == '0.0 x 0') {
+        return null;
+      } else {
+        return string;
+      }
+    } else {
+      return null;
+    }
+  }
+
+  Future<String?> getPreviousDurationSetData(
+      int dateId, int exerciseInfoId, int setIndex) async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+
+    final date = await getDateById(id: dateId);
+    final digitDate = date.digitDate;
+
+    final result = await db.rawQuery('''
+    SELECT s.$weightColumn, s.$durationColumn
+    FROM $setsTable s
+    JOIN $exercisesTable e ON e.$idColumn = s.$exerciseIdColumn
+    JOIN $datesTable d ON d.$idColumn = e.$dateIdColumn
+    WHERE d.$digitDateColumn < ? AND e.$exerciseInfoIdColumn = ? AND s.$setIndexColumn = ?
+    ORDER BY d.$digitDateColumn DESC
+    LIMIT 1;
+  ''', [digitDate, exerciseInfoId, setIndex]);
+
+    if (result.isNotEmpty) {
+      final set = result.first;
+      final weight = set[weightColumn];
+      final duration = set[durationColumn];
+      final string = '$weight x ${duration}s';
+      if (string == '0.0 x 0s') {
+        return null;
+      } else {
+        return string;
+      }
+    } else {
+      return null;
+    }
+  }
+
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  //sets
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  //training days
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+
   Future<DatabaseTrainingDay> createTrainingDay(
       {required String name, required bool isFromPlan}) async {
     await _ensureDbIsOpen();
@@ -516,7 +992,7 @@ class ExerciseService {
       whereArgs: [name],
     );
     if (trainingDays.isEmpty) {
-      throw CouldNotFindNote();
+      throw CouldNotFindInDb();
     } else {
       final trainingDay = DatabaseTrainingDay.fromRow(trainingDays.first);
       return trainingDay;
@@ -577,7 +1053,7 @@ class ExerciseService {
     );
 
     if (updatesCount == 0) {
-      throw CouldNotUpdateNote();
+      throw CouldNotUpdateInDb();
     }
   }
 
@@ -590,7 +1066,7 @@ class ExerciseService {
       whereArgs: [name],
     );
     if (deletedCount == 0) {
-      throw CouldNotDeleteNote();
+      throw CouldNotDeleteFromDb();
     }
   }
 
@@ -602,6 +1078,102 @@ class ExerciseService {
       return false;
     }
   }
+
+  Future<void> updateTrainingDayFromTomorrowToEndOfDates(
+      TrainingDayData trainingDay) async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+
+    final tomorrow = DateTime.now().add(const Duration(days: 1));
+    final tomorrowString = tomorrow.toIso8601String().split('T')[0];
+
+    // 1. Pobierz wszystkie daty od jutra do końca z tabeli `dates`
+    final datesToRemove = await db.query(
+      datesTable,
+      where: "$digitDateColumn >= ? AND $dayColumn = ?",
+      whereArgs: [
+        tomorrowString,
+        trainingDay.name
+      ], // Porównujemy na podstawie stringa ISO8601
+    );
+
+    // Jeśli nie ma dat do usunięcia, zakończ operację
+    if (datesToRemove.isEmpty) {
+      return;
+    }
+
+    // 2. Dla każdej daty usuń wszystkie ćwiczenia i powiązane zestawy
+    for (var date in datesToRemove) {
+      final dateId = date[idColumn];
+
+      // Usuń zestawy powiązane z ćwiczeniami
+      await db.delete(
+        setsTable,
+        where:
+            "$exerciseIdColumn IN (SELECT $idColumn FROM $exercisesTable WHERE $dateIdColumn = ?)",
+        whereArgs: [dateId],
+      );
+
+      // Usuń ćwiczenia dla danej daty
+      await db.delete(
+        exercisesTable,
+        where: "$dateIdColumn = ?",
+        whereArgs: [dateId],
+      );
+    }
+
+    // 3. Dodaj nowe ćwiczenia dla każdej daty z tego samego zakresu
+    for (var date in datesToRemove) {
+      final dateId = date[idColumn];
+
+      for (var exercise in trainingDay.exercises) {
+        // Dodaj ćwiczenie dla danej daty
+        if (exercise.infoId == null &&
+            exercise.name != null &&
+            exercise.muscleGroup != null &&
+            exercise.type != null) {
+          //uzytkownik wpisal wlasne cwiczenie
+          // sprawdzenie czy wpisane cwiczenie znajduje sie juz w bazie
+          final result = await checkIfExerciseInfoExistAndReturn(
+            name: exercise.name!,
+            type: exercise.type!,
+            muscleGroup: exercise.muscleGroup!,
+          );
+          if (result == null) {
+            //nie ma w bazie wiec tworzymy i dodajemy stworzone
+            final info = await createExerciseInfo(
+              name: exercise.name!,
+              type: exercise.type!,
+              muscleGroup: exercise.muscleGroup!,
+            );
+            await db.insert(exercisesTable, {
+              dateIdColumn: dateId,
+              exerciseInfoIdColumn: info.id,
+            });
+          } else {
+            // jest w bazie wiec nie tworzymy drugiego i dodajemy to ktore jest
+            await db.insert(exercisesTable, {
+              dateIdColumn: dateId,
+              exerciseInfoIdColumn: result.id,
+            });
+          }
+        } else if (exercise.infoId != null) {
+          //uzytkownik wybral cwiczenie z listy
+          await db.insert(exercisesTable, {
+            dateIdColumn: dateId,
+            exerciseInfoIdColumn: exercise.infoId,
+          });
+        }
+      }
+    }
+  }
+
+  ////////////////////////////////////////////////////////////////
+  //training days
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  //training day exercises
+  ////////////////////////////////////////////////////////////////
 
   Future<DatabaseTrainingDayExercise> createTrainingDayExercise(
       {required int trainingDayId, required int exerciseInfoId}) async {
@@ -650,6 +1222,21 @@ class ExerciseService {
     //pytanie czy to powinno sie zawsze wywolywac w metodach jesli mamy pusta liste cwiczen
     //wczesniej rzucalem wyjatek jesli liczba usunietych jest 0 - zmuszalo mnie to do ominiecia takiej sytaucji
   }
+
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  //training day exercises
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  //training day data
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
 
   Future<void> saveTrainingDayData(
       TrainingDayData trainingDayData, bool isFromPlan) async {
@@ -829,485 +1416,20 @@ class ExerciseService {
     return data;
   }
 
-  Future<List<DatabaseExercise>> createExercisesFromTrainingDayInGivenDate({
-    required TrainingDayData trainingDay,
-    required int dateId,
-  }) async {
-    List<DatabaseExercise> exercises = [];
-
-    for (var i = 0; i < trainingDay.exercises.length; i++) {
-      final exerciseInfoId = trainingDay.exercises.elementAt(i).infoId;
-      if (exerciseInfoId != null) {
-        //nie moze byc null bo w radio liscie sa ExerciseData w takim formacie (name, type, id)
-        exercises.add(await createExercise(
-            dateId: dateId, exerciseInfoId: exerciseInfoId));
-      }
-    }
-    return exercises;
-  }
-
-  Future<void> updateTrainingDayFromTomorrowToEndOfDates(
-      TrainingDayData trainingDay) async {
-    await _ensureDbIsOpen();
-    final db = _getDatabaseOrThrow();
-
-    final tomorrow = DateTime.now().add(const Duration(days: 1));
-    final tomorrowString = tomorrow.toIso8601String().split('T')[0];
-
-    // 1. Pobierz wszystkie daty od jutra do końca z tabeli `dates`
-    final datesToRemove = await db.query(
-      datesTable,
-      where: "$digitDateColumn >= ? AND $dayColumn = ?",
-      whereArgs: [
-        tomorrowString,
-        trainingDay.name
-      ], // Porównujemy na podstawie stringa ISO8601
-    );
-
-    // Jeśli nie ma dat do usunięcia, zakończ operację
-    if (datesToRemove.isEmpty) {
-      return;
-    }
-
-    // 2. Dla każdej daty usuń wszystkie ćwiczenia i powiązane zestawy
-    for (var date in datesToRemove) {
-      final dateId = date[idColumn];
-
-      // Usuń zestawy powiązane z ćwiczeniami
-      await db.delete(
-        setsTable,
-        where:
-            "$exerciseIdColumn IN (SELECT $idColumn FROM $exercisesTable WHERE $dateIdColumn = ?)",
-        whereArgs: [dateId],
-      );
-
-      // Usuń ćwiczenia dla danej daty
-      await db.delete(
-        exercisesTable,
-        where: "$dateIdColumn = ?",
-        whereArgs: [dateId],
-      );
-    }
-
-    // 3. Dodaj nowe ćwiczenia dla każdej daty z tego samego zakresu
-    for (var date in datesToRemove) {
-      final dateId = date[idColumn];
-
-      for (var exercise in trainingDay.exercises) {
-        // Dodaj ćwiczenie dla danej daty
-        if (exercise.infoId == null &&
-            exercise.name != null &&
-            exercise.muscleGroup != null &&
-            exercise.type != null) {
-          //uzytkownik wpisal wlasne cwiczenie
-          // sprawdzenie czy wpisane cwiczenie znajduje sie juz w bazie
-          final result = await checkIfExerciseInfoExistAndReturn(
-            name: exercise.name!,
-            type: exercise.type!,
-            muscleGroup: exercise.muscleGroup!,
-          );
-          if (result == null) {
-            //nie ma w bazie wiec tworzymy i dodajemy stworzone
-            final info = await createExerciseInfo(
-              name: exercise.name!,
-              type: exercise.type!,
-              muscleGroup: exercise.muscleGroup!,
-            );
-            await db.insert(exercisesTable, {
-              dateIdColumn: dateId,
-              exerciseInfoIdColumn: info.id,
-            });
-          } else {
-            // jest w bazie wiec nie tworzymy drugiego i dodajemy to ktore jest
-            await db.insert(exercisesTable, {
-              dateIdColumn: dateId,
-              exerciseInfoIdColumn: result.id,
-            });
-          }
-        } else if (exercise.infoId != null) {
-          //uzytkownik wybral cwiczenie z listy
-          await db.insert(exercisesTable, {
-            dateIdColumn: dateId,
-            exerciseInfoIdColumn: exercise.infoId,
-          });
-        }
-      }
-    }
-  }
-
-  Future<void> deleteExercisesAndSetsFromTomorrowToEndOfDates() async {
-    await _ensureDbIsOpen();
-    final db = _getDatabaseOrThrow();
-
-    final tomorrow = DateTime.now().add(const Duration(days: 1));
-    final tomorrowString = tomorrow.toIso8601String().split('T')[0];
-
-    await db.transaction((txn) async {
-      // 1. Pobierz wszystkie daty od jutra do końca z tabeli `dates`
-      final datesToRemove = await txn.query(
-        datesTable,
-        where: "$digitDateColumn >= ?",
-        whereArgs: [tomorrowString], // Porównujemy na podstawie stringa ISO8601
-      );
-
-      // Jeśli nie ma dat do usunięcia, zakończ operację
-      if (datesToRemove.isEmpty) {
-        return;
-      }
-
-      // 2. Dla każdej daty usuń wszystkie ćwiczenia i powiązane zestawy
-      for (var date in datesToRemove) {
-        final dateId = date[idColumn];
-
-        // Usuń zestawy powiązane z ćwiczeniami
-        await txn.delete(
-          setsTable,
-          where:
-              "$exerciseIdColumn IN (SELECT $idColumn FROM $exercisesTable WHERE $dateIdColumn = ?)",
-          whereArgs: [dateId],
-        );
-
-        // Usuń ćwiczenia dla danej daty
-        await txn.delete(
-          exercisesTable,
-          where: "$dateIdColumn = ?",
-          whereArgs: [dateId],
-        );
-      }
-    });
-  }
-
-  Future<DatabaseExercise> getExercise({required int id}) async {
-    await _ensureDbIsOpen();
-    final db = _getDatabaseOrThrow();
-    final results = await db.query(
-      exercisesTable,
-      limit: 1,
-      where: "$idColumn = ?",
-      whereArgs: [id],
-    );
-    if (results.isEmpty) {
-      throw CouldNotFindUser();
-    } else {
-      return DatabaseExercise.fromRow(results.first);
-    }
-  }
-
-  Future<List<DatabaseExercise>> getAllExercises() async {
-    await _ensureDbIsOpen();
-    final db = _getDatabaseOrThrow();
-    final exercises = await db.query(
-      exercisesTable,
-    );
-
-    return exercises
-        .map((exercisesRow) => DatabaseExercise.fromRow(exercisesRow))
-        .toList();
-  }
-
-  Future<void> deleteExercise({required int id}) async {
-    await _ensureDbIsOpen();
-    final db = _getDatabaseOrThrow();
-    final deletedCount = await db.delete(
-      exercisesTable,
-      where: "$idColumn = ?",
-      whereArgs: [id],
-    );
-    if (deletedCount == 0) {
-      throw CouldNotDeleteNote();
-    }
-  }
-
-  Future<DatabaseDate?> getDateByDigitDate({required String digitDate}) async {
-    await _ensureDbIsOpen();
-    final db = _getDatabaseOrThrow();
-    final dates = await db.query(
-      datesTable,
-      where: "$digitDateColumn = ?",
-      whereArgs: [digitDate],
-    );
-    if (dates.isEmpty) return null;
-    return DatabaseDate.fromRow(dates.first);
-  }
-
-  Future<List<DatabaseExercise>> getExercisesForDate(
-      {required int dateId}) async {
-    await _ensureDbIsOpen();
-    final db = _getDatabaseOrThrow();
-    final exercises = await db.query(
-      exercisesTable,
-      where: "$dateIdColumn = ?",
-      whereArgs: [dateId],
-    );
-    return exercises.map((row) => DatabaseExercise.fromRow(row)).toList();
-  }
-
-  Future<List<DatabaseExercise>> getExerciseByDateAndInfoId(
-      {required int dateId, required int infoId}) async {
-    await _ensureDbIsOpen();
-    final db = _getDatabaseOrThrow();
-
-    final results = await db.query(
-      exercisesTable,
-      limit: 1,
-      where: "$dateIdColumn = ? AND $exerciseInfoIdColumn = ?",
-      whereArgs: [dateId, infoId],
-    );
-    return results.map((row) => DatabaseExercise.fromRow(row)).toList();
-  }
-
-  Future<DatabaseSet> createSet(
-      {required int exerciseId,
-      required int setIndex,
-      required double weight,
-      required int reps}) async {
-    await _ensureDbIsOpen();
-    final db = _getDatabaseOrThrow();
-
-    final setId = await db.insert(setsTable, {
-      exerciseIdColumn: exerciseId,
-      setIndexColumn: setIndex,
-      weightColumn: weight,
-      repsColumn: reps,
-    });
-    final newSet = DatabaseSet(
-      id: setId,
-      exerciseId: exerciseId,
-      setIndex: setIndex,
-      weight: weight,
-      reps: reps,
-    );
-
-    return newSet;
-  }
-
-  Future<DatabaseSet> createDurationSet(
-      {required int exerciseId,
-      required int setIndex,
-      required double weight,
-      required int duration}) async {
-    await _ensureDbIsOpen();
-    final db = _getDatabaseOrThrow();
-
-    final setId = await db.insert(setsTable, {
-      exerciseIdColumn: exerciseId,
-      setIndexColumn: setIndex,
-      weightColumn: weight,
-      repsColumn: 0,
-      durationColumn: duration,
-    });
-    final newSet = DatabaseSet(
-      id: setId,
-      exerciseId: exerciseId,
-      setIndex: setIndex,
-      weight: weight,
-      reps: 0,
-      duration: duration,
-    );
-
-    return newSet;
-  }
-
-  Future<DatabaseSet> getSet({required int id}) async {
-    await _ensureDbIsOpen();
-    final db = _getDatabaseOrThrow();
-    final results = await db.query(
-      setsTable,
-      limit: 1,
-      where: "$idColumn = ?",
-      whereArgs: [id],
-    );
-    if (results.isEmpty) {
-      throw CouldNotFindUser();
-    } else {
-      return DatabaseSet.fromRow(results.first);
-    }
-  }
-
-  Future<List<DatabaseSet>> getSetsForExercise(
-      {required int exerciseId}) async {
-    await _ensureDbIsOpen();
-    final db = _getDatabaseOrThrow();
-
-    final sets = await db.query(
-      setsTable,
-      where: "$exerciseIdColumn = ?",
-      whereArgs: [exerciseId],
-    );
-    if (sets.isEmpty) {
-      return [];
-    } else {
-      return sets.map((row) {
-        final set = DatabaseSet.fromRow(row);
-        return set;
-      }).toList();
-    }
-  }
-
-  Future<DatabaseSet?> getSetByExerciseAndIndex(
-      {required int exerciseId, required int setIndex}) async {
-    await _ensureDbIsOpen();
-    final db = _getDatabaseOrThrow();
-    final sets = await db.query(
-      setsTable,
-      limit: 1,
-      where: "$exerciseIdColumn = ? AND $setIndexColumn = ?",
-      whereArgs: [exerciseId, setIndex],
-    );
-    if (sets.isEmpty) {
-      return null;
-    } else {
-      final existingSet = DatabaseSet.fromRow(sets.first);
-      return existingSet;
-    }
-  }
-
-  Future<DatabaseSet?> updateSet({
-    required DatabaseSet setToUpdate,
-    required double? weight,
-    required int? reps,
-    required int? duration,
-  }) async {
-    await _ensureDbIsOpen();
-    final db = _getDatabaseOrThrow();
-
-    final updates = <String, Object?>{};
-    if (weight != null) {
-      updates[weightColumn] = weight;
-    } else {
-      updates[weightColumn] = 0.0;
-    }
-    if (reps != null) {
-      updates[repsColumn] = reps;
-    } else {
-      updates[repsColumn] = 0;
-    }
-    if (duration != null) {
-      updates[durationColumn] = duration;
-    }
-
-    if (updates.isEmpty) {
-      return null;
-    }
-    final updatesCount = await db.update(
-      setsTable,
-      updates,
-      where: "$idColumn = ?",
-      whereArgs: [setToUpdate.id],
-    );
-    if (updatesCount == 0) {
-      return null;
-    }
-
-    final updatedSet = await getSet(id: setToUpdate.id);
-    return updatedSet;
-  }
-
-  Future<void> deleteSet({required int id}) async {
-    await _ensureDbIsOpen();
-    final db = _getDatabaseOrThrow();
-    final deletedCount = await db.delete(
-      setsTable,
-      where: "$idColumn = ?",
-      whereArgs: [id],
-    );
-    if (deletedCount == 0) {
-      throw CouldNotDeleteNote();
-    }
-  }
-
-  Future<void> deleteSetByIndexForExercise(
-      {required int setIndex, required int exerciseId}) async {
-    await _ensureDbIsOpen();
-    final db = _getDatabaseOrThrow();
-    final deletedCount = await db.delete(
-      setsTable,
-      where: "$exerciseIdColumn = ? AND $setIndexColumn = ?",
-      whereArgs: [exerciseId, setIndex],
-    );
-    if (deletedCount == 0) {
-      throw CouldNotDeleteNote();
-    }
-  }
-
-  Future<void> deleteSetsForExercise({required int exerciseid}) async {
-    await _ensureDbIsOpen();
-    final db = _getDatabaseOrThrow();
-    final deletedCount = await db.delete(
-      setsTable,
-      where: "$exerciseIdColumn = ?",
-      whereArgs: [exerciseid],
-    );
-    if (deletedCount == 0) {
-      throw CouldNotDeleteNote();
-    }
-  }
-
-  Future<String?> getPreviousRepsSetData(
-      int dateId, int exerciseInfoId, int setIndex) async {
-    await _ensureDbIsOpen();
-    final db = _getDatabaseOrThrow();
-
-    final date = await getDateById(id: dateId);
-    final digitDate = date.digitDate;
-
-    final result = await db.rawQuery('''
-    SELECT s.$weightColumn, s.$repsColumn
-    FROM $setsTable s
-    JOIN $exercisesTable e ON e.$idColumn = s.$exerciseIdColumn
-    JOIN $datesTable d ON d.$idColumn = e.$dateIdColumn
-    WHERE d.$digitDateColumn < ? AND e.$exerciseInfoIdColumn = ? AND s.$setIndexColumn = ?
-    ORDER BY d.$digitDateColumn DESC
-    LIMIT 1;
-  ''', [digitDate, exerciseInfoId, setIndex]);
-
-    if (result.isNotEmpty) {
-      final set = result.first;
-      final weight = set[weightColumn];
-      final reps = set[repsColumn];
-      final string = '$weight x $reps';
-      if (string == '0.0 x 0') {
-        return null;
-      } else {
-        return string;
-      }
-    } else {
-      return null;
-    }
-  }
-
-  Future<String?> getPreviousDurationSetData(
-      int dateId, int exerciseInfoId, int setIndex) async {
-    await _ensureDbIsOpen();
-    final db = _getDatabaseOrThrow();
-
-    final date = await getDateById(id: dateId);
-    final digitDate = date.digitDate;
-
-    final result = await db.rawQuery('''
-    SELECT s.$weightColumn, s.$durationColumn
-    FROM $setsTable s
-    JOIN $exercisesTable e ON e.$idColumn = s.$exerciseIdColumn
-    JOIN $datesTable d ON d.$idColumn = e.$dateIdColumn
-    WHERE d.$digitDateColumn < ? AND e.$exerciseInfoIdColumn = ? AND s.$setIndexColumn = ?
-    ORDER BY d.$digitDateColumn DESC
-    LIMIT 1;
-  ''', [digitDate, exerciseInfoId, setIndex]);
-
-    if (result.isNotEmpty) {
-      final set = result.first;
-      final weight = set[weightColumn];
-      final duration = set[durationColumn];
-      final string = '$weight x ${duration}s';
-      if (string == '0.0 x 0s') {
-        return null;
-      } else {
-        return string;
-      }
-    } else {
-      return null;
-    }
-  }
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  //training day data
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  //charts data
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
 
   Future<MySnapshotData> getWeeklySnapshotData() async {
     final now = DateTime.now();
@@ -1476,55 +1598,5 @@ class ExerciseService {
     }
 
     return data;
-  }
-
-  Database _getDatabaseOrThrow() {
-    final db = _db;
-    if (db == null) {
-      throw DatabaseNotOpen();
-    } else {
-      return db;
-    }
-  }
-
-  Future<void> _ensureDbIsOpen() async {
-    try {
-      await open();
-    } on DatabaseAlreadyOpenException {
-      //empty
-    }
-  }
-
-  Future<void> open() async {
-    if (_db != null) {
-      throw DatabaseAlreadyOpenException();
-    }
-    try {
-      final docsPath = await getApplicationDocumentsDirectory();
-      final dbPath = join(docsPath.path, dbName);
-      final db = await openDatabase(dbPath);
-      _db = db;
-
-      await db.execute(createDatesTable);
-      await db.execute(createExercisesInfoTable);
-      await db.execute(createExerciseTable);
-      await db.execute(createSetsTable);
-      await db.execute(createTrainingDaysTable);
-      await db.execute(createTrainingDayExercisesTable);
-
-      //await _cacheNotes();
-    } on MissingPlatformDirectoryException {
-      throw UnableToGetDocumentsDirectory();
-    }
-  }
-
-  Future<void> close() async {
-    final db = _db;
-    if (db == null) {
-      throw DatabaseNotOpen();
-    } else {
-      await db.close();
-      _db = null;
-    }
   }
 }

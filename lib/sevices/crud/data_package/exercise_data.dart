@@ -13,6 +13,6 @@ class ExerciseData {
 
   @override
   String toString() {
-    return "ExerciseData name: $name, type: $type, muscleGroup: $muscleGroup, infoId: $infoId";
+    return "ExerciseData, name: $name, type: $type, muscleGroup: $muscleGroup, infoId: $infoId";
   }
 }
