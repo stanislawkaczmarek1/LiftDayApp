@@ -10,11 +10,9 @@ import 'package:liftday/sevices/bloc/config/config_bloc.dart';
 import 'package:liftday/sevices/bloc/config/config_event.dart';
 import 'package:liftday/sevices/bloc/config/config_state.dart';
 import 'package:liftday/sevices/bloc/edit/edit_bloc.dart';
-import 'package:liftday/sevices/bloc/language/language_bloc.dart';
+import 'package:liftday/sevices/bloc/settings/settings_bloc.dart';
+import 'package:liftday/sevices/bloc/settings/settings_state.dart';
 import 'package:liftday/sevices/bloc/tap/tap_bloc.dart';
-import 'package:liftday/sevices/bloc/theme/theme_bloc.dart';
-import 'package:liftday/sevices/bloc/theme/theme_state.dart';
-import 'package:liftday/sevices/bloc/weight_unit/weight_unit_bloc.dart';
 import 'package:liftday/view/config/4_add_first_week_plan_view.dart';
 import 'package:liftday/view/config/3_choose_training_days_view.dart';
 import 'package:liftday/view/config/2_create_plan_or_skip_view.dart';
@@ -49,43 +47,31 @@ void main() {
               return AppBarBloc();
             },
           ),
-          BlocProvider<ThemeBloc>(
-            create: (context) => ThemeBloc(),
-          ),
-          BlocProvider<LanguageBloc>(
-            create: (context) => LanguageBloc(),
-          ),
           BlocProvider<TapBloc>(
             create: (context) => TapBloc(),
           ),
-          BlocProvider<WeightUnitBloc>(
-            create: (context) => WeightUnitBloc(),
+          BlocProvider<SettingsBloc>(
+            create: (context) => SettingsBloc(),
           ),
         ],
-        child: BlocListener<ThemeBloc, ThemeState>(
+        child: BlocListener<SettingsBloc, SettingsState>(
           listener: (context, state) {
             context.read<AppBarBloc>().add(
                 AppBarEventSetDefaultTitle(state.themeMode == ThemeMode.dark));
           },
-          child: BlocBuilder<ThemeBloc, ThemeState>(
-            builder: (context, themeState) {
-              return BlocBuilder<LanguageBloc, LanguageState>(
-                builder: (context, languageState) {
-                  return MaterialApp(
-                    title: 'Lift Day',
-                    theme: lightTheme,
-                    darkTheme: darkTheme,
-                    themeMode: themeState.themeMode,
-                    home: const HomePage(),
-                    supportedLocales: L10n.all,
-                    locale: languageState.locale,
-                    localizationsDelegates:
-                        AppLocalizations.localizationsDelegates,
-                    routes: {
-                      editTrainingDayRoute: (context) =>
-                          const TrainingDayView(),
-                    },
-                  );
+          child: BlocBuilder<SettingsBloc, SettingsState>(
+            builder: (context, settingsState) {
+              return MaterialApp(
+                title: 'Lift Day',
+                theme: lightTheme,
+                darkTheme: darkTheme,
+                themeMode: settingsState.themeMode,
+                home: const HomePage(),
+                supportedLocales: L10n.all,
+                locale: settingsState.locale,
+                localizationsDelegates: AppLocalizations.localizationsDelegates,
+                routes: {
+                  editTrainingDayRoute: (context) => const TrainingDayView(),
                 },
               );
             },

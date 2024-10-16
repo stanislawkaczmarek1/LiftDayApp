@@ -1,14 +1,13 @@
 import 'dart:async';
 import 'dart:developer';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:liftday/dialogs/error_dialog.dart';
 import 'package:liftday/dialogs/no_days_to_load.dart';
+import 'package:liftday/sevices/bloc/settings/settings_bloc.dart';
+import 'package:liftday/sevices/bloc/settings/settings_state.dart';
 import 'package:liftday/sevices/bloc/tap/tap_bloc.dart';
-import 'package:liftday/sevices/bloc/weight_unit/weight_unit_bloc.dart';
 import 'package:liftday/sevices/crud/exercise_service.dart';
 import 'package:liftday/sevices/crud/tables/database_date.dart';
 import 'package:liftday/sevices/crud/tables/database_exercise.dart';
@@ -411,7 +410,7 @@ class _ExerciseTableState extends State<ExerciseTable> {
                         ),
                         Flexible(
                           flex: 1,
-                          child: BlocBuilder<WeightUnitBloc, WeightUnitState>(
+                          child: BlocBuilder<SettingsBloc, SettingsState>(
                             builder: (context, state) {
                               return PopupMenuButton<String>(
                                 onSelected: (value) async {
@@ -693,7 +692,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
                         ),
                         Expanded(
                           child: Center(
-                            child: BlocBuilder<WeightUnitBloc, WeightUnitState>(
+                            child: BlocBuilder<SettingsBloc, SettingsState>(
                               builder: (context, state) {
                                 return Text(state.unit,
                                     style: const TextStyle(

@@ -1,36 +1,43 @@
 import 'package:bloc/bloc.dart';
+import 'package:flutter/material.dart';
+import 'package:liftday/sevices/bloc/abstract/app_event.dart';
+import 'package:liftday/sevices/bloc/abstract/app_state.dart';
 
-abstract class TapEvent {}
+@immutable
+abstract class TapEvent extends AppEvent {
+  const TapEvent();
+}
 
 class Tap extends TapEvent {
-  Tap();
+  const Tap();
 }
 
 class SetTappedDefault extends TapEvent {
-  SetTappedDefault();
+  const SetTappedDefault();
 }
 
-abstract class TapState {
-  TapState();
+@immutable
+abstract class TapState extends AppState {
+  const TapState();
 }
 
 class Tapped extends TapState {
-  Tapped();
+  const Tapped();
 }
 
 class NoTapped extends TapState {
-  NoTapped();
+  const NoTapped();
 }
 
 class TapBloc extends Bloc<TapEvent, TapState> {
-  TapBloc() : super(NoTapped()) {
+  TapBloc() : super(const NoTapped()) {
     on<Tap>((event, emit) {
       emit(
-          Tapped()); //potencjalnie duza strata wydajnosci (emisja stanu przy kazdym klinknieciu)
+          const Tapped()); //potencjalnie duza strata wydajnosci (emisja stanu przy kazdym klinknieciu)
     });
 
     on<SetTappedDefault>((event, emit) {
-      emit(NoTapped());
+      emit(const NoTapped());
     });
   }
 }

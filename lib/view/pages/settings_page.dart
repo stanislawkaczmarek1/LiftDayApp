@@ -1,16 +1,13 @@
 import 'dart:developer';
 import 'dart:io';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:liftday/constants/database.dart';
 import 'package:liftday/l10n/l10n.dart';
-import 'package:liftday/sevices/bloc/language/language_bloc.dart';
-import 'package:liftday/sevices/bloc/theme/theme_bloc.dart';
-import 'package:liftday/sevices/bloc/theme/theme_event.dart';
-import 'package:liftday/sevices/bloc/theme/theme_state.dart';
-import 'package:liftday/sevices/bloc/weight_unit/weight_unit_bloc.dart';
+import 'package:liftday/sevices/bloc/settings/settings_bloc.dart';
+import 'package:liftday/sevices/bloc/settings/settings_event.dart';
+import 'package:liftday/sevices/bloc/settings/settings_state.dart';
 import 'package:liftday/sevices/crud/exercise_service.dart';
 import 'package:liftday/sevices/settings/settings_service.dart';
 import 'package:path/path.dart';
@@ -123,12 +120,14 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: Column(
-        children: [
-          BlocBuilder<ThemeBloc, ThemeState>(
-            builder: (context, themeState) {
-              final isDarkMode = themeState.themeMode == ThemeMode.dark;
-              return ListTile(
+      child: BlocBuilder<SettingsBloc, SettingsState>(
+        builder: (context, state) {
+          final isDarkMode = state.themeMode == ThemeMode.dark;
+          final currentLocale = state.locale;
+          final currentUnit = state.unit;
+          return Column(
+            children: [
+              ListTile(
                 title: const Text(
                   'Tryb Ciemny',
                   style: TextStyle(
@@ -141,19 +140,14 @@ class _SettingsPageState extends State<SettingsPage> {
                     value: isDarkMode,
                     focusColor: Theme.of(context).colorScheme.secondary,
                     onChanged: (value) {
-                      BlocProvider.of<ThemeBloc>(context).add(
-                        ThemeEventChange(isDarkMode: value),
+                      BlocProvider.of<SettingsBloc>(context).add(
+                        SettingsEventChangeTheme(isDarkMode: value),
                       );
                     },
                   ),
                 ),
-              );
-            },
-          ),
-          BlocBuilder<LanguageBloc, LanguageState>(
-            builder: (context, languageState) {
-              final currentLocale = languageState.locale;
-              return ListTile(
+              ),
+              ListTile(
                 title: const Text(
                   'Język',
                   style: TextStyle(fontSize: 16),
@@ -168,19 +162,14 @@ class _SettingsPageState extends State<SettingsPage> {
                   }).toList(),
                   onChanged: (Locale? newLocale) {
                     if (newLocale != null) {
-                      context
-                          .read<LanguageBloc>()
-                          .add(ChangeLanguage(newLocale)); // Zmiana języka
+                      context.read<SettingsBloc>().add(
+                          SettingsEventChangeLanguage(
+                              newLocale)); // Zmiana języka
                     }
                   },
                 ),
-              );
-            },
-          ),
-          BlocBuilder<WeightUnitBloc, WeightUnitState>(
-            builder: (context, unitState) {
-              final currentUnit = unitState.unit;
-              return ListTile(
+              ),
+              ListTile(
                 title: const Text(
                   'Jednostka',
                   style: TextStyle(fontSize: 16),
@@ -200,56 +189,56 @@ class _SettingsPageState extends State<SettingsPage> {
                   onChanged: (String? newUnit) {
                     if (newUnit != null) {
                       context
-                          .read<WeightUnitBloc>()
-                          .add(ChangeWeightUnit(newUnit));
+                          .read<SettingsBloc>()
+                          .add(SettingsEventChangeWeightUnit(newUnit));
                     }
                   },
                 ),
-              );
-            },
-          ),
-          //TODO: Rodo i komunikaty
-          ListTile(
-            title: const Text(
-              'Kopia zapasowa',
-              style: TextStyle(fontSize: 16),
-            ),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ElevatedButton(
-                  onPressed: () async {
-                    final result = await _restoreDb();
-                    if (result) {
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text('Successfully Restored DB')),
-                        );
-                      }
-                    }
-                  },
-                  child: const Icon(Icons.upload),
+              ),
+              //TODO: Rodo i komunikaty
+              ListTile(
+                title: const Text(
+                  'Kopia zapasowa',
+                  style: TextStyle(fontSize: 16),
                 ),
-                const SizedBox(width: 10),
-                ElevatedButton(
-                  onPressed: () async {
-                    final result = await _shareDb();
-                    if (result) {
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text('Successfully Copied DB')),
-                        );
-                      }
-                    }
-                  },
-                  child: const Icon(Icons.download),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () async {
+                        final result = await _restoreDb();
+                        if (result) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text('Successfully Restored DB')),
+                            );
+                          }
+                        }
+                      },
+                      child: const Icon(Icons.upload),
+                    ),
+                    const SizedBox(width: 10),
+                    ElevatedButton(
+                      onPressed: () async {
+                        final result = await _shareDb();
+                        if (result) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text('Successfully Copied DB')),
+                            );
+                          }
+                        }
+                      },
+                      child: const Icon(Icons.download),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
-        ],
+              ),
+            ],
+          );
+        },
       ),
     );
   }
