@@ -1,9 +1,9 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
+import 'package:liftday/constants/app_exercises.dart';
 import 'package:liftday/sevices/crud/data_package/exercise_data.dart';
+import 'package:liftday/sevices/crud/tables/database_exercise_info.dart';
 import 'package:liftday/view/routes_views/add_exercise_view.dart';
-import 'package:liftday/view/widgets/ui_elements.dart';
 
 typedef ExercisesCallback = void Function(
     List<ExerciseData> exercisesFromTable);
@@ -86,18 +86,37 @@ class _SimpleExerciseTableState extends State<SimpleExerciseTable> {
           height: 10.0,
         ),
         Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: normalButton(
-              "+ Dodaj ćwiczenie",
-              () {
-                if (exercises.length >= 10) {
-                  return;
-                }
-                _showAddExerciseView();
-              },
-              Theme.of(context).colorScheme.tertiary,
-              Theme.of(context).colorScheme.primary,
-            )),
+          padding: const EdgeInsets.all(16.0),
+          child: GestureDetector(
+            onTap: () {
+              if (exercises.length >= 10) {
+                return;
+              }
+              _showAddExerciseView();
+            },
+            child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 8.0),
+              padding: const EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.onTertiary,
+                  borderRadius: BorderRadius.circular(12.0),
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  )),
+              child: Center(
+                child: Text(
+                  "+ Dodaj ćwiczenie",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.normal,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -117,6 +136,15 @@ class SimpleExerciseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String appExerciseName = "";
+    if (exercise.name == null && exercise.infoId != null) {
+      DatabaseExerciseInfo? appExerciseInfo =
+          getAppExerciseById(exercise.infoId!);
+      if (appExerciseInfo != null) {
+        appExerciseName = appExerciseInfo.name;
+      }
+    }
+
     return Card(
       margin: const EdgeInsets.all(8.0),
       child: ListTile(
@@ -129,7 +157,7 @@ class SimpleExerciseCard extends StatelessWidget {
         ),
         title: Text(
           exercise.name ??
-              exercise.infoId
+              appExerciseName
                   .toString(), //bedzie trzeba pobrac nazwe i typ jesli cwicznie bedzie z listy
           style: const TextStyle(fontSize: 18),
         ),

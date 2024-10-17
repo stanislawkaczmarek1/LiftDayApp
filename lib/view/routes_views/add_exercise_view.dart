@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:liftday/constants/themes.dart';
 import 'package:liftday/dialogs/entry_exerciese_name.dart';
 import 'package:liftday/dialogs/entry_exercise_musle.dart';
+import 'package:liftday/dialogs/entry_exercise_name_and_muscle.dart';
 import 'package:liftday/sevices/crud/tables/database_exercise_info.dart';
 import 'package:liftday/view/routes_views/exercise_list_view.dart';
 
@@ -82,11 +83,10 @@ class _AddExerciseViewState extends State<AddExerciseView> {
                     ),
                     const SizedBox(height: 16),
                     const Text(
-                      "Nazwa: ",
+                      "Wpisz nazwę: ",
                       style: TextStyle(fontSize: 14),
                     ),
                     TextField(
-                      autofocus: true,
                       onChanged: (value) {
                         setState(() {
                           exerciseName = value;
@@ -130,7 +130,7 @@ class _AddExerciseViewState extends State<AddExerciseView> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        "Rodzaj: ",
+                        "Wybierz rodzaj: ",
                         style: TextStyle(fontSize: 14),
                       ),
                       const SizedBox(height: 14),
@@ -149,7 +149,7 @@ class _AddExerciseViewState extends State<AddExerciseView> {
               const SizedBox(height: 24),
               GestureDetector(
                 onTap: () async {
-                  _showMuscleGroupDialog("CHANGE");
+                  _showMuscleGroupBottomSheet();
                 },
                 child: Container(
                   padding: const EdgeInsets.all(16.0),
@@ -163,7 +163,7 @@ class _AddExerciseViewState extends State<AddExerciseView> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        "Główna grupa mięśniowa: ",
+                        "Wybierz główną grupę mięśniową: ",
                         style: TextStyle(fontSize: 14),
                       ),
                       const SizedBox(height: 14),
@@ -194,7 +194,7 @@ class _AddExerciseViewState extends State<AddExerciseView> {
               showEntryExerciseNameAndMuscleDialog(context);
             } else if (exerciseName.isNotEmpty &&
                 selectedMuscleGroup == 'wybierz') {
-              _showMuscleGroupDialog("SAVE");
+              showEntryExerciseMuscleDialog(context);
             } else if ((exerciseName.isEmpty &&
                 selectedMuscleGroup != 'wybierz')) {
               showEntryExerciseNameDialog(context);
@@ -211,46 +211,87 @@ class _AddExerciseViewState extends State<AddExerciseView> {
     );
   }
 
-  void _showMuscleGroupDialog(String whenPressed) async {
-    showDialog(
+  void _showMuscleGroupBottomSheet() async {
+    showModalBottomSheet(
+      backgroundColor: Theme.of(context).colorScheme.onPrimary,
       context: context,
-      builder: (context) {
+      builder: (BuildContext context) {
         tempSelectedGroup = selectedMuscleGroup;
         return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setRadioState) {
-            return AlertDialog(
-              title: const Text(
-                "Główna grupa mięśniowa",
-                style: TextStyle(fontSize: 16),
-              ),
-              content: SingleChildScrollView(
-                child: ListBody(
-                  children: appMuscleGroups.map((group) {
-                    return RadioListTile<String>(
-                      title: Text(group),
-                      value: group,
-                      groupValue: tempSelectedGroup,
-                      onChanged: (String? value) {
-                        if (value != null) {
-                          if (whenPressed == "CHANGE") {
-                            setRadioState(() {
-                              tempSelectedGroup = value;
+          builder: (BuildContext context, StateSetter setSheetState) {
+            return Container(
+              padding: const EdgeInsets.all(16),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Container(
+                      width: 50,
+                      height: 5,
+                      margin: const EdgeInsets.only(bottom: 16),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[400],
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    const Text(
+                      "Główna grupa mięśniowa:",
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Column(
+                      mainAxisSize: MainAxisSize
+                          .min, // Zapobiega rozciąganiu na całą wysokość ekranu
+                      children: appMuscleGroups.map((group) {
+                        return GestureDetector(
+                          onTap: () {
+                            setSheetState(() {
+                              tempSelectedGroup = group;
                             });
                             setState(() {
                               selectedMuscleGroup = tempSelectedGroup;
                             });
                             Navigator.of(context).pop();
-                          }
-                          if (whenPressed == "SAVE") {
-                            Navigator.of(context).pop();
-                            Navigator.of(context).pop();
-                            widget.onResult(exerciseName, exerciseType,
-                                selectedMuscleGroup, null);
-                          }
-                        }
-                      },
-                    );
-                  }).toList(),
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(vertical: 8),
+                            decoration: BoxDecoration(
+                              color: tempSelectedGroup == group
+                                  ? Theme.of(context).colorScheme.onTertiary
+                                  : Theme.of(context).colorScheme.onTertiary,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: tempSelectedGroup == group
+                                    ? Theme.of(context).colorScheme.secondary
+                                    : Theme.of(context).colorScheme.onTertiary,
+                                width: 2,
+                              ),
+                            ),
+                            padding: const EdgeInsets.all(16),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  group,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                if (tempSelectedGroup == group)
+                                  Icon(
+                                    Icons.check,
+                                    color:
+                                        Theme.of(context).colorScheme.secondary,
+                                  ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ],
                 ),
               ),
             );

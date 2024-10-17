@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:liftday/dialogs/are_you_sure_to%20delete_exercise.dart';
 import 'package:liftday/dialogs/no_days_to_load.dart';
 import 'package:liftday/dialogs/unavailable_operation.dart';
 import 'package:liftday/sevices/bloc/settings/settings_bloc.dart';
@@ -33,7 +34,6 @@ class _ExerciseTableState extends State<ExerciseTable> {
   List<ExerciseCard> _exerciseCards = [];
 
   TrainingDayData? _selectedDay;
-  TrainingDayData? _tempSelectedDay;
 
   void _addExercise(String? name, String? type, String? muscleGroup,
       int? exerciseInfoId) async {
@@ -191,7 +191,7 @@ class _ExerciseTableState extends State<ExerciseTable> {
     } //else nic sie nie dzieje czekamy na akcje uzytkownika np dodanie cwiczenia
   }
 
-  Future<List<TrainingDayData>> _fetchTrainingDaysToRadioList() async {
+  Future<List<TrainingDayData>> _fetchTrainingDaysToUiList() async {
     final trainingDays = await _exerciseService.getTrainingDaysData();
     return trainingDays;
   }
@@ -228,70 +228,113 @@ class _ExerciseTableState extends State<ExerciseTable> {
     }
   }
 
-  Future<void> _showSelectDayRadioList() async {
+  Future<void> _showSelectDayUiList() async {
     if (_date != null) {
-      List<TrainingDayData> days = await _fetchTrainingDaysToRadioList();
+      List<TrainingDayData> days = await _fetchTrainingDaysToUiList();
       if (days.isEmpty) {
         if (mounted) {
           showNoDaysToLoadDialog(context);
         }
       } else {
         if (mounted) {
-          showDialog(
+          TrainingDayData? tempSelectedDay;
+          showModalBottomSheet(
+            backgroundColor: Theme.of(context).colorScheme.onPrimary,
             context: context,
             builder: (BuildContext context) {
               return StatefulBuilder(
-                  builder: (BuildContext context, StateSetter setState) {
-                return AlertDialog(
-                  content: SingleChildScrollView(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        ...days.map((day) {
-                          return RadioListTile<TrainingDayData>(
-                            title: Text(
-                              day.name,
-                              style: const TextStyle(fontSize: 16),
+                builder: (BuildContext context, StateSetter setSheetState) {
+                  return Container(
+                    padding: const EdgeInsets.all(16),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 50,
+                            height: 5,
+                            margin: const EdgeInsets.only(bottom: 16),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[400],
+                              borderRadius: BorderRadius.circular(10),
                             ),
-                            activeColor:
-                                Theme.of(context).colorScheme.secondary,
-                            value: day,
-                            groupValue: _tempSelectedDay,
-                            onChanged: (TrainingDayData? value) {
-                              setState(() {
-                                _tempSelectedDay = value;
-                              });
-                            },
-                          );
-                        })
-                      ],
+                          ),
+                          const Text(
+                            "Wybierz dzień:",
+                            style: TextStyle(fontSize: 18),
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          ...days.map((day) {
+                            return GestureDetector(
+                              onTap: () {
+                                setSheetState(() {
+                                  if (tempSelectedDay == day) {
+                                    tempSelectedDay = null;
+                                  } else {
+                                    tempSelectedDay = day;
+                                  }
+                                });
+                              },
+                              child: Container(
+                                margin: const EdgeInsets.symmetric(vertical: 8),
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: tempSelectedDay == day
+                                      ? Theme.of(context).colorScheme.onTertiary
+                                      : Theme.of(context)
+                                          .colorScheme
+                                          .onTertiary,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: tempSelectedDay == day
+                                        ? Theme.of(context)
+                                            .colorScheme
+                                            .secondary
+                                        : Theme.of(context)
+                                            .colorScheme
+                                            .onTertiary,
+                                    width: 2,
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      day.name,
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    if (tempSelectedDay == day)
+                                      Icon(
+                                        Icons.check,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary,
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          })
+                        ],
+                      ),
                     ),
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Text('Anuluj'),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        setState(
-                          () {
-                            log("$_tempSelectedDay");
-                            _selectedDay = _tempSelectedDay;
-                            _loadExercisesForSelectedDate();
-                          },
-                        );
-                      },
-                      child: const Text('Zatwierdź'),
-                    ),
-                  ],
-                );
-              });
+                  );
+                },
+              );
             },
-          );
+          ).then((_) {
+            if (tempSelectedDay != null) {
+              setState(() {
+                _selectedDay = tempSelectedDay;
+              });
+            }
+          });
         }
       }
     } else {
@@ -303,7 +346,7 @@ class _ExerciseTableState extends State<ExerciseTable> {
           widget.selectedDate.isBefore(endDate)) {
         _date =
             await _exerciseService.createDate(dateTime: widget.selectedDate);
-        await _showSelectDayRadioList();
+        await _showSelectDayUiList();
       } else {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -389,9 +432,8 @@ class _ExerciseTableState extends State<ExerciseTable> {
                                       Theme.of(context).colorScheme.onTertiary,
                                   borderRadius: BorderRadius.circular(12.0),
                                   border: Border.all(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onTertiary,
+                                    color:
+                                        Theme.of(context).colorScheme.onPrimary,
                                   )),
                               child: Center(
                                 child: Text(
@@ -415,7 +457,7 @@ class _ExerciseTableState extends State<ExerciseTable> {
                               return PopupMenuButton<String>(
                                 onSelected: (value) async {
                                   if (value == 'load_day') {
-                                    await _showSelectDayRadioList();
+                                    await _showSelectDayUiList();
                                   }
                                   if (value == 'generate_report') {
                                     if (_date != null) {
@@ -623,34 +665,17 @@ class _ExerciseCardState extends State<ExerciseCard> {
                               maxLines: 2, //
                               overflow: TextOverflow.ellipsis, //
                               style: const TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.bold),
+                                fontSize: 19,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                           PopupMenuButton<String>(
                             onSelected: (value) async {
                               if (value == 'delete') {
-                                final confirm = await showDialog<bool>(
-                                  context: context,
-                                  builder: (context) => AlertDialog(
-                                    title: const Text('Usuń ćwiczenie'),
-                                    content: const Text(
-                                        'Czy na pewno chcesz usunąć to ćwiczenie?'),
-                                    actions: [
-                                      TextButton(
-                                        child: const Text('Anuluj'),
-                                        onPressed: () {
-                                          Navigator.of(context).pop(false);
-                                        },
-                                      ),
-                                      TextButton(
-                                        child: const Text('Usuń'),
-                                        onPressed: () {
-                                          Navigator.of(context).pop(true);
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                );
+                                final confirm =
+                                    await showAreYouSureToDeleteExerciseDialog(
+                                        context);
                                 if (confirm == true) {
                                   widget.onDeleteCard(
                                       widget.exercise.id, widget.exerciseName);
@@ -679,7 +704,8 @@ class _ExerciseCardState extends State<ExerciseCard> {
                           child: Center(
                             child: Text('seria',
                                 style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.bold)),
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.normal)),
                           ),
                         ),
                         const Expanded(
@@ -697,7 +723,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
                                 return Text(state.unit,
                                     style: const TextStyle(
                                         fontSize: 16,
-                                        fontWeight: FontWeight.bold));
+                                        fontWeight: FontWeight.normal));
                               },
                             ),
                           ),
@@ -712,7 +738,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
                                   : const Text('x',
                                       style: TextStyle(
                                           fontSize: 16,
-                                          fontWeight: FontWeight.bold))),
+                                          fontWeight: FontWeight.normal))),
                         ),
                       ],
                     ),
@@ -753,7 +779,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
                               color: Theme.of(context).colorScheme.onTertiary,
                               borderRadius: BorderRadius.circular(12.0),
                               border: Border.all(
-                                color: Theme.of(context).colorScheme.onTertiary,
+                                color: Theme.of(context).colorScheme.onPrimary,
                               )),
                           child: Center(
                             child: Text(

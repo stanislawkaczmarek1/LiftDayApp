@@ -20,6 +20,7 @@ const durationColumn = 'duration';
 const typeColumn = 'type';
 const trainingDayIdColumn = 'training_day_id';
 const exerciseInfoIdColumn = 'exercise_info_id';
+const isArchivedColumn = 'is_archived';
 const createDatesTable = """CREATE TABLE IF NOT EXISTS "$datesTable" (
 	"$idColumn"	INTEGER NOT NULL,
 	"$digitDateColumn"	TEXT NOT NULL UNIQUE,
@@ -67,5 +68,6 @@ const createExercisesInfoTable =
 	"$dayNameColumn"	TEXT NOT NULL,
 	"$typeColumn"	TEXT NOT NULL DEFAULT 'reps',
   "$muscleGroupColumn"	TEXT NOT NULL,
+  "$isArchivedColumn"	INTEGER NOT NULL DEFAULT 0,
 	PRIMARY KEY("$idColumn" AUTOINCREMENT)
 );""";

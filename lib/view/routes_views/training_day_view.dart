@@ -6,6 +6,7 @@ import 'package:liftday/sevices/bloc/edit/edit_event.dart';
 import 'package:liftday/sevices/bloc/edit/edit_state.dart';
 import 'package:liftday/sevices/crud/data_package/exercise_data.dart';
 import 'package:liftday/sevices/crud/data_package/training_day_data.dart';
+import 'package:liftday/sevices/crud/exercise_service.dart';
 import 'package:liftday/view/widgets/tables/simple_exercise_table.dart';
 import 'package:liftday/view/widgets/ui_elements.dart';
 
@@ -30,6 +31,13 @@ class _TrainingDayViewState extends State<TrainingDayView> {
         name != 'Friday' &&
         name != 'Saturday' &&
         name != 'Sunday') {
+      ExerciseService exerciseService = ExerciseService();
+      final otherDays = await exerciseService.getTrainingDaysNotFromPlanData();
+      for (var i = 0; i < otherDays.length; i++) {
+        if (otherDays.elementAt(i).name == name && _currentName != name) {
+          return false;
+        }
+      }
       return true;
     } else {
       return false;

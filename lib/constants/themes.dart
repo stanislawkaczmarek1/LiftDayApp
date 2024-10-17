@@ -27,6 +27,9 @@ ThemeData lightTheme = ThemeData(
   appBarTheme: const AppBarTheme(
     backgroundColor: colorWhite,
   ),
+  bottomSheetTheme: const BottomSheetThemeData(
+    surfaceTintColor: colorWhite,
+  ),
 );
 
 ThemeData darkTheme = ThemeData(
@@ -41,5 +44,8 @@ ThemeData darkTheme = ThemeData(
   ),
   appBarTheme: const AppBarTheme(
     backgroundColor: colorBlack,
+  ),
+  bottomSheetTheme: const BottomSheetThemeData(
+    surfaceTintColor: colorBlack,
   ),
 );

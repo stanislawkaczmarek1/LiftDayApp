@@ -622,7 +622,7 @@ class ExerciseService {
     for (var i = 0; i < trainingDay.exercises.length; i++) {
       final exerciseInfoId = trainingDay.exercises.elementAt(i).infoId;
       if (exerciseInfoId != null) {
-        //nie moze byc null bo w radio liscie sa ExerciseData w takim formacie (name, type, id)
+        //nie moze byc null bo w liscie w ui sa ExerciseData w takim formacie (name, type, id)
         exercises.add(await createExercise(
             dateId: dateId, exerciseInfoId: exerciseInfoId));
       }
@@ -1048,7 +1048,7 @@ class ExerciseService {
       {
         dayNameColumn: name,
       },
-      where: "name = ?",
+      where: "$dayNameColumn = ?",
       whereArgs: [name],
     );
 

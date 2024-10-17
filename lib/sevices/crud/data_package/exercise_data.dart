@@ -6,9 +6,9 @@ class ExerciseData {
 
   ExerciseData({
     required this.name,
-    required this.infoId,
     this.type = "reps",
     required this.muscleGroup,
+    required this.infoId,
   });
 
   @override
