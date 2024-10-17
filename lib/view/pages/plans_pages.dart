@@ -299,12 +299,18 @@ class _PlansTabState extends State<PlansTab> {
                   return [
                     const PopupMenuItem<String>(
                       value: 'edit',
-                      child: Text('Edytuj'),
+                      child: ListTile(
+                        leading: Icon(Icons.edit),
+                        title: Text('Edytuj'),
+                      ),
                     ),
                     if (!isFromPlan)
                       const PopupMenuItem<String>(
                         value: 'delete',
-                        child: Text('Usuń'),
+                        child: ListTile(
+                          leading: Icon(Icons.delete),
+                          title: Text('Usuń'),
+                        ),
                       ),
                   ];
                 },
@@ -524,12 +530,18 @@ class _RoutinesTabState extends State<RoutinesTab> {
                   return [
                     const PopupMenuItem<String>(
                       value: 'edit',
-                      child: Text('Edytuj'),
+                      child: ListTile(
+                        leading: Icon(Icons.edit),
+                        title: Text('Edytuj'),
+                      ),
                     ),
                     if (!isFromPlan)
                       const PopupMenuItem<String>(
                         value: 'delete',
-                        child: Text('Usuń'),
+                        child: ListTile(
+                          leading: Icon(Icons.delete),
+                          title: Text('Usuń'),
+                        ),
                       ),
                   ];
                 },

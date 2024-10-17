@@ -4,6 +4,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:liftday/constants/database.dart';
+import 'package:liftday/dialogs/create_backup.dart';
+import 'package:liftday/dialogs/restore_backup.dart';
 import 'package:liftday/l10n/l10n.dart';
 import 'package:liftday/sevices/bloc/settings/settings_bloc.dart';
 import 'package:liftday/sevices/bloc/settings/settings_event.dart';
@@ -59,33 +61,38 @@ class _SettingsPageState extends State<SettingsPage> {
     final docsPath = await getApplicationDocumentsDirectory();
     final dbPath = join(docsPath.path, dbName);
 
-    FilePickerResult? result = await FilePicker.platform.pickFiles();
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles();
 
-    if (result != null) {
-      File source = File(result.files.single.path!);
-      String fileExtension = source.path.split('.').last;
-      if (fileExtension == 'db' || fileExtension == 'sqlite') {
-        if (await _isValidDatabase(source)) {
-          try {
-            await source.copy(dbPath);
-            ExerciseService exerciseService = ExerciseService();
-            SettingsService settingsService = SettingsService();
-            settingsService.setHasPlanFlag(
-                await exerciseService.checkIfThereIsPlanInRestoredDB());
-            return true;
-          } catch (e) {
-            log('Błąd podczas przywracania bazy danych: $e');
+      if (result != null) {
+        File source = File(result.files.single.path!);
+        String fileExtension = source.path.split('.').last;
+        if (fileExtension == 'db' || fileExtension == 'sqlite') {
+          if (await _isValidDatabase(source)) {
+            try {
+              await source.copy(dbPath);
+              ExerciseService exerciseService = ExerciseService();
+              SettingsService settingsService = SettingsService();
+              settingsService.setHasPlanFlag(
+                  await exerciseService.checkIfThereIsPlanInRestoredDB());
+              return true;
+            } catch (e) {
+              log('Błąd podczas przywracania bazy danych: $e');
+              return false;
+            }
+          } else {
+            log('Wybrany plik nie spełnia standardów projektu.');
             return false;
           }
         } else {
-          log('Wybrany plik nie spełnia standardów projektu.');
+          log('Wybrano plik o nieprawidłowym rozszerzeniu');
           return false;
         }
       } else {
-        log('Wybrano plik o nieprawidłowym rozszerzeniu');
+        // Użytkownik nie zezwolil
         return false;
       }
-    } else {
+    } catch (e) {
       // Użytkownik anulował wybór
       return false;
     }
@@ -195,10 +202,9 @@ class _SettingsPageState extends State<SettingsPage> {
                   },
                 ),
               ),
-              //TODO: Rodo i komunikaty
               ListTile(
                 title: const Text(
-                  'Kopia zapasowa',
+                  'Wyślij\nkopie zapasową',
                   style: TextStyle(fontSize: 16),
                 ),
                 trailing: Row(
@@ -206,32 +212,50 @@ class _SettingsPageState extends State<SettingsPage> {
                   children: [
                     ElevatedButton(
                       onPressed: () async {
-                        final result = await _restoreDb();
-                        if (result) {
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text('Successfully Restored DB')),
-                            );
+                        final dialogResult =
+                            await showCreateBackupDialog(context);
+                        if (dialogResult) {
+                          final result = await _shareDb();
+                          if (result) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text('Successfully Copied DB')),
+                              );
+                            }
                           }
                         }
                       },
-                      child: const Icon(Icons.upload),
+                      child: const Icon(Icons.cloud_queue_outlined),
                     ),
-                    const SizedBox(width: 10),
+                  ],
+                ),
+              ),
+              ListTile(
+                title: const Text(
+                  'Wczytaj\nkopie zapasową',
+                  style: TextStyle(fontSize: 16),
+                ),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
                     ElevatedButton(
                       onPressed: () async {
-                        final result = await _shareDb();
-                        if (result) {
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text('Successfully Copied DB')),
-                            );
+                        final dialogResult =
+                            await showRestoreBackupDialog(context);
+                        if (dialogResult) {
+                          final result = await _restoreDb();
+                          if (result) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text('Successfully Restored DB')),
+                              );
+                            }
                           }
                         }
                       },
-                      child: const Icon(Icons.download),
+                      child: const Icon(Icons.upload_file_outlined),
                     ),
                   ],
                 ),

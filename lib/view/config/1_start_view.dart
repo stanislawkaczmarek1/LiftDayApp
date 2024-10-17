@@ -17,44 +17,46 @@ class _StartViewState extends State<StartView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBar(context),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          const SizedBox(),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              AppLocalizations.of(context)!.hello,
-              style: const TextStyle(fontSize: 34, fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            const SizedBox(),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                AppLocalizations.of(context)!.hello,
+                style:
+                    const TextStyle(fontSize: 34, fontWeight: FontWeight.bold),
+              ),
             ),
-          ),
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              normalButton(
-                "Rozpocznij",
-                () {
-                  context
-                      .read<ConfigBloc>()
-                      .add(const ConfigEventStartButton());
-                },
-                Theme.of(context).colorScheme.tertiary,
-                Theme.of(context).colorScheme.primary,
-              ),
-              const SizedBox(
-                height: 20.0,
-              ),
-              const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Text(
-                  'Klikając przycisk "Rozpocznij", akceptujesz nasze Warunki korzystania i Politykę prywatności',
-                  textAlign: TextAlign.center,
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                normalButton(
+                  "Rozpocznij",
+                  () {
+                    context
+                        .read<ConfigBloc>()
+                        .add(const ConfigEventStartButton());
+                  },
+                  Theme.of(context).colorScheme.tertiary,
+                  Theme.of(context).colorScheme.primary,
                 ),
-              ),
-            ],
-          ),
-        ],
+                const SizedBox(
+                  height: 40.0,
+                ), /*
+                const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(
+                    'Klikając przycisk "Rozpocznij", akceptujesz nasze Warunki korzystania i Politykę prywatności',
+                    textAlign: TextAlign.center,
+                  ),
+                ),*/
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

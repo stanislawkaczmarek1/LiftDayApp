@@ -170,7 +170,10 @@ class SimpleExerciseCard extends StatelessWidget {
           itemBuilder: (BuildContext context) => [
             const PopupMenuItem(
               value: 'delete',
-              child: Text('Usuń'),
+              child: ListTile(
+                leading: Icon(Icons.delete),
+                title: Text('Usuń'),
+              ),
             ),
           ],
         ),

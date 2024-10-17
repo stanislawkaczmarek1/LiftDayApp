@@ -52,13 +52,13 @@ class _StatisticsPageState extends State<StatisticsPage> {
                   ],
                 ),
               ),
-              const VolumeChartWidget(),
+              const MuscleChartWidget(),
               Divider(
                 color: Theme.of(context).colorScheme.tertiary,
                 thickness: 1,
                 height: 60,
               ),
-              const MuscleChartWidget(),
+              const VolumeChartWidget(),
               Divider(
                 color: Theme.of(context).colorScheme.tertiary,
                 thickness: 1,
@@ -423,9 +423,9 @@ class _MuscleChartWidgetState extends State<MuscleChartWidget> {
     ExerciseService exerciseService = ExerciseService();
     const List<String> muscleGroups = [
       "chest",
-      "back",
-      "arms",
       "shoulders",
+      "arms",
+      "back",
       "legs",
       "core",
     ];

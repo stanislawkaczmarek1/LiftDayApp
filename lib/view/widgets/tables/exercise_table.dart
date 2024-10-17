@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'dart:developer';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
 import 'package:liftday/dialogs/are_you_sure_to%20delete_exercise.dart';
 import 'package:liftday/dialogs/no_days_to_load.dart';
@@ -474,11 +477,17 @@ class _ExerciseTableState extends State<ExerciseTable> {
                                   return [
                                     const PopupMenuItem<String>(
                                       value: 'load_day',
-                                      child: Text('Wczytaj dzień'),
+                                      child: ListTile(
+                                        leading: Icon(Icons.calendar_today),
+                                        title: Text('Wczytaj dzień'),
+                                      ),
                                     ),
                                     const PopupMenuItem<String>(
                                       value: 'generate_report',
-                                      child: Text('Generuj raport'),
+                                      child: ListTile(
+                                        leading: Icon(Icons.description),
+                                        title: Text('Generuj raport'),
+                                      ),
                                     ),
                                   ];
                                 },
@@ -688,7 +697,10 @@ class _ExerciseCardState extends State<ExerciseCard> {
                               return [
                                 const PopupMenuItem<String>(
                                   value: 'delete',
-                                  child: Text('Usuń'),
+                                  child: ListTile(
+                                    leading: Icon(Icons.delete),
+                                    title: Text('Usuń'),
+                                  ),
                                 ),
                               ];
                             },
@@ -1052,17 +1064,21 @@ class _ExerciseRowState extends State<ExerciseRow> {
               } else {
                 _setupTextControllerListenerTypeReps();
               }
-              return Dismissible(
+              return Slidable(
                 key: Key(widget.setIndex.toString()),
-                direction: DismissDirection.endToStart,
-                onDismissed: (direction) {
-                  widget.onDeleteSet(widget.setIndex);
-                },
-                background: Container(
-                  color: Colors.red,
-                  alignment: Alignment.centerRight,
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: const Icon(Icons.delete, color: Colors.white),
+                endActionPane: ActionPane(
+                  motion: const ScrollMotion(),
+                  children: [
+                    SlidableAction(
+                      onPressed: (context) {
+                        widget.onDeleteSet(widget.setIndex);
+                      },
+                      backgroundColor: Colors.red,
+                      foregroundColor: Colors.white,
+                      icon: Icons.delete,
+                      label: 'Usuń serie',
+                    ),
+                  ],
                 ),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
@@ -1071,9 +1087,16 @@ class _ExerciseRowState extends State<ExerciseRow> {
                     children: [
                       Expanded(
                         child: Center(
-                          child: Text(
-                            '$setIndex',
-                            style: const TextStyle(fontSize: 16),
+                          child: GestureDetector(
+                            onTap: _showDeleteSetBottomSheet,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 8),
+                              child: Text(
+                                '$setIndex',
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -1190,6 +1213,66 @@ class _ExerciseRowState extends State<ExerciseRow> {
           }
         },
       ),
+    );
+  }
+
+  void _showDeleteSetBottomSheet() async {
+    showModalBottomSheet(
+      backgroundColor: Theme.of(context).colorScheme.onPrimary,
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setSheetState) {
+            return Container(
+              padding: const EdgeInsets.all(16),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Container(
+                      width: 50,
+                      height: 5,
+                      margin: const EdgeInsets.only(bottom: 16),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[400],
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        widget.onDeleteSet(widget.setIndex);
+                        Navigator.pop(context);
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(vertical: 8),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.onTertiary,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: Theme.of(context).colorScheme.onTertiary,
+                            width: 2,
+                          ),
+                        ),
+                        padding: const EdgeInsets.all(16),
+                        child: ListTile(
+                          title: Text(
+                            "Usuń serię",
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                color: Theme.of(context).colorScheme.primary),
+                          ),
+                          leading: const Icon(Icons.delete),
+                          iconColor: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }
