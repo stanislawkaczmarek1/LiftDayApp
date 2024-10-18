@@ -1,7 +1,419 @@
 {
     "@@locale": "en",
-    "hello": "Hello",
-    "@hello": {
-        "description": "Welcome message"
+    "remove_exercise": "Remove exercise",
+    "@remove_exercise": {
+        "description": "Prompt to remove an exercise"
+    },
+    "confirm_remove_exercise": "Are you sure you want to delete this exercise?",
+    "@confirm_remove_exercise": {
+        "description": "Confirmation message for exercise deletion"
+    },
+    "no": "No",
+    "@no": {
+        "description": "Negative response"
+    },
+    "yes": "Yes",
+    "@yes": {
+        "description": "Positive response"
+    },
+    "confirm_plan_removal": "Are you sure you want to remove your plan?",
+    "@confirm_plan_removal": {
+        "description": "Confirmation message for plan removal"
+    },
+    "future_workouts_warning": "Future workouts from the current plan will be removed from the calendar.\n\nDays from the training plan in the Plan tab will be removed.\n\n\nYour historical workouts will remain in the calendar.",
+    "@future_workouts_warning": {
+        "description": "Warning about future workouts and historical data"
+    },
+    "database_info": "Database Information",
+    "@database_info": {
+        "description": "Information about the database"
+    },
+    "scrollable_content": "Scrollable content:\n\nBefore you decide to share the database, we would like to inform you that:\n\n*The application stores data on your device, so creating a backup may be useful, for example, during device replacement.\n*You can send the database to your email or choose another available sharing option.\n*Your database contains all the data you have entered (including workouts from the calendar, plans, routines, and your own exercises).\n*As a user, you have full control over what you do with this data after sharing it.\n\nClicking 'Share' means you agree to share your data.",
+    "@scrollable_content": {
+        "description": "Instructions and information about sharing the database"
+    },
+    "cancel": "Cancel",
+    "@cancel": {
+        "description": "Cancel action"
+    },
+    "share": "Share",
+    "@share": {
+        "description": "Share data option"
+    },
+    "enter_exercise_name": "Please enter the exercise name",
+    "@enter_exercise_name": {
+        "description": "Prompt to enter the exercise name"
+    },
+    "ok": "Ok",
+    "@ok": {
+        "description": "Confirmation button"
+    },
+    "select_main_muscle_group": "Please select the main muscle group",
+    "@select_main_muscle_group": {
+        "description": "Prompt to select muscle group"
+    },
+    "enter_exercise_name_and_group": "Please enter the exercise name and select the main muscle group",
+    "@enter_exercise_name_and_group": {
+        "description": "Prompt for exercise name and muscle group"
+    },
+    "operation_error": "Sorry, an error occurred during the operation",
+    "@operation_error": {
+        "description": "Error message"
+    },
+    "select_plan_duration": "Please select the plan duration",
+    "@select_plan_duration": {
+        "description": "Prompt to select the duration of the plan"
+    },
+    "select_training_days": "Please select training days",
+    "@select_training_days": {
+        "description": "Prompt to select training days"
+    },
+    "no_days_to_load": "No days to load",
+    "@no_days_to_load": {
+        "description": "Message when there are no days to load"
+    },
+    "max_routines_reached": "Maximum number of routines reached",
+    "@max_routines_reached": {
+        "description": "Error message for maximum routines limit"
+    },
+    "load_backup": "Load backup",
+    "@load_backup": {
+        "description": "Option to load backup"
+    },
+    "load_backup_message": "After clicking 'Load', select a previously saved file named $dbName",
+    "@load_backup_message": {
+        "description": "Message about loading a backup file"
+    },
+    "load": "Load",
+    "@load": {
+        "description": "Load action"
+    },
+    "confirm_undo": "Are you sure you want to undo?",
+    "@confirm_undo": {
+        "description": "Confirmation for undo action"
+    },
+    "unsaved_workouts_warning": "Your entered workouts have not been saved yet.\n\nIf you want to edit the previously entered days,\nyou will be able to do it later in the app.",
+    "@unsaved_workouts_warning": {
+        "description": "Warning about unsaved workouts"
+    },
+    "stay": "Stay",
+    "@stay": {
+        "description": "Option to stay on the current screen"
+    },
+    "operation_unavailable": "Sorry, this operation is unavailable",
+    "@operation_unavailable": {
+        "description": "Message for unavailable operations"
+    },
+    "enter_another_name": "Please enter a different name",
+    "@enter_another_name": {
+        "description": "Prompt to enter a different name"
+    },
+    "start": "Start",
+    "@start": {
+        "description": "Button to start the process"
+    },
+    "choose_workout_addition_method": "Choose the way you want to add workouts",
+    "@choose_workout_addition_method": {
+        "description": "Prompt to choose how to add workouts"
+    },
+    "change_method_later": "(You can always change the way you add workouts later)",
+    "@change_method_later": {
+        "description": "Note that the method can be changed later"
+    },
+    "auto_assign_days": "Automatic assignment of training days to days of the week",
+    "@auto_assign_days": {
+        "description": "Option for automatic assignment of training days"
+    },
+    "i_choose": "I choose",
+    "@i_choose": {
+        "description": "Button to confirm the choice"
+    },
+    "recommended": "Recommended",
+    "@recommended": {
+        "description": "Indication of a recommended option"
+    },
+    "manual_assign_days": "Manual assignment of a training day to a day of the week",
+    "@manual_assign_days": {
+        "description": "Option for manually assigning training days"
+    },
+    "manual_add_exercises": "Manual addition of exercises each day",
+    "@manual_add_exercises": {
+        "description": "Option for manually adding exercises"
+    },
+    "finish": "Finish",
+    "@finish": {
+        "description": "Button to complete the process"
+    },
+    "next_day": "Next day",
+    "@next_day": {
+        "description": "Proceed to the next day"
+    },
+    "enter_day_name": "Enter the day name",
+    "@enter_day_name": {
+        "description": "Prompt to enter the name of a training day"
+    },
+    "choose_training_days": "Select your training days",
+    "@choose_training_days": {
+        "description": "Prompt to choose training days"
+    },
+    "next": "Next",
+    "@next": {
+        "description": "Button to proceed to the next step"
+    },
+    "choose_plan_duration": "Select the duration of your training plan",
+    "@choose_plan_duration": {
+        "description": "Prompt to choose the duration of the plan"
+    },
+    "week_1": "1 week",
+    "@week_1": {
+        "description": "Option for a 1-week plan"
+    },
+    "weeks_2": "2 weeks",
+    "@weeks_2": {
+        "description": "Option for a 2-week plan"
+    },
+    "weeks_4": "4 weeks",
+    "@weeks_4": {
+        "description": "Option for a 4-week plan"
+    },
+    "weeks_8": "8 weeks",
+    "@weeks_8": {
+        "description": "Option for an 8-week plan"
+    },
+    "choose_option": "Choose an option",
+    "@choose_option": {
+        "description": "Prompt to choose an option"
+    },
+    "data_updated": "Data updated",
+    "@data_updated": {
+        "description": "Confirmation that data has been updated"
+    },
+    "plan_deleted": "Plan deleted",
+    "@plan_deleted": {
+        "description": "Message confirming that the plan has been deleted"
+    },
+    "day_deleted": "Day deleted",
+    "@day_deleted": {
+        "description": "Message confirming that the day has been deleted"
+    },
+    "my_plan": "My plan",
+    "@my_plan": {
+        "description": "Label for the user's plan"
+    },
+    "days_left": "days left",
+    "@days_left": {
+        "description": "Label showing how many days are left"
+    },
+    "replace": "Replace",
+    "@replace": {
+        "description": "Option to replace something"
+    },
+    "delete": "Delete",
+    "@delete": {
+        "description": "Option to delete something"
+    },
+    "add_plan": "Add plan",
+    "@add_plan": {
+        "description": "Button to add a new plan"
+    },
+    "edit": "Edit",
+    "@edit": {
+        "description": "Option to edit"
+    },
+    "my_routines": "My routines",
+    "@my_routines": {
+        "description": "Section for user's routines"
+    },
+    "add_routine": "+ Add routine",
+    "@add_routine": {
+        "description": "Button to add a new routine"
+    },
+    "dark_mode": "Dark mode",
+    "@dark_mode": {
+        "description": "Option to enable dark mode"
+    },
+    "language": "Language",
+    "@language": {
+        "description": "Option to change language"
+    },
+    "unit": "Unit",
+    "@unit": {
+        "description": "Option to change units of measurement"
+    },
+    "send_backup": "Send backup",
+    "@send_backup": {
+        "description": "Option to send backup"
+    },
+    "chest": "chest",
+    "@chest": {
+        "description": "Chest muscle group"
+    },
+    "shoulders": "shoulders",
+    "@shoulders": {
+        "description": "Shoulders muscle group"
+    },
+    "arms": "arms",
+    "@arms": {
+        "description": "Arms muscle group"
+    },
+    "back": "back",
+    "@back": {
+        "description": "Back muscle group"
+    },
+    "legs": "legs",
+    "@legs": {
+        "description": "Legs muscle group"
+    },
+    "core": "core",
+    "@core": {
+        "description": "Core muscle group"
+    },
+    "muscle_distribution": "Muscle distribution",
+    "@muscle_distribution": {
+        "description": "Muscle distribution overview"
+    },
+    "days_7": "7 days",
+    "@days_7": {
+        "description": "Period of 7 days"
+    },
+    "days_30": "30 days",
+    "@days_30": {
+        "description": "Period of 30 days"
+    },
+    "days_90": "90 days",
+    "@days_90": {
+        "description": "Period of 90 days"
+    },
+    "all_time": "All time",
+    "@all_time": {
+        "description": "Entire period"
+    },
+    "weight_and_reps": "weight and repetitions",
+    "@weight_and_reps": {
+        "description": "Exercise based on weight and repetitions"
+    },
+    "select": "Select",
+    "@select": {
+        "description": "Button to make a selection"
+    },
+    "exercise_list": "Exercise list",
+    "@exercise_list": {
+        "description": "List of exercises"
+    },
+    "add_exercise": "Add exercise",
+    "@add_exercise": {
+        "description": "Button to add a new exercise"
+    },
+    "enter_name": "Enter name:",
+    "@enter_name": {
+        "description": "Prompt to enter a name"
+    },
+    "weight_and_time": "weight and time",
+    "@weight_and_time": {
+        "description": "Exercise based on weight and time"
+    },
+    "select_type": "Select type:",
+    "@select_type": {
+        "description": "Prompt to select a type"
+    },
+    "select_muscle_group": "Select main muscle group:",
+    "@select_muscle_group": {
+        "description": "Prompt to select the main muscle group"
+    },
+    "add": "Add",
+    "@add": {
+        "description": "Button to add something"
+    },
+    "main_muscle_group": "Main muscle group:",
+    "@main_muscle_group": {
+        "description": "Label for main muscle group"
+    },
+    "search_exercise": "Search exercise",
+    "@search_exercise": {
+        "description": "Prompt to search for an exercise"
+    },
+    "from_app": "From the app",
+    "@from_app": {
+        "description": "Option to select exercises from the app"
+    },
+    "custom": "Custom",
+    "@custom": {
+        "description": "Option to select custom exercises"
+    },
+    "exercise_loading_error": "Error loading exercises",
+    "@exercise_loading_error": {
+        "description": "Message indicating an error loading exercises"
+    },
+    "no_custom_exercises": "No custom exercises",
+    "@no_custom_exercises": {
+        "description": "Message indicating no custom exercises"
+    },
+    "volume": "volume:",
+    "@volume": {
+        "description": "Label for workout volume"
+    },
+    "enter_day_name2": "Enter the name of the day",
+    "@enter_day_name2": {
+        "description": "Prompt to enter a day name"
+    },
+    "calendar_not_in_range": "The workout calendar does not cover this date",
+    "@calendar_not_in_range": {
+        "description": "Message indicating that the date is outside the calendar range"
+    },
+    "exercise_deleted": "Exercise deleted",
+    "@exercise_deleted": {
+        "description": "Message indicating that an exercise has been deleted"
+    },
+    "select_day": "Select day:",
+    "@select_day": {
+        "description": "Prompt to select a day"
+    },
+    "add_exercise2": "+ Add exercise",
+    "@add_exercise2": {
+        "description": "Button to add a new exercise"
+    },
+    "load_day": "Load day",
+    "@load_day": {
+        "description": "Button to load a day"
+    },
+    "generate_report": "Generate report",
+    "@generate_report": {
+        "description": "Button to generate a report"
+    },
+    "set": "Set",
+    "@set": {
+        "description": "Label for a workout set"
+    },
+    "add_set": "+ Add set",
+    "@add_set": {
+        "description": "Button to add a new set"
+    },
+    "delete_set": "Delete set",
+    "@delete_set": {
+        "description": "Button to delete a set"
+    },
+    "plan": "Plan",
+    "@plan": {
+        "description": "Section for workout plans"
+    },
+    "routines": "Routines",
+    "@routines": {
+        "description": "Section for workout routines"
+    },
+    "training": "Training",
+    "@training": {
+        "description": "Section for workouts"
+    },
+    "statistics": "Statistics",
+    "@statistics": {
+        "description": "Section for workout statistics"
+    },
+    "settings": "Settings",
+    "@settings": {
+        "description": "Section for app settings"
+    },
+    "bench_press_flat": "Bench press flat",
+    "@bench_press_flat": {
+        "description": "Exercise: bench press on a flat bench"
     }
 }

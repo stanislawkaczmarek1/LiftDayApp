@@ -99,8 +99,8 @@ class _CreatePlanOrSkipViewState extends State<CreatePlanOrSkipView> {
               ),
               Center(
                 child: _roundedRectangleWithButton(
-                  text: "Ręczne wybieranie\ndanego dnia treningowego\n"
-                      "w dany dzień tygodnia",
+                  text: """Ręczne wybieranie\ndanego dnia treningowego\n
+                      w dany dzień tygodnia""",
                   buttonText: "Wybieram",
                   backgroundColor: Theme.of(context).colorScheme.tertiary,
                   textColor: Theme.of(context).colorScheme.primary,
