@@ -34,7 +34,7 @@ class _StartViewState extends State<StartView> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 normalButton(
-                  "Rozpocznij",
+                  AppLocalizations.of(context)!.start,
                   () {
                     context
                         .read<ConfigBloc>()

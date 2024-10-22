@@ -3,6 +3,7 @@ import 'package:liftday/constants/app_exercises.dart';
 import 'package:liftday/constants/themes.dart';
 import 'package:liftday/sevices/crud/exercise_service.dart';
 import 'package:liftday/sevices/crud/tables/database_exercise_info.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 typedef AddExerciseFromListCallback = void Function(int? exerciseInfoId);
 
@@ -90,9 +91,9 @@ class _ExerciseListViewState extends State<ExerciseListView>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Lista ćwiczeń',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.normal),
+        title: Text(
+          AppLocalizations.of(context)!.exercise_list,
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.normal),
         ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(190), // sum of all boxes
@@ -108,7 +109,7 @@ class _ExerciseListViewState extends State<ExerciseListView>
                     height: 60,
                     child: TextField(
                       decoration: InputDecoration(
-                        hintText: 'Szukaj ćwiczenia',
+                        hintText: AppLocalizations.of(context)!.search_exercise,
                         hintStyle: TextStyle(
                             fontWeight: FontWeight.normal,
                             color: Colors.grey.withOpacity(0.7)),
@@ -208,9 +209,9 @@ class _ExerciseListViewState extends State<ExerciseListView>
                     unselectedLabelStyle: const TextStyle(
                         fontSize: 16, fontWeight: FontWeight.normal),
                     controller: _tabController,
-                    tabs: const [
-                      Tab(text: 'Z aplikacji'),
-                      Tab(text: 'Własne'),
+                    tabs: [
+                      Tab(text: AppLocalizations.of(context)!.from_app),
+                      Tab(text: AppLocalizations.of(context)!.custom),
                     ],
                   ),
                 ),
@@ -239,9 +240,13 @@ class _ExerciseListViewState extends State<ExerciseListView>
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {
-                return const Center(child: Text('Błąd ładowania ćwiczeń'));
+                return Center(
+                    child: Text(
+                        AppLocalizations.of(context)!.exercise_loading_error));
               } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return const Center(child: Text('Brak własnych ćwiczeń'));
+                return Center(
+                    child: Text(
+                        AppLocalizations.of(context)!.no_custom_exercises));
               } else {
                 _customExercisesData = snapshot.data!;
 

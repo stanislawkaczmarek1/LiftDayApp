@@ -4,6 +4,7 @@ import 'package:liftday/dialogs/have_to_choose_plan_duration.dart';
 import 'package:liftday/sevices/bloc/config/config_bloc.dart';
 import 'package:liftday/sevices/bloc/config/config_event.dart';
 import 'package:liftday/view/widgets/ui_elements.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PlanDurationView extends StatefulWidget {
   const PlanDurationView({super.key});
@@ -31,7 +32,8 @@ class _PlanDurationViewState extends State<PlanDurationView> {
         }
       },
       child: Scaffold(
-        appBar: appBarWithButton(context, "Dalej", () async {
+        appBar: appBarWithButton(context, AppLocalizations.of(context)!.next,
+            () async {
           if (_selectedDuration != null) {
             context
                 .read<ConfigBloc>()
@@ -43,11 +45,12 @@ class _PlanDurationViewState extends State<PlanDurationView> {
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Padding(
-              padding: EdgeInsets.all(8.0),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
               child: Text(
-                'Wybierz okres na jaki chcesz ustawić plan treningowy',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                AppLocalizations.of(context)!.choose_plan_duration,
+                style:
+                    const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -77,20 +80,20 @@ class Dropdown extends StatefulWidget {
 class _DropdownState extends State<Dropdown> {
   String? _selectedOption;
 
-  final Map<String, int> _optionsMap = {
-    '1 tydzień': 7,
-    '2 tygodnie': 14,
-    '4 tygodnie': 28,
-    '8 tygodni': 56,
-  };
-
   @override
   Widget build(BuildContext context) {
+    final Map<String, int> optionsMap = {
+      AppLocalizations.of(context)!.week_1: 7,
+      AppLocalizations.of(context)!.weeks_2: 14,
+      AppLocalizations.of(context)!.weeks_4: 28,
+      AppLocalizations.of(context)!.weeks_8: 56,
+    };
+
     return DropdownButton<String>(
       value: _selectedOption,
-      hint: const Text('Wybierz opcję'),
+      hint: Text(AppLocalizations.of(context)!.choose_option),
       icon: const Icon(Icons.arrow_drop_down),
-      items: _optionsMap.keys.map<DropdownMenuItem<String>>((String value) {
+      items: optionsMap.keys.map<DropdownMenuItem<String>>((String value) {
         return DropdownMenuItem<String>(
           value: value,
           child: Text(value),
@@ -99,7 +102,7 @@ class _DropdownState extends State<Dropdown> {
       onChanged: (String? newValue) {
         setState(() {
           _selectedOption = newValue;
-          widget.onDurationChanged(_optionsMap[newValue]);
+          widget.onDurationChanged(optionsMap[newValue]);
         });
       },
     );

@@ -15,8 +15,8 @@ import 'package:liftday/sevices/settings/settings_service.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
-
 import 'package:sqflite/sqflite.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -135,9 +135,9 @@ class _SettingsPageState extends State<SettingsPage> {
           return Column(
             children: [
               ListTile(
-                title: const Text(
-                  'Tryb Ciemny',
-                  style: TextStyle(
+                title: Text(
+                  AppLocalizations.of(context)!.dark_mode,
+                  style: const TextStyle(
                     fontSize: 16,
                   ),
                 ),
@@ -155,9 +155,9 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ),
               ListTile(
-                title: const Text(
-                  'Język',
-                  style: TextStyle(fontSize: 16),
+                title: Text(
+                  AppLocalizations.of(context)!.language,
+                  style: const TextStyle(fontSize: 16),
                 ),
                 trailing: DropdownButton<Locale>(
                   value: currentLocale,
@@ -177,9 +177,9 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ),
               ListTile(
-                title: const Text(
-                  'Jednostka',
-                  style: TextStyle(fontSize: 16),
+                title: Text(
+                  AppLocalizations.of(context)!.unit,
+                  style: const TextStyle(fontSize: 16),
                 ),
                 trailing: DropdownButton<String>(
                   value: currentUnit,
@@ -203,9 +203,9 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ),
               ListTile(
-                title: const Text(
-                  'Wyślij\nkopie zapasową',
-                  style: TextStyle(fontSize: 16),
+                title: Text(
+                  AppLocalizations.of(context)!.send_backup,
+                  style: const TextStyle(fontSize: 16),
                 ),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -219,8 +219,9 @@ class _SettingsPageState extends State<SettingsPage> {
                           if (result) {
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text('Successfully Copied DB')),
+                                SnackBar(
+                                    content: Text(AppLocalizations.of(context)!
+                                        .copied_backup)),
                               );
                             }
                           }
@@ -232,9 +233,9 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ),
               ListTile(
-                title: const Text(
-                  'Wczytaj\nkopie zapasową',
-                  style: TextStyle(fontSize: 16),
+                title: Text(
+                  AppLocalizations.of(context)!.restore_backup,
+                  style: const TextStyle(fontSize: 16),
                 ),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -248,8 +249,9 @@ class _SettingsPageState extends State<SettingsPage> {
                           if (result) {
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text('Successfully Restored DB')),
+                                SnackBar(
+                                    content: Text(AppLocalizations.of(context)!
+                                        .restored_backup)),
                               );
                             }
                           }

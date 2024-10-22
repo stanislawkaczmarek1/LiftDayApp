@@ -48,7 +48,7 @@ const createSetsTable = """CREATE TABLE IF NOT EXISTS "$setsTable" (
 const createTrainingDaysTable =
     """CREATE TABLE IF NOT EXISTS "$trainingDaysTable" (
 	"$idColumn"	INTEGER NOT NULL,
-	"$dayNameColumn"	TEXT NOT NULL UNIQUE,
+	"$dayNameColumn" TEXT NOT NULL UNIQUE,
   "$isFromPlanColumn"	INTEGER NOT NULL DEFAULT 1,
 	PRIMARY KEY("$idColumn" AUTOINCREMENT)
 );""";

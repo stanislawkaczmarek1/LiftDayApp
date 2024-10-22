@@ -4,6 +4,7 @@ import 'package:liftday/constants/app_exercises.dart';
 import 'package:liftday/sevices/crud/data_package/exercise_data.dart';
 import 'package:liftday/sevices/crud/tables/database_exercise_info.dart';
 import 'package:liftday/view/routes_views/add_exercise_view.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 typedef ExercisesCallback = void Function(
     List<ExerciseData> exercisesFromTable);
@@ -105,7 +106,7 @@ class _SimpleExerciseTableState extends State<SimpleExerciseTable> {
                   )),
               child: Center(
                 child: Text(
-                  "+ Dodaj ćwiczenie",
+                  AppLocalizations.of(context)!.add_exercise2,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 16,
@@ -168,11 +169,11 @@ class SimpleExerciseCard extends StatelessWidget {
             }
           },
           itemBuilder: (BuildContext context) => [
-            const PopupMenuItem(
+            PopupMenuItem(
               value: 'delete',
               child: ListTile(
-                leading: Icon(Icons.delete),
-                title: Text('Usuń'),
+                leading: const Icon(Icons.delete),
+                title: Text(AppLocalizations.of(context)!.delete),
               ),
             ),
           ],

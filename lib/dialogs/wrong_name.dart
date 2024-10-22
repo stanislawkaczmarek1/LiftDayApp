@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:liftday/dialogs/generic/generic_dialog.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 Future<void> showWrongNameDialog(BuildContext context) {
   return showGenericDialog<void>(
     context: context,
-    content: "Proszę wprowadź inną nazwę",
+    content: AppLocalizations.of(context)!.enter_another_name,
     optionBuilder: () => {
       "Ok": null,
     },

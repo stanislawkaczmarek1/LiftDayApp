@@ -9,6 +9,7 @@ import 'package:liftday/sevices/crud/data_package/training_day_data.dart';
 import 'package:liftday/sevices/crud/exercise_service.dart';
 import 'package:liftday/view/widgets/tables/simple_exercise_table.dart';
 import 'package:liftday/view/widgets/ui_elements.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TrainingDayView extends StatefulWidget {
   const TrainingDayView({super.key});
@@ -44,6 +45,7 @@ class _TrainingDayViewState extends State<TrainingDayView> {
     }
   }
 
+  //TODO:
   String _getPolishDayAbbreviation(String dayOfWeek) {
     switch (dayOfWeek) {
       case 'Monday':
@@ -87,7 +89,7 @@ class _TrainingDayViewState extends State<TrainingDayView> {
           return Scaffold(
             appBar: appBarWithButton(
               context,
-              "Zapisz",
+              AppLocalizations.of(context)!.save,
               () {
                 context.read<EditBloc>().add(EditEventPushSaveButton(
                     context,
@@ -130,7 +132,7 @@ class _TrainingDayViewState extends State<TrainingDayView> {
           return Scaffold(
             appBar: appBarWithButton(
               context,
-              "Zapisz",
+              AppLocalizations.of(context)!.save,
               () async {
                 if (await _chceckDayName(_dayController.text)) {
                   if (context.mounted) {
@@ -165,7 +167,8 @@ class _TrainingDayViewState extends State<TrainingDayView> {
                                 width: 2,
                                 color: Theme.of(context).colorScheme.secondary),
                           ),
-                          hintText: 'Wpisz nazwę dnia',
+                          hintText:
+                              AppLocalizations.of(context)!.enter_day_name,
                           hintStyle: const TextStyle(fontSize: 24)),
                       style: const TextStyle(
                         fontSize: 24,
@@ -188,7 +191,7 @@ class _TrainingDayViewState extends State<TrainingDayView> {
           return Scaffold(
             appBar: appBarWithButton(
               context,
-              "Zapisz",
+              AppLocalizations.of(context)!.save,
               () async {
                 if (await _chceckDayName(_dayController.text)) {
                   if (context.mounted) {
@@ -223,7 +226,8 @@ class _TrainingDayViewState extends State<TrainingDayView> {
                                 width: 2,
                                 color: Theme.of(context).colorScheme.secondary),
                           ),
-                          hintText: 'Wpisz nazwę dnia',
+                          hintText:
+                              AppLocalizations.of(context)!.enter_day_name,
                           hintStyle: const TextStyle(fontSize: 24)),
                       style: const TextStyle(
                         fontSize: 24,

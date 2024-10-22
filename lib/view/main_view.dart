@@ -6,6 +6,7 @@ import 'package:liftday/view/pages/settings_page.dart';
 import 'package:liftday/view/pages/statistics_page.dart';
 import 'package:liftday/view/pages/training_page.dart';
 import 'package:liftday/view/pages/plans_pages.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class MainView extends StatefulWidget {
   const MainView({super.key});
@@ -51,11 +52,13 @@ class _MainViewState extends State<MainView> {
                       fontSize: 16, fontWeight: FontWeight.bold),
                   unselectedLabelStyle: const TextStyle(
                       fontSize: 16, fontWeight: FontWeight.normal),
-                  tabs: const [
+                  tabs: [
                     Tab(
-                      text: 'Plan',
+                      text: AppLocalizations.of(context)!.plan,
                     ),
-                    Tab(text: 'Rutyny'),
+                    Tab(
+                      text: AppLocalizations.of(context)!.routines,
+                    ),
                   ],
                 ),
               )
@@ -90,22 +93,22 @@ class _MainViewState extends State<MainView> {
             : _pages[_selectedIndex], // Inne strony
 
         bottomNavigationBar: BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
+          items: <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-              icon: Icon(Icons.calendar_month),
-              label: 'Trening',
+              icon: const Icon(Icons.calendar_month),
+              label: AppLocalizations.of(context)!.training,
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.description),
-              label: 'Plan',
+              icon: const Icon(Icons.description),
+              label: AppLocalizations.of(context)!.plan,
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.bar_chart),
-              label: 'Statystyki',
+              icon: const Icon(Icons.bar_chart),
+              label: AppLocalizations.of(context)!.statistics,
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.settings),
-              label: 'Ustawienia',
+              icon: const Icon(Icons.settings),
+              label: AppLocalizations.of(context)!.settings,
             ),
           ],
           currentIndex: _selectedIndex,

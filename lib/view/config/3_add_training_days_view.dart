@@ -10,6 +10,7 @@ import 'package:liftday/sevices/bloc/config/config_state.dart';
 import 'package:liftday/sevices/crud/data_package/exercise_data.dart';
 import 'package:liftday/sevices/crud/data_package/training_day_data.dart';
 import 'package:liftday/view/widgets/tables/simple_exercise_table.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AddTrainingDaysView extends StatefulWidget {
   const AddTrainingDaysView({super.key});
@@ -114,9 +115,9 @@ class _AddTrainingDaysViewState extends State<AddTrainingDaysView> {
                 },
                 style: TextButton.styleFrom(
                     foregroundColor: Theme.of(context).colorScheme.secondary),
-                child: const Text(
-                  "Zakończ",
-                  style: TextStyle(fontSize: 14.0),
+                child: Text(
+                  AppLocalizations.of(context)!.finish,
+                  style: const TextStyle(fontSize: 14.0),
                 ),
               ),
               if (!_maximumOfDays)
@@ -146,9 +147,9 @@ class _AddTrainingDaysViewState extends State<AddTrainingDaysView> {
                   },
                   style: TextButton.styleFrom(
                       foregroundColor: Theme.of(context).colorScheme.secondary),
-                  child: const Text(
-                    "Kolejny dzień",
-                    style: TextStyle(fontSize: 14.0),
+                  child: Text(
+                    AppLocalizations.of(context)!.next_day,
+                    style: const TextStyle(fontSize: 14.0),
                   ),
                 )
               else
@@ -169,6 +170,7 @@ class _AddTrainingDaysViewState extends State<AddTrainingDaysView> {
                 Padding(
                   padding: const EdgeInsets.all(20.0),
                   child: TextField(
+                    //TODO: ogarnac wszystkie textfieldy w kodzie
                     controller: _dayController,
                     decoration: InputDecoration(
                         border: InputBorder.none,
@@ -178,7 +180,7 @@ class _AddTrainingDaysViewState extends State<AddTrainingDaysView> {
                               width: 2,
                               color: Theme.of(context).colorScheme.secondary),
                         ),
-                        hintText: 'Wpisz nazwę dnia',
+                        hintText: AppLocalizations.of(context)!.enter_day_name2,
                         hintStyle: const TextStyle(fontSize: 24)),
                     style: const TextStyle(
                       fontSize: 24,

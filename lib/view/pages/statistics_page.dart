@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:liftday/sevices/conversion/conversion_service.dart';
 import 'package:liftday/sevices/crud/data_package/snapshot_data.dart';
@@ -6,6 +5,7 @@ import 'package:liftday/sevices/crud/exercise_service.dart';
 import 'package:liftday/view/widgets/charts/muscle_chart.dart';
 import 'package:liftday/view/widgets/charts/volume_chart.dart';
 import 'package:liftday/sevices/crud/data_package/volume_chart_data.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class StatisticsPage extends StatefulWidget {
   const StatisticsPage({super.key});
@@ -36,14 +36,14 @@ class _StatisticsPageState extends State<StatisticsPage> {
                   borderRadius: BorderRadius.circular(8),
                   color: Theme.of(context).colorScheme.onPrimary,
                 ),
-                child: const Column(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Align(
                       alignment: Alignment.bottomLeft,
                       child: Text(
-                        "Statystyki treningowe",
-                        style: TextStyle(
+                        AppLocalizations.of(context)!.workout_statistics,
+                        style: const TextStyle(
                           fontSize: 18.0,
                           fontWeight: FontWeight.bold,
                         ),
@@ -92,24 +92,24 @@ class _WeeklySnapshotState extends State<WeeklySnapshot> {
       builder: (context, snapshot) {
         return LayoutBuilder(
           builder: (context, constraints) {
-            const placeholderContent = Column(
+            final placeholderContent = Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Align(
                   alignment: Alignment.bottomLeft,
                   child: Text(
-                    "Migawka z tygodnia",
-                    style: TextStyle(
+                    AppLocalizations.of(context)!.weekly_snapshot,
+                    style: const TextStyle(
                       fontSize: 14.0,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
-                SizedBox(height: 24.0),
+                const SizedBox(height: 24.0),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       width: 10,
                     ),
                     Column(
@@ -117,17 +117,17 @@ class _WeeklySnapshotState extends State<WeeklySnapshot> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Text(
-                          "treningi",
-                          style: TextStyle(
+                          AppLocalizations.of(context)!.workouts,
+                          style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.normal,
                             color: Colors.transparent,
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 10,
                         ),
-                        Text(
+                        const Text(
                           "", // Placeholder
                           style: TextStyle(
                             fontSize: 26,
@@ -136,7 +136,7 @@ class _WeeklySnapshotState extends State<WeeklySnapshot> {
                         ),
                       ],
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 20,
                     ),
                     Column(
@@ -144,17 +144,17 @@ class _WeeklySnapshotState extends State<WeeklySnapshot> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Text(
-                          "objętość",
-                          style: TextStyle(
+                          AppLocalizations.of(context)!.volume_label,
+                          style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.normal,
                             color: Colors.transparent,
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 10,
                         ),
-                        Text(
+                        const Text(
                           "", // Placeholder
                           style: TextStyle(
                             fontSize: 26,
@@ -184,11 +184,11 @@ class _WeeklySnapshotState extends State<WeeklySnapshot> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Align(
+                        Align(
                           alignment: Alignment.bottomLeft,
                           child: Text(
-                            "Migawka z tygodnia",
-                            style: TextStyle(
+                            AppLocalizations.of(context)!.weekly_snapshot,
+                            style: const TextStyle(
                               fontSize: 14.0,
                               fontWeight: FontWeight.bold,
                             ),
@@ -205,9 +205,9 @@ class _WeeklySnapshotState extends State<WeeklySnapshot> {
                               mainAxisSize: MainAxisSize.min,
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                const Text(
-                                  "treningi",
-                                  style: TextStyle(
+                                Text(
+                                  AppLocalizations.of(context)!.workouts,
+                                  style: const TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.normal,
                                     color: Colors.grey,
@@ -232,9 +232,9 @@ class _WeeklySnapshotState extends State<WeeklySnapshot> {
                               mainAxisSize: MainAxisSize.min,
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                const Text(
-                                  "objętość",
-                                  style: TextStyle(
+                                Text(
+                                  AppLocalizations.of(context)!.volume_label,
+                                  style: const TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.normal,
                                     color: Colors.grey,
@@ -272,7 +272,7 @@ class _WeeklySnapshotState extends State<WeeklySnapshot> {
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.onTertiary,
                   ),
-                  child: const Opacity(
+                  child: Opacity(
                     opacity: 1.0,
                     child: placeholderContent,
                   ),
@@ -316,11 +316,11 @@ class _VolumeChartWidgetState extends State<VolumeChartWidget> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Align(
+              Align(
                 alignment: Alignment.bottomLeft,
                 child: Text(
-                  "Objętość treningowa",
-                  style: TextStyle(
+                  AppLocalizations.of(context)!.workout_volume,
+                  style: const TextStyle(
                       fontSize: 16.0,
                       fontWeight: FontWeight.normal,
                       color: Colors.grey),
@@ -368,18 +368,18 @@ class _VolumeChartWidgetState extends State<VolumeChartWidget> {
               borderRadius: BorderRadius.circular(8),
               fillColor: Theme.of(context).colorScheme.onTertiary,
               borderColor: Theme.of(context).colorScheme.onTertiary,
-              children: const [
+              children: [
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 14),
-                  child: Text("7 dni"),
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                  child: Text(AppLocalizations.of(context)!.days_7),
                 ),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 14),
-                  child: Text("30 dni"),
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                  child: Text(AppLocalizations.of(context)!.days_30),
                 ),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 14),
-                  child: Text("90 dni"),
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                  child: Text(AppLocalizations.of(context)!.days_90),
                 ),
               ],
               onPressed: (int newIndex) {
@@ -421,6 +421,7 @@ class _MuscleChartWidgetState extends State<MuscleChartWidget> {
 
   Future<Map<String, int>> _loadMuscleChartData(int range) async {
     ExerciseService exerciseService = ExerciseService();
+    //TODO:
     const List<String> muscleGroups = [
       "chest",
       "shoulders",
@@ -447,11 +448,11 @@ class _MuscleChartWidgetState extends State<MuscleChartWidget> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Align(
+              Align(
                 alignment: Alignment.bottomLeft,
                 child: Text(
-                  "Dystrybucja mięśni",
-                  style: TextStyle(
+                  AppLocalizations.of(context)!.muscle_distribution,
+                  style: const TextStyle(
                       fontSize: 16.0,
                       fontWeight: FontWeight.normal,
                       color: Colors.grey),
@@ -496,24 +497,22 @@ class _MuscleChartWidgetState extends State<MuscleChartWidget> {
               borderRadius: BorderRadius.circular(8),
               fillColor: Theme.of(context).colorScheme.onTertiary,
               borderColor: Theme.of(context).colorScheme.onTertiary,
-              children: const [
+              children: [
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 14),
-                  child: Text(
-                    "7 dni",
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                  child: Text(AppLocalizations.of(context)!.days_7),
                 ),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 14),
-                  child: Text("30 dni"),
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                  child: Text(AppLocalizations.of(context)!.days_30),
                 ),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 14),
-                  child: Text("90 dni"),
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                  child: Text(AppLocalizations.of(context)!.days_90),
                 ),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 14),
-                  child: Text("Cały okres"),
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                  child: Text(AppLocalizations.of(context)!.all_time),
                 ),
               ],
               onPressed: (int newIndex) {

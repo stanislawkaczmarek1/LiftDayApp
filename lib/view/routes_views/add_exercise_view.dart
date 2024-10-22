@@ -5,6 +5,7 @@ import 'package:liftday/dialogs/entry_exercise_musle.dart';
 import 'package:liftday/dialogs/entry_exercise_name_and_muscle.dart';
 import 'package:liftday/sevices/crud/tables/database_exercise_info.dart';
 import 'package:liftday/view/routes_views/exercise_list_view.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 typedef AddExerciseViewCallback = void Function(
     String? name, String? type, String? muscleGroup, int? exerciseInfoId);
@@ -19,6 +20,7 @@ class AddExerciseView extends StatefulWidget {
 }
 
 class _AddExerciseViewState extends State<AddExerciseView> {
+  //TODO: ponizsze
   String exerciseName = '';
   String exerciseType = 'reps';
   String exerciseText = 'ciężar i powtórzenia';
@@ -52,9 +54,9 @@ class _AddExerciseViewState extends State<AddExerciseView> {
             },
             style: TextButton.styleFrom(
                 foregroundColor: Theme.of(context).colorScheme.secondary),
-            child: const Text(
-              "Lista ćwiczeń",
-              style: TextStyle(fontSize: 18.0),
+            child: Text(
+              AppLocalizations.of(context)!.exercise_list,
+              style: const TextStyle(fontSize: 18.0),
             ),
           )
         ],
@@ -77,14 +79,14 @@ class _AddExerciseViewState extends State<AddExerciseView> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      "Dodaj ćwiczenie",
-                      style: TextStyle(fontSize: 20),
+                    Text(
+                      AppLocalizations.of(context)!.add_exercise,
+                      style: const TextStyle(fontSize: 20),
                     ),
                     const SizedBox(height: 16),
-                    const Text(
-                      "Wpisz nazwę: ",
-                      style: TextStyle(fontSize: 14),
+                    Text(
+                      AppLocalizations.of(context)!.enter_name,
+                      style: const TextStyle(fontSize: 14),
                     ),
                     TextField(
                       onChanged: (value) {
@@ -129,9 +131,9 @@ class _AddExerciseViewState extends State<AddExerciseView> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        "Wybierz rodzaj: ",
-                        style: TextStyle(fontSize: 14),
+                      Text(
+                        AppLocalizations.of(context)!.select_type,
+                        style: const TextStyle(fontSize: 14),
                       ),
                       const SizedBox(height: 14),
                       Text(
@@ -162,9 +164,9 @@ class _AddExerciseViewState extends State<AddExerciseView> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        "Wybierz główną grupę mięśniową: ",
-                        style: TextStyle(fontSize: 14),
+                      Text(
+                        AppLocalizations.of(context)!.select_muscle_group,
+                        style: const TextStyle(fontSize: 14),
                       ),
                       const SizedBox(height: 14),
                       Text(
@@ -204,7 +206,7 @@ class _AddExerciseViewState extends State<AddExerciseView> {
                   exerciseName, exerciseType, selectedMuscleGroup, null);
             }
           },
-          tooltip: 'Dodaj',
+          tooltip: AppLocalizations.of(context)!.add,
           child: const Icon(Icons.check),
         ),
       ),
@@ -233,9 +235,9 @@ class _AddExerciseViewState extends State<AddExerciseView> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    const Text(
-                      "Główna grupa mięśniowa:",
-                      style: TextStyle(fontSize: 18),
+                    Text(
+                      AppLocalizations.of(context)!.main_muscle_group,
+                      style: const TextStyle(fontSize: 18),
                     ),
                     const SizedBox(
                       height: 20,

@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:liftday/dialogs/generic/generic_dialog.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 Future<void> showNoDaysToLoadDialog(BuildContext context) {
   return showGenericDialog<void>(
     context: context,
-    content: "Brak dni do wczytania",
+    content: AppLocalizations.of(context)!.no_days_to_load,
     optionBuilder: () => {
-      "Ok": null,
+      AppLocalizations.of(context)!.ok: null,
     },
   );
 }

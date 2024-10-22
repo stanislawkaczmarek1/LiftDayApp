@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:liftday/dialogs/generic/generic_dialog.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 Future<void> showErrorDialog(BuildContext context) {
   return showGenericDialog<void>(
     context: context,
-    content: "Przepraszamy wystąpił błąd podczas operacji",
+    content: AppLocalizations.of(context)!.operation_error,
     optionBuilder: () => {
-      "Ok": null,
+      AppLocalizations.of(context)!.ok: null,
     },
   );
 }

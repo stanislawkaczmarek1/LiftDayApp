@@ -20,6 +20,7 @@ import 'package:liftday/sevices/crud/tables/database_set.dart';
 import 'package:liftday/sevices/crud/data_package/training_day_data.dart';
 import 'package:liftday/view/routes_views/add_exercise_view.dart';
 import 'package:liftday/view/routes_views/report_view.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ExerciseTable extends StatefulWidget {
   final DateTime selectedDate;
@@ -112,8 +113,9 @@ class _ExerciseTableState extends State<ExerciseTable> {
       } else {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text('Kalendarz treningowy nie obejmuje tej daty')),
+            SnackBar(
+                content:
+                    Text(AppLocalizations.of(context)!.calendar_not_in_range)),
           );
         }
       }
@@ -125,7 +127,7 @@ class _ExerciseTableState extends State<ExerciseTable> {
     await _exerciseService.deleteExercise(id: exerciseId);
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Ćwiczenie usunięte')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.exercise_deleted)),
       );
     }
     setState(() {
@@ -262,9 +264,9 @@ class _ExerciseTableState extends State<ExerciseTable> {
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
-                          const Text(
-                            "Wybierz dzień:",
-                            style: TextStyle(fontSize: 18),
+                          Text(
+                            AppLocalizations.of(context)!.select_day,
+                            style: const TextStyle(fontSize: 18),
                           ),
                           const SizedBox(
                             height: 20,
@@ -353,8 +355,9 @@ class _ExerciseTableState extends State<ExerciseTable> {
       } else {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text('Kalendarz treningowy nie obejmuje tej daty')),
+            SnackBar(
+                content:
+                    Text(AppLocalizations.of(context)!.calendar_not_in_range)),
           );
         }
       }
@@ -440,7 +443,7 @@ class _ExerciseTableState extends State<ExerciseTable> {
                                   )),
                               child: Center(
                                 child: Text(
-                                  "+ Dodaj ćwiczenie",
+                                  AppLocalizations.of(context)!.add_exercise2,
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontSize: 16,
@@ -475,18 +478,23 @@ class _ExerciseTableState extends State<ExerciseTable> {
                                 },
                                 itemBuilder: (BuildContext context) {
                                   return [
-                                    const PopupMenuItem<String>(
+                                    PopupMenuItem<String>(
                                       value: 'load_day',
                                       child: ListTile(
-                                        leading: Icon(Icons.calendar_today),
-                                        title: Text('Wczytaj dzień'),
+                                        leading:
+                                            const Icon(Icons.calendar_today),
+                                        title: Text(
+                                            AppLocalizations.of(context)!
+                                                .load_day),
                                       ),
                                     ),
-                                    const PopupMenuItem<String>(
+                                    PopupMenuItem<String>(
                                       value: 'generate_report',
                                       child: ListTile(
-                                        leading: Icon(Icons.description),
-                                        title: Text('Generuj raport'),
+                                        leading: const Icon(Icons.description),
+                                        title: Text(
+                                            AppLocalizations.of(context)!
+                                                .generate_report),
                                       ),
                                     ),
                                   ];
@@ -695,11 +703,12 @@ class _ExerciseCardState extends State<ExerciseCard> {
                             },
                             itemBuilder: (BuildContext context) {
                               return [
-                                const PopupMenuItem<String>(
+                                PopupMenuItem<String>(
                                   value: 'delete',
                                   child: ListTile(
-                                    leading: Icon(Icons.delete),
-                                    title: Text('Usuń'),
+                                    leading: const Icon(Icons.delete),
+                                    title: Text(
+                                        AppLocalizations.of(context)!.delete),
                                   ),
                                 ),
                               ];
@@ -712,10 +721,10 @@ class _ExerciseCardState extends State<ExerciseCard> {
                     const SizedBox(height: 16.0),
                     Row(
                       children: [
-                        const Expanded(
+                        Expanded(
                           child: Center(
-                            child: Text('seria',
-                                style: TextStyle(
+                            child: Text(AppLocalizations.of(context)!.set,
+                                style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.normal)),
                           ),
@@ -782,7 +791,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
                       child: GestureDetector(
                         onTap: () {
                           _addSet(++_setCounter);
-                          context.read<TapBloc>().add(Tap());
+                          context.read<TapBloc>().add(const Tap());
                         },
                         child: Container(
                           margin: const EdgeInsets.symmetric(vertical: 8.0),
@@ -795,7 +804,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
                               )),
                           child: Center(
                             child: Text(
-                              "+ Dodaj serię",
+                              AppLocalizations.of(context)!.add_set,
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 14,
@@ -1051,7 +1060,7 @@ class _ExerciseRowState extends State<ExerciseRow> {
         if (state is Tapped && _isInputActive.value == true) {
           log("change in state");
           _removeFocus();
-          context.read<TapBloc>().add(SetTappedDefault());
+          context.read<TapBloc>().add(const SetTappedDefault());
         }
       },
       child: FutureBuilder<void>(
@@ -1076,7 +1085,7 @@ class _ExerciseRowState extends State<ExerciseRow> {
                       backgroundColor: Colors.red,
                       foregroundColor: Colors.white,
                       icon: Icons.delete,
-                      label: 'Usuń serie',
+                      label: AppLocalizations.of(context)!.delete_set,
                     ),
                   ],
                 ),
@@ -1255,7 +1264,7 @@ class _ExerciseRowState extends State<ExerciseRow> {
                         padding: const EdgeInsets.all(16),
                         child: ListTile(
                           title: Text(
-                            "Usuń serię",
+                            AppLocalizations.of(context)!.delete_set,
                             style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w500,

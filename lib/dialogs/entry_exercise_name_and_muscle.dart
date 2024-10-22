@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:liftday/dialogs/generic/generic_dialog.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 Future<void> showEntryExerciseNameAndMuscleDialog(BuildContext context) {
   return showGenericDialog<void>(
     context: context,
-    content: "Proszę wpisz nazwę ćwiczenia i wybierz główną grupę mięśniową",
+    content: AppLocalizations.of(context)!.enter_exercise_name_and_group,
     optionBuilder: () => {
-      "Ok": null,
+      AppLocalizations.of(context)!.ok: null,
     },
   );
 }

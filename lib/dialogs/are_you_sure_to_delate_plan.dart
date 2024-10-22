@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
 import 'package:liftday/dialogs/generic/generic_title_dialog.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 Future<bool> showAreYouSureToDeletePlanDialog(BuildContext context) {
   return showGenericTitleDialog<bool>(
     context: context,
-    title: "Czy jestes pewny/a\nże chcesz usunąć\nswój plan?",
-    content:
-        "Przyszłe treningi z obecnego planu zostaną usunięte z kalendarza\n\nDni z planu treningowego w zakładce Plan zostaną usunięte\n\n\nTwoje historyczne treningi pozostaną w kalendarzu",
+    title: AppLocalizations.of(context)!.confirm_plan_removal,
+    content: AppLocalizations.of(context)!.future_workouts_warning,
     optionBuilder: () => {
-      "Nie": false,
-      "Tak": true,
+      AppLocalizations.of(context)!.no: false,
+      AppLocalizations.of(context)!.yes: true,
     },
   ).then((value) => value ?? false);
 }

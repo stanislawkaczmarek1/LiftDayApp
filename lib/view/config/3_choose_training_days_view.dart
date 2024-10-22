@@ -4,6 +4,7 @@ import 'package:liftday/dialogs/have_to_choose_training_days.dart';
 import 'package:liftday/sevices/bloc/config/config_bloc.dart';
 import 'package:liftday/sevices/bloc/config/config_event.dart';
 import 'package:liftday/view/widgets/ui_elements.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ChooseTrainingDaysView extends StatefulWidget {
   const ChooseTrainingDaysView({super.key});
@@ -13,6 +14,7 @@ class ChooseTrainingDaysView extends StatefulWidget {
 }
 
 class _ChooseTrainingDaysViewState extends State<ChooseTrainingDaysView> {
+  //TODO: ogarnac ponizsze
   final List<String> daysOfWeek = [
     'Monday',
     'Tuesday',
@@ -70,11 +72,12 @@ class _ChooseTrainingDaysViewState extends State<ChooseTrainingDaysView> {
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Padding(
-              padding: EdgeInsets.all(8.0),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
               child: Text(
-                'Wybierz swoje dni treningowe',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                AppLocalizations.of(context)!.choose_training_days,
+                style:
+                    const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -129,7 +132,7 @@ class _ChooseTrainingDaysViewState extends State<ChooseTrainingDaysView> {
               height: 30.0,
             ),
             normalButton(
-              "Dalej",
+              AppLocalizations.of(context)!.next,
               () {
                 final List<String> confirmedDays = _convertDaysBoolToString();
                 if (confirmedDays.isNotEmpty) {

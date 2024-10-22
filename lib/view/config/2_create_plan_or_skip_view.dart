@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:liftday/sevices/bloc/config/config_bloc.dart';
 import 'package:liftday/sevices/bloc/config/config_event.dart';
 import 'package:liftday/view/widgets/ui_elements.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class CreatePlanOrSkipView extends StatefulWidget {
   const CreatePlanOrSkipView({super.key});
@@ -29,20 +30,22 @@ class _CreatePlanOrSkipViewState extends State<CreatePlanOrSkipView> {
               const SizedBox(
                 height: 24.0,
               ),
-              const Center(
+              Center(
                 child: Text(
-                  'Wybierz formę w jakiej\nchcesz dodawać treningi',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  //TODO ogarnac \n w calym kodzie
+                  AppLocalizations.of(context)!.choose_workout_addition_method,
+                  style: const TextStyle(
+                      fontSize: 24, fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
               ),
               const SizedBox(
                 height: 14.0,
               ),
-              const Center(
+              Center(
                 child: Text(
-                  '(Zawsze możesz zmienić\nformę dodawania treningów później)',
-                  style: TextStyle(
+                  AppLocalizations.of(context)!.change_method_later,
+                  style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.normal,
                       color: Colors.grey),
@@ -53,45 +56,18 @@ class _CreatePlanOrSkipViewState extends State<CreatePlanOrSkipView> {
                 height: 44.0,
               ),
               Center(
-                child: Stack(
-                  children: [
-                    _roundedRectangleWithButton(
-                      text:
-                          "Automatyczne\nprzypisanie dni treningowych\ndo dni tygodnia",
-                      buttonText: "Wybieram",
-                      backgroundColor: Theme.of(context).colorScheme.tertiary,
-                      textColor: Theme.of(context).colorScheme.primary,
-                      buttonColor: Theme.of(context).colorScheme.primary,
-                      buttonTextColor: Theme.of(context).colorScheme.onPrimary,
-                      onPressed: () {
-                        context
-                            .read<ConfigBloc>()
-                            .add(const ConfigEventConfirmWeekAutomation());
-                      },
-                    ),
-                    Positioned(
-                      top: 10.0,
-                      right: 10.0,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8.0,
-                          vertical: 4.0,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.secondary,
-                          borderRadius: BorderRadius.circular(12.0),
-                        ),
-                        child: const Text(
-                          'Zalecane',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                child: _roundedRectangleWithButton(
+                  text: AppLocalizations.of(context)!.auto_assign_days,
+                  buttonText: AppLocalizations.of(context)!.i_choose,
+                  backgroundColor: Theme.of(context).colorScheme.tertiary,
+                  textColor: Theme.of(context).colorScheme.primary,
+                  buttonColor: Theme.of(context).colorScheme.primary,
+                  buttonTextColor: Theme.of(context).colorScheme.onPrimary,
+                  onPressed: () {
+                    context
+                        .read<ConfigBloc>()
+                        .add(const ConfigEventConfirmWeekAutomation());
+                  },
                 ),
               ),
               const SizedBox(
@@ -99,9 +75,8 @@ class _CreatePlanOrSkipViewState extends State<CreatePlanOrSkipView> {
               ),
               Center(
                 child: _roundedRectangleWithButton(
-                  text: """Ręczne wybieranie\ndanego dnia treningowego\n
-                      w dany dzień tygodnia""",
-                  buttonText: "Wybieram",
+                  text: AppLocalizations.of(context)!.manual_assign_days,
+                  buttonText: AppLocalizations.of(context)!.i_choose,
                   backgroundColor: Theme.of(context).colorScheme.tertiary,
                   textColor: Theme.of(context).colorScheme.primary,
                   buttonColor: Theme.of(context).colorScheme.primary,
@@ -118,8 +93,8 @@ class _CreatePlanOrSkipViewState extends State<CreatePlanOrSkipView> {
               ),
               Center(
                 child: _roundedRectangleWithButton(
-                  text: "Ręczne dodawanie ćwiczeń\nkażdego dnia",
-                  buttonText: "Wybieram",
+                  text: AppLocalizations.of(context)!.manual_add_exercises,
+                  buttonText: AppLocalizations.of(context)!.i_choose,
                   backgroundColor: Theme.of(context).colorScheme.tertiary,
                   textColor: Theme.of(context).colorScheme.primary,
                   buttonColor: Theme.of(context).colorScheme.primary,

@@ -1,5 +1,9 @@
 {
     "@@locale": "en",
+    "hello": "Hello",
+    "@hello": {
+        "description": "Welcome message"
+    },
     "remove_exercise": "Remove exercise",
     "@remove_exercise": {
         "description": "Prompt to remove an exercise"
@@ -80,7 +84,7 @@
     "@load_backup": {
         "description": "Option to load backup"
     },
-    "load_backup_message": "After clicking 'Load', select a previously saved file named $dbName",
+    "load_backup_message": "After clicking 'Load', select a previously saved file named ",
     "@load_backup_message": {
         "description": "Message about loading a backup file"
     },
@@ -244,6 +248,38 @@
     "@send_backup": {
         "description": "Option to send backup"
     },
+    "copied_backup": "Successfully Copied DB",
+    "@copied_backup": {
+        "description": "Snackbar communicat"
+    },
+    "restore_backup": "Resore backup",
+    "@restore_backup": {
+        "description": "Option to restore backup"
+    },
+    "restored_backup": "Successfully Restored DB",
+    "@restored_backup": {
+        "description": "Snackbar communicat"
+    },
+    "workout_statistics": "Workout statistics",
+    "@workout_statistics": {
+        "description": "Section for workout statistics"
+    },
+    "weekly_snapshot": "Weekly snapshot",
+    "@weekly_snapshot": {
+        "description": "Overview of workout activity for the week"
+    },
+    "workouts": "Workouts",
+    "@workouts": {
+        "description": "Label for workout sessions"
+    },
+    "volume_label": "Volume",
+    "@volume_label": {
+        "description": "Label for workout volume"
+    },
+    "workout_volume": "Workout volume",
+    "@workout_volume": {
+        "description": "Total volume of workouts"
+    },
     "chest": "chest",
     "@chest": {
         "description": "Chest muscle group"
@@ -348,9 +384,13 @@
     "@no_custom_exercises": {
         "description": "Message indicating no custom exercises"
     },
-    "volume": "volume:",
+    "volume": "volume: ",
     "@volume": {
         "description": "Label for workout volume"
+    },
+    "save": "Zapisz",
+    "@save": {
+        "description": "Save button"
     },
     "enter_day_name2": "Enter the name of the day",
     "@enter_day_name2": {

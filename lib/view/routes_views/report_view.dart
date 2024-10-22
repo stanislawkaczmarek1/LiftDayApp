@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:liftday/sevices/crud/tables/database_exercise.dart';
 import 'package:liftday/sevices/crud/tables/database_exercise_info.dart';
 import 'package:liftday/sevices/crud/tables/database_set.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ReportView extends StatelessWidget {
   final String trainingTitle;
@@ -82,7 +83,7 @@ class ReportView extends StatelessWidget {
               ...exerciseWidgets,
               const SizedBox(height: 20),
               Text(
-                "objętość: ${_formatWeight(totalVolume)} $unit",
+                "${AppLocalizations.of(context)!.volume}${_formatWeight(totalVolume)} $unit",
                 style: const TextStyle(fontSize: 18),
               ),
             ],

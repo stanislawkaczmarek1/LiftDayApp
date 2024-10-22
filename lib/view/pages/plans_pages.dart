@@ -14,6 +14,7 @@ import 'package:liftday/sevices/crud/data_package/exercise_data.dart';
 import 'package:liftday/sevices/crud/data_package/training_day_data.dart';
 import 'package:liftday/sevices/crud/exercise_service.dart';
 import 'package:liftday/sevices/settings/settings_service.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PlansTab extends StatefulWidget {
   const PlansTab({super.key});
@@ -65,7 +66,8 @@ class _PlansTabState extends State<PlansTab> {
           context.read<EditBloc>().add(const EditEventEndedEdition());
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Zaktualizowane dane')),
+              SnackBar(
+                  content: Text(AppLocalizations.of(context)!.data_updated)),
             );
           }
         }
@@ -77,7 +79,8 @@ class _PlansTabState extends State<PlansTab> {
           context.read<EditBloc>().add(const EditEventEndedEdition());
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Usunięto plan')),
+              SnackBar(
+                  content: Text(AppLocalizations.of(context)!.plan_deleted)),
             );
           }
         }
@@ -88,7 +91,8 @@ class _PlansTabState extends State<PlansTab> {
           context.read<EditBloc>().add(const EditEventEndedEdition());
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Usunięto dzien')),
+              SnackBar(
+                  content: Text(AppLocalizations.of(context)!.day_deleted)),
             );
           }
         }
@@ -108,9 +112,9 @@ class _PlansTabState extends State<PlansTab> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    "Mój plan",
-                    style: TextStyle(
+                  Text(
+                    AppLocalizations.of(context)!.my_plan,
+                    style: const TextStyle(
                       fontSize: 18.0,
                       fontWeight: FontWeight.bold,
                     ),
@@ -122,7 +126,7 @@ class _PlansTabState extends State<PlansTab> {
                         final daysUntilEnd = snapshot.data;
                         return Text(
                           (daysUntilEnd != null && hasPlan)
-                              ? '$daysUntilEnd dni do końca'
+                              ? '$daysUntilEnd ${AppLocalizations.of(context)!.days_left}'
                               : '',
                           style: const TextStyle(fontSize: 14.0),
                         );
@@ -167,7 +171,7 @@ class _PlansTabState extends State<PlansTab> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         _buildTextButton(
-                          "Zastąp",
+                          AppLocalizations.of(context)!.replace,
                           Icons.autorenew,
                           () {
                             context
@@ -176,7 +180,7 @@ class _PlansTabState extends State<PlansTab> {
                           },
                         ),
                         _buildTextButton(
-                          "Usuń",
+                          AppLocalizations.of(context)!.delete,
                           Icons.delete,
                           () async {
                             final delete =
@@ -194,7 +198,7 @@ class _PlansTabState extends State<PlansTab> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         _buildTextButton(
-                          "Dodaj plan",
+                          AppLocalizations.of(context)!.add_plan,
                           Icons.add,
                           () {
                             context
@@ -297,19 +301,19 @@ class _PlansTabState extends State<PlansTab> {
                 },
                 itemBuilder: (BuildContext context) {
                   return [
-                    const PopupMenuItem<String>(
+                    PopupMenuItem<String>(
                       value: 'edit',
                       child: ListTile(
-                        leading: Icon(Icons.edit),
-                        title: Text('Edytuj'),
+                        leading: const Icon(Icons.edit),
+                        title: Text(AppLocalizations.of(context)!.edit),
                       ),
                     ),
                     if (!isFromPlan)
-                      const PopupMenuItem<String>(
+                      PopupMenuItem<String>(
                         value: 'delete',
                         child: ListTile(
-                          leading: Icon(Icons.delete),
-                          title: Text('Usuń'),
+                          leading: const Icon(Icons.delete),
+                          title: Text(AppLocalizations.of(context)!.delete),
                         ),
                       ),
                   ];
@@ -366,7 +370,8 @@ class _RoutinesTabState extends State<RoutinesTab> {
           context.read<EditBloc>().add(const EditEventEndedEdition());
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Zaktualizowane dane')),
+              SnackBar(
+                  content: Text(AppLocalizations.of(context)!.data_updated)),
             );
           }
         }
@@ -377,7 +382,8 @@ class _RoutinesTabState extends State<RoutinesTab> {
           context.read<EditBloc>().add(const EditEventEndedEdition());
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Usunięto dzien')),
+              SnackBar(
+                  content: Text(AppLocalizations.of(context)!.day_deleted)),
             );
           }
         }
@@ -394,12 +400,12 @@ class _RoutinesTabState extends State<RoutinesTab> {
               const SizedBox(
                 height: 10,
               ),
-              const Row(
+              Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Text(
-                    "Moje rutyny",
-                    style: TextStyle(
+                    AppLocalizations.of(context)!.my_routines,
+                    style: const TextStyle(
                       fontSize: 18.0,
                       fontWeight: FontWeight.bold,
                     ),
@@ -462,7 +468,7 @@ class _RoutinesTabState extends State<RoutinesTab> {
                       )),
                   child: Center(
                     child: Text(
-                      "+ Dodaj rutynę",
+                      AppLocalizations.of(context)!.add_routine,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 14,
@@ -528,19 +534,19 @@ class _RoutinesTabState extends State<RoutinesTab> {
                 },
                 itemBuilder: (BuildContext context) {
                   return [
-                    const PopupMenuItem<String>(
+                    PopupMenuItem<String>(
                       value: 'edit',
                       child: ListTile(
-                        leading: Icon(Icons.edit),
-                        title: Text('Edytuj'),
+                        leading: const Icon(Icons.edit),
+                        title: Text(AppLocalizations.of(context)!.edit),
                       ),
                     ),
                     if (!isFromPlan)
-                      const PopupMenuItem<String>(
+                      PopupMenuItem<String>(
                         value: 'delete',
                         child: ListTile(
-                          leading: Icon(Icons.delete),
-                          title: Text('Usuń'),
+                          leading: const Icon(Icons.delete),
+                          title: Text(AppLocalizations.of(context)!.delete),
                         ),
                       ),
                   ];
@@ -578,6 +584,7 @@ String _writeExercises(List<ExerciseData> exercises) {
   return exercisesText;
 }
 
+//TODO: ogarnac ponizsze
 String _getPolishDayAbbreviation(String dayOfWeek) {
   switch (dayOfWeek) {
     case 'Monday':

@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:liftday/dialogs/generic/generic_dialog.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 Future<void> showEntryExerciseNameDialog(BuildContext context) {
   return showGenericDialog<void>(
     context: context,
-    content: "Proszę wpisz nazwę ćwiczenia",
+    content: AppLocalizations.of(context)!.enter_exercise_name,
     optionBuilder: () => {
-      "Ok": null,
+      AppLocalizations.of(context)!.ok: null,
     },
   );
 }

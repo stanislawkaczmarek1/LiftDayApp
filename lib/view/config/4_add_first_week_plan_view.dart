@@ -7,6 +7,7 @@ import 'package:liftday/sevices/crud/data_package/exercise_data.dart';
 import 'package:liftday/sevices/crud/data_package/training_day_data.dart';
 import 'package:liftday/view/widgets/tables/simple_exercise_table.dart';
 import 'package:liftday/view/widgets/ui_elements.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AddFirstWeekPlanView extends StatefulWidget {
   const AddFirstWeekPlanView({super.key});
@@ -21,6 +22,7 @@ class _AddFirstWeekPlanViewState extends State<AddFirstWeekPlanView> {
   late SimpleExerciseTable _exerciseTable;
   List<ExerciseData> exercises = [];
 
+  //TODO: ogarnac ponizsze
   String _getPolishDayAbbreviation(String dayOfWeek) {
     switch (dayOfWeek) {
       case 'Monday':
@@ -81,7 +83,7 @@ class _AddFirstWeekPlanViewState extends State<AddFirstWeekPlanView> {
           child: Scaffold(
             appBar: appBarWithButton(
               context,
-              "Dalej",
+              AppLocalizations.of(context)!.next,
               () {
                 String day = dayOfWeek;
                 context.read<ConfigBloc>().add(
