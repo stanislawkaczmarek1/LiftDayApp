@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:intl/intl.dart';
 import 'package:liftday/constants/app_exercises.dart';
 import 'package:liftday/constants/database.dart';
+import 'package:liftday/sevices/conversion/conversion_service.dart';
 import 'package:liftday/sevices/crud/crud_exceptions.dart';
 import 'package:liftday/sevices/crud/data_package/exercise_data.dart';
 import 'package:liftday/sevices/crud/data_package/snapshot_data.dart';
@@ -894,10 +895,11 @@ class ExerciseService {
 
     if (result.isNotEmpty) {
       final set = result.first;
-      final weight = set[weightColumn];
+      final weight = set[weightColumn] as double;
       final reps = set[repsColumn];
-      final string = '$weight x $reps';
-      if (string == '0.0 x 0') {
+      final weightString = ConversionService.formatWeight(weight);
+      final string = '$weightString x $reps';
+      if (string == '0 x 0') {
         return null;
       } else {
         return string;
@@ -927,10 +929,12 @@ class ExerciseService {
 
     if (result.isNotEmpty) {
       final set = result.first;
-      final weight = set[weightColumn];
-      final duration = set[durationColumn];
-      final string = '$weight x ${duration}s';
-      if (string == '0.0 x 0s') {
+      final weight = set[weightColumn] as double;
+      final duration = set[durationColumn] as int;
+      final durationString = ConversionService.convertSecondsToTime(duration);
+      final weightString = ConversionService.formatWeight(weight);
+      final string = '$weightString x $durationString';
+      if (string == '0 x 0s') {
         return null;
       } else {
         return string;

@@ -195,4 +195,38 @@ class ConversionService {
       return '${(number / 1000000).toStringAsFixed(1)}m';
     }
   }
+
+  static String formatWeight(double weight) {
+    if (weight == weight.toInt()) {
+      return weight.toInt().toString();
+    } else if (weight == double.parse(weight.toStringAsFixed(1))) {
+      return weight.toStringAsFixed(1);
+    } else if (weight == double.parse(weight.toStringAsFixed(2))) {
+      return weight.toStringAsFixed(2);
+    } else {
+      return weight.toStringAsFixed(3);
+    }
+  }
+
+  static int convertTimeToSeconds(String time) {
+    if (!time.contains(':')) return 0;
+
+    List<String> parts = time.split(':');
+    if (parts.length != 2) return 0;
+
+    int minutes = int.tryParse(parts[0]) ?? 0;
+    int seconds = int.tryParse(parts[1]) ?? 0;
+
+    return (minutes * 60) + seconds;
+  }
+
+  static String convertSecondsToTime(int totalSeconds) {
+    int minutes = totalSeconds ~/ 60;
+    int seconds = totalSeconds % 60;
+
+    String formattedMinutes = minutes.toString().padLeft(2, '0');
+    String formattedSeconds = seconds.toString().padLeft(2, '0');
+
+    return '$formattedMinutes:$formattedSeconds';
+  }
 }

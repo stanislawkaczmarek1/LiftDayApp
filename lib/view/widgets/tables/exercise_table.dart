@@ -12,6 +12,7 @@ import 'package:liftday/dialogs/unavailable_operation.dart';
 import 'package:liftday/sevices/bloc/settings/settings_bloc.dart';
 import 'package:liftday/sevices/bloc/settings/settings_state.dart';
 import 'package:liftday/sevices/bloc/tap/tap_bloc.dart';
+import 'package:liftday/sevices/conversion/conversion_service.dart';
 import 'package:liftday/sevices/crud/exercise_service.dart';
 import 'package:liftday/sevices/crud/tables/database_date.dart';
 import 'package:liftday/sevices/crud/tables/database_exercise.dart';
@@ -895,18 +896,6 @@ class _ExerciseRowState extends State<ExerciseRow> {
     }
   }
 
-  int _convertTimeToSeconds(String time) {
-    if (!time.contains(':')) return 0;
-
-    List<String> parts = time.split(':');
-    if (parts.length != 2) return 0;
-
-    int minutes = int.tryParse(parts[0]) ?? 0;
-    int seconds = int.tryParse(parts[1]) ?? 0;
-
-    return (minutes * 60) + seconds;
-  }
-
   void _kgAndRepsControllerListner() async {
     final mySet = _set;
     if (mySet == null) {
@@ -945,7 +934,7 @@ class _ExerciseRowState extends State<ExerciseRow> {
       return;
     }
     final weight = _convertToDouble(_weightController.text);
-    final duration = _convertTimeToSeconds(durationText);
+    final duration = ConversionService.convertTimeToSeconds(durationText);
 
     await _exerciseService.updateSet(
       setToUpdate: mySet,
@@ -986,9 +975,7 @@ class _ExerciseRowState extends State<ExerciseRow> {
     if (dbSet != null) {
       if (dbSet.weight != 0.0) {
         final value = dbSet.weight;
-        String formattedValue = value == value.toInt()
-            ? value.toInt().toString()
-            : value.toStringAsFixed(1);
+        String formattedValue = ConversionService.formatWeight(value);
         _weightController.text = formattedValue;
       }
       if (dbSet.reps != 0) {

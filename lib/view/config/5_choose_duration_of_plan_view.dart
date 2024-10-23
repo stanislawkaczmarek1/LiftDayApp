@@ -46,7 +46,7 @@ class _PlanDurationViewState extends State<PlanDurationView> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(16.0),
               child: Text(
                 AppLocalizations.of(context)!.choose_plan_duration,
                 style:

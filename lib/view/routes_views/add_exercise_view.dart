@@ -21,13 +21,11 @@ class AddExerciseView extends StatefulWidget {
 }
 
 class _AddExerciseViewState extends State<AddExerciseView> {
-  //TODO: ponizsze
   String exerciseName = '';
   String exerciseType = 'reps';
-  String exerciseText = 'ciężar i powtórzenia';
 
-  String selectedMuscleGroup = 'wybierz';
-  String tempSelectedGroup = 'wybierz';
+  String selectedMuscleGroup = 'empty';
+  String exerciseTypeText = 'empty';
 
   @override
   Widget build(BuildContext context) {
@@ -121,10 +119,12 @@ class _AddExerciseViewState extends State<AddExerciseView> {
                   setState(() {
                     if (exerciseType == 'reps') {
                       exerciseType = 'duration';
-                      exerciseText = 'ciężar i czas';
+                      exerciseTypeText =
+                          AppLocalizations.of(context)!.weight_and_time;
                     } else {
                       exerciseType = 'reps';
-                      exerciseText = 'ciężar i powtórzenia';
+                      exerciseTypeText = exerciseTypeText =
+                          AppLocalizations.of(context)!.weight_and_reps;
                     }
                   });
                 },
@@ -145,7 +145,9 @@ class _AddExerciseViewState extends State<AddExerciseView> {
                       ),
                       const SizedBox(height: 14),
                       Text(
-                        exerciseText,
+                        exerciseTypeText == "empty"
+                            ? AppLocalizations.of(context)!.weight_and_reps
+                            : exerciseTypeText,
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           color: colorBabyBlue,
@@ -178,7 +180,10 @@ class _AddExerciseViewState extends State<AddExerciseView> {
                       ),
                       const SizedBox(height: 14),
                       Text(
-                        selectedMuscleGroup,
+                        selectedMuscleGroup != "empty"
+                            ? ConversionService.getPolishMuscleNameOrReturn(
+                                selectedMuscleGroup)
+                            : AppLocalizations.of(context)!.select,
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
@@ -200,13 +205,13 @@ class _AddExerciseViewState extends State<AddExerciseView> {
           backgroundColor: colorLightGreen,
           heroTag: 'addBtn',
           onPressed: () {
-            if (exerciseName.isEmpty && selectedMuscleGroup == 'wybierz') {
+            if (exerciseName.isEmpty && selectedMuscleGroup == 'empty') {
               showEntryExerciseNameAndMuscleDialog(context);
             } else if (exerciseName.isNotEmpty &&
-                selectedMuscleGroup == 'wybierz') {
+                selectedMuscleGroup == 'empty') {
               showEntryExerciseMuscleDialog(context);
             } else if ((exerciseName.isEmpty &&
-                selectedMuscleGroup != 'wybierz')) {
+                selectedMuscleGroup != 'empty')) {
               showEntryExerciseNameDialog(context);
             } else {
               Navigator.of(context).pop();
@@ -222,6 +227,7 @@ class _AddExerciseViewState extends State<AddExerciseView> {
   }
 
   void _showMuscleGroupBottomSheet() async {
+    String tempSelectedGroup;
     showModalBottomSheet(
       backgroundColor: Theme.of(context).colorScheme.onPrimary,
       context: context,
