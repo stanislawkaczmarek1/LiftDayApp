@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:liftday/dialogs/reach_maxiumum_of_days.dart';
 import 'package:liftday/dialogs/training_days_delete_in_config.dart';
@@ -43,13 +44,13 @@ class _AddTrainingDaysViewState extends State<AddTrainingDaysView> {
 
   @override
   void initState() {
+    super.initState();
     _exerciseTable = SimpleExerciseTable(
       key: _exerciseTableKey,
       callback: (List<ExerciseData> exercisesFromTable) {
         exercises = exercisesFromTable;
       },
     );
-    super.initState();
   }
 
   @override
@@ -103,10 +104,11 @@ class _AddTrainingDaysViewState extends State<AddTrainingDaysView> {
             actions: [
               TextButton(
                 onPressed: () {
-                  if (_chceckDayName(_dayController.text)) {
+                  final dayName = _dayController.text.trimRight();
+                  if (_chceckDayName(dayName)) {
                     context.read<ConfigBloc>().add(ConfigEventPushDoneButton(
                         TrainingDayData(
-                            name: _dayController.text,
+                            name: dayName,
                             exercises: exercises,
                             isFromPlan: 0)));
                   } else {
@@ -123,10 +125,11 @@ class _AddTrainingDaysViewState extends State<AddTrainingDaysView> {
               if (!_maximumOfDays)
                 TextButton(
                   onPressed: () {
-                    if (_chceckDayName(_dayController.text)) {
+                    final dayName = _dayController.text.trimRight();
+                    if (_chceckDayName(dayName)) {
                       context.read<ConfigBloc>().add(
                           ConfigEventPushNextDayButton(TrainingDayData(
-                              name: _dayController.text,
+                              name: dayName,
                               exercises: exercises,
                               isFromPlan: 0)));
                       setState(() {
@@ -170,7 +173,11 @@ class _AddTrainingDaysViewState extends State<AddTrainingDaysView> {
                 Padding(
                   padding: const EdgeInsets.all(20.0),
                   child: TextField(
-                    //TODO: ogarnac wszystkie textfieldy w kodzie
+                    maxLength: 30,
+                    buildCounter: (BuildContext context,
+                        {int? currentLength, bool? isFocused, int? maxLength}) {
+                      return null;
+                    },
                     controller: _dayController,
                     decoration: InputDecoration(
                         border: InputBorder.none,

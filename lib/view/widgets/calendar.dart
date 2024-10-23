@@ -4,7 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:liftday/constants/themes.dart';
 import 'package:liftday/sevices/bloc/app_bar/app_bar_bloc.dart';
 import 'package:liftday/sevices/bloc/app_bar/app_bar_event.dart';
+import 'package:liftday/sevices/conversion/conversion_service.dart';
 import 'package:liftday/sevices/crud/exercise_service.dart';
+import 'package:liftday/sevices/settings/settings_service.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class AppCalendar extends StatefulWidget {
@@ -53,32 +55,41 @@ class _AppCalendarState extends State<AppCalendar> {
   }
 
   String _getMonthName(int month) {
-    const months = [
-      'Styczeń',
-      'Luty',
-      'Marzec',
-      'Kwiecień',
-      'Maj',
-      'Czerwiec',
-      'Lipiec',
-      'Sierpień',
-      'Wrzesień',
-      'Październik',
-      'Listopad',
-      'Grudzień'
-    ];
+    final List<String> months;
+    SettingsService settingsService = SettingsService();
+    if (settingsService.language() == "pl") {
+      months = [
+        'Styczeń',
+        'Luty',
+        'Marzec',
+        'Kwiecień',
+        'Maj',
+        'Czerwiec',
+        'Lipiec',
+        'Sierpień',
+        'Wrzesień',
+        'Październik',
+        'Listopad',
+        'Grudzień'
+      ];
+    } else {
+      months = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December"
+      ];
+    }
     return months[month - 1];
   }
-
-  final List<String> _customDayNames = [
-    'N',
-    'P',
-    'W',
-    'Ś',
-    'C',
-    'P',
-    'S',
-  ];
 
   @override
   void initState() {
@@ -196,7 +207,7 @@ class _AppCalendarState extends State<AppCalendar> {
             weekdayStyle: const TextStyle(fontSize: 12.0),
             weekendStyle: const TextStyle(fontSize: 12.0),
             dowTextFormatter: (date, locale) {
-              return _customDayNames[date.weekday % 7];
+              return ConversionService.getDayOfWeekOneLetter("${date.weekday}");
             },
           ),
           rowHeight: 60.0,

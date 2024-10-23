@@ -10,6 +10,7 @@ import 'package:liftday/sevices/bloc/config/config_event.dart';
 import 'package:liftday/sevices/bloc/edit/edit_bloc.dart';
 import 'package:liftday/sevices/bloc/edit/edit_event.dart';
 import 'package:liftday/sevices/bloc/edit/edit_state.dart';
+import 'package:liftday/sevices/conversion/conversion_service.dart';
 import 'package:liftday/sevices/crud/data_package/exercise_data.dart';
 import 'package:liftday/sevices/crud/data_package/training_day_data.dart';
 import 'package:liftday/sevices/crud/exercise_service.dart';
@@ -269,7 +270,7 @@ class _PlansTabState extends State<PlansTab> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                _getPolishDayAbbreviation(day.name),
+                ConversionService.getPolishDayOrReturn(day.name),
                 style: const TextStyle(
                   fontSize: 16.0,
                   fontWeight: FontWeight.bold,
@@ -502,7 +503,7 @@ class _RoutinesTabState extends State<RoutinesTab> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                _getPolishDayAbbreviation(day.name),
+                ConversionService.getPolishDayOrReturn(day.name),
                 style: const TextStyle(
                   fontSize: 16.0,
                   fontWeight: FontWeight.bold,
@@ -582,26 +583,4 @@ String _writeExercises(List<ExerciseData> exercises) {
   }
 
   return exercisesText;
-}
-
-//TODO: ogarnac ponizsze
-String _getPolishDayAbbreviation(String dayOfWeek) {
-  switch (dayOfWeek) {
-    case 'Monday':
-      return 'Poniedziałek';
-    case 'Tuesday':
-      return 'Wtorek';
-    case 'Wednesday':
-      return 'Środa';
-    case 'Thursday':
-      return 'Czwartek';
-    case 'Friday':
-      return 'Piątek';
-    case 'Saturday':
-      return 'Sobota';
-    case 'Sunday':
-      return 'Niedziela';
-    default:
-      return dayOfWeek;
-  }
 }

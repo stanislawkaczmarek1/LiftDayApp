@@ -4,6 +4,7 @@ import 'package:liftday/dialogs/wrong_name.dart';
 import 'package:liftday/sevices/bloc/edit/edit_bloc.dart';
 import 'package:liftday/sevices/bloc/edit/edit_event.dart';
 import 'package:liftday/sevices/bloc/edit/edit_state.dart';
+import 'package:liftday/sevices/conversion/conversion_service.dart';
 import 'package:liftday/sevices/crud/data_package/exercise_data.dart';
 import 'package:liftday/sevices/crud/data_package/training_day_data.dart';
 import 'package:liftday/sevices/crud/exercise_service.dart';
@@ -42,28 +43,6 @@ class _TrainingDayViewState extends State<TrainingDayView> {
       return true;
     } else {
       return false;
-    }
-  }
-
-  //TODO:
-  String _getPolishDayAbbreviation(String dayOfWeek) {
-    switch (dayOfWeek) {
-      case 'Monday':
-        return 'Poniedziałek';
-      case 'Tuesday':
-        return 'Wtorek';
-      case 'Wednesday':
-        return 'Środa';
-      case 'Thursday':
-        return 'Czwartek';
-      case 'Friday':
-        return 'Piątek';
-      case 'Saturday':
-        return 'Sobota';
-      case 'Sunday':
-        return 'Niedziela';
-      default:
-        return dayOfWeek;
     }
   }
 
@@ -107,7 +86,8 @@ class _TrainingDayViewState extends State<TrainingDayView> {
                   Padding(
                     padding: const EdgeInsets.all(20.0),
                     child: Text(
-                      _getPolishDayAbbreviation(state.trainingDay.name),
+                      ConversionService.getPolishDayOrReturn(
+                          state.trainingDay.name),
                       style: const TextStyle(
                           fontSize: 24, fontWeight: FontWeight.bold),
                       textAlign: TextAlign.center,
@@ -134,12 +114,13 @@ class _TrainingDayViewState extends State<TrainingDayView> {
               context,
               AppLocalizations.of(context)!.save,
               () async {
-                if (await _chceckDayName(_dayController.text)) {
+                final dayName = _dayController.text.trimRight();
+                if (await _chceckDayName(dayName)) {
                   if (context.mounted) {
                     context.read<EditBloc>().add(EditEventPushSaveButton(
                         context,
                         TrainingDayData(
-                          name: _dayController.text,
+                          name: dayName,
                           exercises: exercises,
                         ),
                         _currentName));
@@ -158,6 +139,13 @@ class _TrainingDayViewState extends State<TrainingDayView> {
                   Padding(
                     padding: const EdgeInsets.all(20.0),
                     child: TextField(
+                      maxLength: 30,
+                      buildCounter: (BuildContext context,
+                          {int? currentLength,
+                          bool? isFocused,
+                          int? maxLength}) {
+                        return null;
+                      },
                       controller: _dayController,
                       decoration: InputDecoration(
                           border: InputBorder.none,
@@ -193,12 +181,13 @@ class _TrainingDayViewState extends State<TrainingDayView> {
               context,
               AppLocalizations.of(context)!.save,
               () async {
-                if (await _chceckDayName(_dayController.text)) {
+                final dayName = _dayController.text.trimRight();
+                if (await _chceckDayName(dayName)) {
                   if (context.mounted) {
                     context.read<EditBloc>().add(EditEventPushSaveButton(
                         context,
                         TrainingDayData(
-                          name: _dayController.text,
+                          name: dayName,
                           exercises: exercises,
                         ),
                         " "));
@@ -217,6 +206,13 @@ class _TrainingDayViewState extends State<TrainingDayView> {
                   Padding(
                     padding: const EdgeInsets.all(20.0),
                     child: TextField(
+                      maxLength: 30,
+                      buildCounter: (BuildContext context,
+                          {int? currentLength,
+                          bool? isFocused,
+                          int? maxLength}) {
+                        return null;
+                      },
                       controller: _dayController,
                       decoration: InputDecoration(
                           border: InputBorder.none,

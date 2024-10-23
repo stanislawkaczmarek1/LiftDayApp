@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:liftday/constants/app_exercises.dart';
 import 'package:liftday/constants/themes.dart';
+import 'package:liftday/sevices/conversion/conversion_service.dart';
 import 'package:liftday/sevices/crud/exercise_service.dart';
 import 'package:liftday/sevices/crud/tables/database_exercise_info.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -108,6 +109,13 @@ class _ExerciseListViewState extends State<ExerciseListView>
                 SizedBox(
                     height: 60,
                     child: TextField(
+                      maxLength: 50,
+                      buildCounter: (BuildContext context,
+                          {int? currentLength,
+                          bool? isFocused,
+                          int? maxLength}) {
+                        return null;
+                      },
                       decoration: InputDecoration(
                         hintText: AppLocalizations.of(context)!.search_exercise,
                         hintStyle: TextStyle(
@@ -168,7 +176,8 @@ class _ExerciseListViewState extends State<ExerciseListView>
                                   });
                                 },
                                 child: Text(
-                                  group,
+                                  ConversionService.getPolishMuscleNameOrReturn(
+                                      group),
                                   style: TextStyle(
                                     color: isSelected
                                         ? Theme.of(context)

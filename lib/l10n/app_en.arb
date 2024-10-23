@@ -116,7 +116,7 @@
     "@start": {
         "description": "Button to start the process"
     },
-    "choose_workout_addition_method": "Choose the way you want to add workouts",
+    "choose_workout_addition_method": "Select the way you want to add workouts",
     "@choose_workout_addition_method": {
         "description": "Prompt to choose how to add workouts"
     },
@@ -128,7 +128,7 @@
     "@auto_assign_days": {
         "description": "Option for automatic assignment of training days"
     },
-    "i_choose": "I choose",
+    "i_choose": "Select",
     "@i_choose": {
         "description": "Button to confirm the choice"
     },
@@ -159,6 +159,34 @@
     "choose_training_days": "Select your training days",
     "@choose_training_days": {
         "description": "Prompt to choose training days"
+    },
+    "mon": "Mon",
+    "@mon": {
+        "description": "Abbreviation for Monday"
+    },
+    "tue": "Tue",
+    "@tue": {
+        "description": "Abbreviation for Tuesday"
+    },
+    "wed": "Wed",
+    "@wed": {
+        "description": "Abbreviation for Wednesday"
+    },
+    "thu": "Thu",
+    "@thu": {
+        "description": "Abbreviation for Thursday"
+    },
+    "fri": "Fri",
+    "@fri": {
+        "description": "Abbreviation for Friday"
+    },
+    "sat": "Sat",
+    "@sat": {
+        "description": "Abbreviation for Saturday"
+    },
+    "sun": "Sun",
+    "@sun": {
+        "description": "Abbreviation for Sunday"
     },
     "next": "Next",
     "@next": {

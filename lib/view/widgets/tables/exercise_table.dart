@@ -891,7 +891,7 @@ class _ExerciseRowState extends State<ExerciseRow> {
       double number = double.parse(text);
       return number;
     } catch (e) {
-      return null; // Zwraca null w przypadku błędu konwersji
+      return null; // bad input
     }
   }
 
@@ -1128,6 +1128,13 @@ class _ExerciseRowState extends State<ExerciseRow> {
                       ),
                       Expanded(
                         child: TextField(
+                          maxLength: 10,
+                          buildCounter: (BuildContext context,
+                              {int? currentLength,
+                              bool? isFocused,
+                              int? maxLength}) {
+                            return null;
+                          },
                           onTap: () => _isInputActive.value = true,
                           onEditingComplete: () {
                             _isInputActive.value = false;
@@ -1159,6 +1166,13 @@ class _ExerciseRowState extends State<ExerciseRow> {
                       _isThatDurationTypeSet
                           ? Expanded(
                               child: TextField(
+                                maxLength: 10,
+                                buildCounter: (BuildContext context,
+                                    {int? currentLength,
+                                    bool? isFocused,
+                                    int? maxLength}) {
+                                  return null;
+                                },
                                 onTap: () => _isInputActive.value = true,
                                 onEditingComplete: () {
                                   _durationFocusNode.unfocus();
@@ -1188,6 +1202,13 @@ class _ExerciseRowState extends State<ExerciseRow> {
                             )
                           : Expanded(
                               child: TextField(
+                                maxLength: 10,
+                                buildCounter: (BuildContext context,
+                                    {int? currentLength,
+                                    bool? isFocused,
+                                    int? maxLength}) {
+                                  return null;
+                                },
                                 onTap: () => _isInputActive.value = true,
                                 onEditingComplete: () {
                                   _repsFocusNode.unfocus();

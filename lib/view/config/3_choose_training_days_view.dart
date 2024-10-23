@@ -14,7 +14,6 @@ class ChooseTrainingDaysView extends StatefulWidget {
 }
 
 class _ChooseTrainingDaysViewState extends State<ChooseTrainingDaysView> {
-  //TODO: ogarnac ponizsze
   final List<String> daysOfWeek = [
     'Monday',
     'Tuesday',
@@ -23,16 +22,6 @@ class _ChooseTrainingDaysViewState extends State<ChooseTrainingDaysView> {
     'Friday',
     'Saturday',
     'Sunday',
-  ];
-
-  final List<String> daysOfWeekToDisplay = [
-    'Pon',
-    'Wt',
-    'Śr',
-    'Czw',
-    'Pt',
-    'Sob',
-    'Nd',
   ];
 
   final List<bool> selectedDays = List<bool>.filled(7, false);
@@ -49,6 +38,16 @@ class _ChooseTrainingDaysViewState extends State<ChooseTrainingDaysView> {
 
   @override
   Widget build(BuildContext context) {
+    final List<String> daysOfWeekToDisplay = [
+      AppLocalizations.of(context)!.mon,
+      AppLocalizations.of(context)!.tue,
+      AppLocalizations.of(context)!.wed,
+      AppLocalizations.of(context)!.thu,
+      AppLocalizations.of(context)!.fri,
+      AppLocalizations.of(context)!.sat,
+      AppLocalizations.of(context)!.sun,
+    ];
+
     // Pobierz szerokość ekranu
     double screenWidth = MediaQuery.of(context).size.width;
     // Ustal rozmiar przerwy między kwadratami

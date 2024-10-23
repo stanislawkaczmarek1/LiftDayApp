@@ -25,91 +25,91 @@ class _CreatePlanOrSkipViewState extends State<CreatePlanOrSkipView> {
       child: Scaffold(
         appBar: appBar(context),
         body: SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              const SizedBox(
-                height: 24.0,
-              ),
-              Center(
-                child: Text(
-                  //TODO ogarnac \n w calym kodzie
-                  AppLocalizations.of(context)!.choose_workout_addition_method,
-                  style: const TextStyle(
-                      fontSize: 24, fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.center,
+          child: Padding(
+            padding: const EdgeInsets.only(left: 36, right: 36, top: 24),
+            child: Column(
+              children: <Widget>[
+                Center(
+                  child: Text(
+                    AppLocalizations.of(context)!
+                        .choose_workout_addition_method,
+                    style: const TextStyle(
+                        fontSize: 24, fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
-              ),
-              const SizedBox(
-                height: 14.0,
-              ),
-              Center(
-                child: Text(
-                  AppLocalizations.of(context)!.change_method_later,
-                  style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.normal,
-                      color: Colors.grey),
-                  textAlign: TextAlign.center,
+                const SizedBox(
+                  height: 14.0,
                 ),
-              ),
-              const SizedBox(
-                height: 44.0,
-              ),
-              Center(
-                child: _roundedRectangleWithButton(
-                  text: AppLocalizations.of(context)!.auto_assign_days,
-                  buttonText: AppLocalizations.of(context)!.i_choose,
-                  backgroundColor: Theme.of(context).colorScheme.tertiary,
-                  textColor: Theme.of(context).colorScheme.primary,
-                  buttonColor: Theme.of(context).colorScheme.primary,
-                  buttonTextColor: Theme.of(context).colorScheme.onPrimary,
-                  onPressed: () {
-                    context
-                        .read<ConfigBloc>()
-                        .add(const ConfigEventConfirmWeekAutomation());
-                  },
+                Center(
+                  child: Text(
+                    AppLocalizations.of(context)!.change_method_later,
+                    style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.normal,
+                        color: Colors.grey),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
-              ),
-              const SizedBox(
-                height: 34.0,
-              ),
-              Center(
-                child: _roundedRectangleWithButton(
-                  text: AppLocalizations.of(context)!.manual_assign_days,
-                  buttonText: AppLocalizations.of(context)!.i_choose,
-                  backgroundColor: Theme.of(context).colorScheme.tertiary,
-                  textColor: Theme.of(context).colorScheme.primary,
-                  buttonColor: Theme.of(context).colorScheme.primary,
-                  buttonTextColor: Theme.of(context).colorScheme.onPrimary,
-                  onPressed: () {
-                    context
-                        .read<ConfigBloc>()
-                        .add(const ConfigEventConfirmDaysCreation());
-                  },
+                const SizedBox(
+                  height: 44.0,
                 ),
-              ),
-              const SizedBox(
-                height: 34.0,
-              ),
-              Center(
-                child: _roundedRectangleWithButton(
-                  text: AppLocalizations.of(context)!.manual_add_exercises,
-                  buttonText: AppLocalizations.of(context)!.i_choose,
-                  backgroundColor: Theme.of(context).colorScheme.tertiary,
-                  textColor: Theme.of(context).colorScheme.primary,
-                  buttonColor: Theme.of(context).colorScheme.primary,
-                  buttonTextColor: Theme.of(context).colorScheme.onPrimary,
-                  onPressed: () {
-                    context
-                        .read<ConfigBloc>()
-                        .add(const ConfigEventConfirmAllByHand());
-                  },
+                Center(
+                  child: _roundedRectangleWithButton(
+                    text: AppLocalizations.of(context)!.auto_assign_days,
+                    buttonText: AppLocalizations.of(context)!.i_choose,
+                    backgroundColor: Theme.of(context).colorScheme.tertiary,
+                    textColor: Theme.of(context).colorScheme.primary,
+                    buttonColor: Theme.of(context).colorScheme.primary,
+                    buttonTextColor: Theme.of(context).colorScheme.onPrimary,
+                    onPressed: () {
+                      context
+                          .read<ConfigBloc>()
+                          .add(const ConfigEventConfirmWeekAutomation());
+                    },
+                  ),
                 ),
-              ),
-              const SizedBox(
-                height: 34.0,
-              ),
-            ],
+                const SizedBox(
+                  height: 34.0,
+                ),
+                Center(
+                  child: _roundedRectangleWithButton(
+                    text: AppLocalizations.of(context)!.manual_assign_days,
+                    buttonText: AppLocalizations.of(context)!.i_choose,
+                    backgroundColor: Theme.of(context).colorScheme.tertiary,
+                    textColor: Theme.of(context).colorScheme.primary,
+                    buttonColor: Theme.of(context).colorScheme.primary,
+                    buttonTextColor: Theme.of(context).colorScheme.onPrimary,
+                    onPressed: () {
+                      context
+                          .read<ConfigBloc>()
+                          .add(const ConfigEventConfirmDaysCreation());
+                    },
+                  ),
+                ),
+                const SizedBox(
+                  height: 34.0,
+                ),
+                Center(
+                  child: _roundedRectangleWithButton(
+                    text: AppLocalizations.of(context)!.manual_add_exercises,
+                    buttonText: AppLocalizations.of(context)!.i_choose,
+                    backgroundColor: Theme.of(context).colorScheme.tertiary,
+                    textColor: Theme.of(context).colorScheme.primary,
+                    buttonColor: Theme.of(context).colorScheme.primary,
+                    buttonTextColor: Theme.of(context).colorScheme.onPrimary,
+                    onPressed: () {
+                      context
+                          .read<ConfigBloc>()
+                          .add(const ConfigEventConfirmAllByHand());
+                    },
+                  ),
+                ),
+                const SizedBox(
+                  height: 34.0,
+                ),
+              ],
+            ),
           ),
         ),
       ),

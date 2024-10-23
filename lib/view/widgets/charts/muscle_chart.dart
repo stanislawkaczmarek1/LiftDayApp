@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:liftday/sevices/conversion/conversion_service.dart';
 
 class MuscleChart extends StatefulWidget {
   final Map<String, int> muscleChartData;
@@ -55,7 +56,8 @@ class _MuscleChartState extends State<MuscleChart> {
               getTitle: (index, angle) {
                 if (index < muscleGroupNames.length) {
                   return RadarChartTitle(
-                    text: muscleGroupNames[index],
+                    text: ConversionService.getPolishMuscleNameOrReturn(
+                        muscleGroupNames[index]),
                   );
                 }
                 return const RadarChartTitle(text: '');

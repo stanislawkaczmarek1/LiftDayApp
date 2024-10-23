@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:liftday/sevices/bloc/config/config_bloc.dart';
 import 'package:liftday/sevices/bloc/config/config_event.dart';
 import 'package:liftday/sevices/bloc/config/config_state.dart';
+import 'package:liftday/sevices/conversion/conversion_service.dart';
 import 'package:liftday/sevices/crud/data_package/exercise_data.dart';
 import 'package:liftday/sevices/crud/data_package/training_day_data.dart';
 import 'package:liftday/view/widgets/tables/simple_exercise_table.dart';
@@ -21,28 +22,6 @@ class _AddFirstWeekPlanViewState extends State<AddFirstWeekPlanView> {
   Key _exerciseTableKey = UniqueKey();
   late SimpleExerciseTable _exerciseTable;
   List<ExerciseData> exercises = [];
-
-  //TODO: ogarnac ponizsze
-  String _getPolishDayAbbreviation(String dayOfWeek) {
-    switch (dayOfWeek) {
-      case 'Monday':
-        return 'Poniedziałek';
-      case 'Tuesday':
-        return 'Wtorek';
-      case 'Wednesday':
-        return 'Środa';
-      case 'Thursday':
-        return 'Czwartek';
-      case 'Friday':
-        return 'Piątek';
-      case 'Saturday':
-        return 'Sobota';
-      case 'Sunday':
-        return 'Niedziela';
-      default:
-        return dayOfWeek;
-    }
-  }
 
   @override
   void initState() {
@@ -111,7 +90,7 @@ class _AddFirstWeekPlanViewState extends State<AddFirstWeekPlanView> {
                   Padding(
                     padding: const EdgeInsets.all(20.0),
                     child: Text(
-                      _getPolishDayAbbreviation(dayOfWeek),
+                      ConversionService.getPolishDayOrReturn(dayOfWeek),
                       style: const TextStyle(
                           fontSize: 24, fontWeight: FontWeight.bold),
                       textAlign: TextAlign.center,

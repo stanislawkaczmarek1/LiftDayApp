@@ -3,6 +3,7 @@ import 'package:liftday/constants/themes.dart';
 import 'package:liftday/dialogs/entry_exerciese_name.dart';
 import 'package:liftday/dialogs/entry_exercise_musle.dart';
 import 'package:liftday/dialogs/entry_exercise_name_and_muscle.dart';
+import 'package:liftday/sevices/conversion/conversion_service.dart';
 import 'package:liftday/sevices/crud/tables/database_exercise_info.dart';
 import 'package:liftday/view/routes_views/exercise_list_view.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -89,9 +90,16 @@ class _AddExerciseViewState extends State<AddExerciseView> {
                       style: const TextStyle(fontSize: 14),
                     ),
                     TextField(
+                      maxLength: 30,
+                      buildCounter: (BuildContext context,
+                          {int? currentLength,
+                          bool? isFocused,
+                          int? maxLength}) {
+                        return null;
+                      },
                       onChanged: (value) {
                         setState(() {
-                          exerciseName = value;
+                          exerciseName = value.trimRight();
                         });
                       },
                       decoration: InputDecoration(
@@ -275,7 +283,8 @@ class _AddExerciseViewState extends State<AddExerciseView> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  group,
+                                  ConversionService.getPolishMuscleNameOrReturn(
+                                      group),
                                   style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w500,

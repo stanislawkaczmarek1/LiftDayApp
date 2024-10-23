@@ -421,7 +421,6 @@ class _MuscleChartWidgetState extends State<MuscleChartWidget> {
 
   Future<Map<String, int>> _loadMuscleChartData(int range) async {
     ExerciseService exerciseService = ExerciseService();
-    //TODO:
     const List<String> muscleGroups = [
       "chest",
       "shoulders",
