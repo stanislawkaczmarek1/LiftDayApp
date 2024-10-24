@@ -1574,7 +1574,9 @@ class ExerciseService {
   }
 
   Future<Map<String, int>> getMuscleChartData(
-      List<String> muscleGroups, int range) async {
+      //TODO: ogarnąć co z plankiem np, ew małe ikonki i do wykresów
+      List<String> muscleGroups,
+      int range) async {
     Map<String, int> data = {};
     const rangeOfAllTime = -1;
 

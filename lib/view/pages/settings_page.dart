@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:liftday/constants/database.dart';
 import 'package:liftday/dialogs/create_backup.dart';
@@ -12,6 +13,7 @@ import 'package:liftday/sevices/bloc/settings/settings_event.dart';
 import 'package:liftday/sevices/bloc/settings/settings_state.dart';
 import 'package:liftday/sevices/crud/exercise_service.dart';
 import 'package:liftday/sevices/settings/settings_service.dart';
+import 'package:liftday/view/routes_views/liftday_club.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -134,6 +136,19 @@ class _SettingsPageState extends State<SettingsPage> {
           final currentUnit = state.unit;
           return Column(
             children: [
+              const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Align(
+                  alignment: Alignment.bottomLeft,
+                  child: Text(
+                    "Ustawienia",
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
               ListTile(
                 title: Text(
                   AppLocalizations.of(context)!.dark_mode,
@@ -262,6 +277,49 @@ class _SettingsPageState extends State<SettingsPage> {
                   ],
                 ),
               ),
+              const SizedBox(
+                height: 48,
+              ),
+              const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Align(
+                  alignment: Alignment.bottomLeft,
+                  child: Text(
+                    "Odkryj",
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 8,
+              ),
+              GestureDetector(
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const LiftDayClub(),
+                    ),
+                  );
+                },
+                child: Container(
+                  height: 80,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16.0),
+                    border: Border.all(
+                      color: Theme.of(context).colorScheme.tertiary,
+                    ),
+                    image: DecorationImage(
+                      image: isDarkMode
+                          ? const AssetImage('assets/liftday_club_dm.png')
+                          : const AssetImage('assets/liftday_club_lm.png'),
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                ),
+              )
             ],
           );
         },
