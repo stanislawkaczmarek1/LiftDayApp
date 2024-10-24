@@ -69,15 +69,17 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     final language = settingsService.language();
     if (language != null) {
       add(SettingsEventChangeLanguage(Locale(language)));
+    } else {
+      add(SettingsEventChangeLanguage(_getDefaultLocale()));
     }
 
     add(SettingsEventChangeTheme(isDarkMode: settingsService.isDarkModeFlag()));
 
     final unit = settingsService.weightUnit();
-    if (unit == "kg") {
-      add(const SettingsEventChangeWeightUnit("kg"));
-    } else if (unit == "lbs") {
+    if (unit == "lbs") {
       add(const SettingsEventChangeWeightUnit("lbs"));
+    } else {
+      add(const SettingsEventChangeWeightUnit("kg"));
     }
   }
 }

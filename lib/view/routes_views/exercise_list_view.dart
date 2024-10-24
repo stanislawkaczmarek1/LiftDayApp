@@ -5,6 +5,7 @@ import 'package:liftday/sevices/conversion/conversion_service.dart';
 import 'package:liftday/sevices/crud/exercise_service.dart';
 import 'package:liftday/sevices/crud/tables/database_exercise_info.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:liftday/sevices/settings/settings_service.dart';
 
 typedef AddExerciseFromListCallback = void Function(int? exerciseInfoId);
 
@@ -40,11 +41,27 @@ class _ExerciseListViewState extends State<ExerciseListView>
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _customExercises = getAllExerciseInfos();
+    final List<DatabaseExerciseInfo> appExercises;
+
+    SettingsService settingsService = SettingsService();
+    if (settingsService.language() == "pl") {
+      appExercises = appExercisesPl;
+    } else {
+      appExercises = appExercisesEn;
+    }
     _filteredAppExercises = appExercises;
   }
 
   void _filterAppExercises() {
     setState(() {
+      final List<DatabaseExerciseInfo> appExercises;
+
+      SettingsService settingsService = SettingsService();
+      if (settingsService.language() == "pl") {
+        appExercises = appExercisesPl;
+      } else {
+        appExercises = appExercisesEn;
+      }
       _filteredAppExercises = appExercises.where((exercise) {
         final matchesSearchTerm =
             exercise.name.toLowerCase().contains(_searchTerm.toLowerCase());
@@ -302,7 +319,7 @@ class _ExerciseListViewState extends State<ExerciseListView>
             style: const TextStyle(fontSize: 18),
           ),
           subtitle: Text(
-            exercise.muscleGroup,
+            ConversionService.getPolishMuscleNameOrReturn(exercise.muscleGroup),
             style: const TextStyle(fontSize: 12, color: Colors.grey),
           ),
           tileColor: isSelected ? Colors.grey.withOpacity(0.3) : null,

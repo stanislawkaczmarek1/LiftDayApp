@@ -64,7 +64,8 @@ class SettingsService {
 
   bool isDarkModeFlag() {
     _ensureInitialized();
-    return _preferences.getBool(_isDarkModeKey) ?? false;
+    return _preferences.getBool(_isDarkModeKey) ??
+        true; //default dark mode in app
   }
 
   Future<void> setLanguage(String value) async {

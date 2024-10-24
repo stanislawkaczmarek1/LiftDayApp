@@ -15,6 +15,7 @@ import 'package:liftday/sevices/crud/tables/database_set.dart';
 import 'package:liftday/sevices/crud/tables/database_training_day.dart';
 import 'package:liftday/sevices/crud/tables/database_training_day_exercise.dart';
 import 'package:liftday/sevices/crud/data_package/volume_chart_data.dart';
+import 'package:liftday/sevices/settings/settings_service.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' show join;
@@ -412,6 +413,15 @@ class ExerciseService {
   Future<List<DatabaseExerciseInfo>> getExerciseInfosByMuscleGroup(
       String muscleGroup) async {
     List<DatabaseExerciseInfo> selectedExerciseInfos = [];
+    final List<DatabaseExerciseInfo> appExercises;
+
+    SettingsService settingsService = SettingsService();
+    if (settingsService.language() == "pl") {
+      appExercises = appExercisesPl;
+    } else {
+      appExercises = appExercisesEn;
+    }
+
     final allAppExerciseInfos = List.of(appExercises);
     for (var appExerciseInfo in allAppExerciseInfos) {
       if (appExerciseInfo.muscleGroup == muscleGroup) {
@@ -437,6 +447,13 @@ class ExerciseService {
   Future<DatabaseExerciseInfo> getExerciseInfo({required int id}) async {
     if (id < 0) {
       try {
+        final List<DatabaseExerciseInfo> appExercises;
+        SettingsService settingsService = SettingsService();
+        if (settingsService.language() == "pl") {
+          appExercises = appExercisesPl;
+        } else {
+          appExercises = appExercisesEn;
+        }
         final exercise =
             appExercises.firstWhere((exercise) => exercise.id == id);
         return exercise;

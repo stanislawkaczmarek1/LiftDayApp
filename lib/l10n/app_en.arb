@@ -368,7 +368,7 @@
     "@add_exercise": {
         "description": "Button to add a new exercise"
     },
-    "enter_name": "Enter name:",
+    "enter_name": "Enter exercise name:",
     "@enter_name": {
         "description": "Prompt to enter a name"
     },

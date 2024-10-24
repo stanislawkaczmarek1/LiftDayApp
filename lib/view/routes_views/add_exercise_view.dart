@@ -23,7 +23,6 @@ class AddExerciseView extends StatefulWidget {
 class _AddExerciseViewState extends State<AddExerciseView> {
   String exerciseName = '';
   String exerciseType = 'reps';
-
   String selectedMuscleGroup = 'empty';
   String exerciseTypeText = 'empty';
 
@@ -60,6 +59,7 @@ class _AddExerciseViewState extends State<AddExerciseView> {
           )
         ],
       ),
+      resizeToAvoidBottomInset: false,
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -79,13 +79,8 @@ class _AddExerciseViewState extends State<AddExerciseView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      AppLocalizations.of(context)!.add_exercise,
-                      style: const TextStyle(fontSize: 20),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
                       AppLocalizations.of(context)!.enter_name,
-                      style: const TextStyle(fontSize: 14),
+                      style: const TextStyle(fontSize: 18),
                     ),
                     TextField(
                       maxLength: 30,

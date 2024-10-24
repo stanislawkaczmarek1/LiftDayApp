@@ -200,7 +200,7 @@ class _PlansTabState extends State<PlansTab> {
                       children: [
                         _buildTextButton(
                           AppLocalizations.of(context)!.add_plan,
-                          Icons.add,
+                          null,
                           () {
                             context
                                 .read<ConfigBloc>()
@@ -217,7 +217,7 @@ class _PlansTabState extends State<PlansTab> {
   }
 
   Widget _buildTextButton(
-      String title, IconData icon, void Function() onPressed) {
+      String title, IconData? icon, void Function() onPressed) {
     return Expanded(
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 5),
@@ -233,22 +233,29 @@ class _PlansTabState extends State<PlansTab> {
                     color: Theme.of(context).colorScheme.onTertiary,
                   )),
               minimumSize: const Size(double.infinity, 0)),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                icon,
-                size: 32,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                title,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                    fontSize: 14, fontWeight: FontWeight.normal),
-              ),
-            ],
-          ),
+          child: icon == null
+              ? Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.normal),
+                )
+              : Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      icon,
+                      size: 32,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      title,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.normal),
+                    ),
+                  ],
+                ),
         ),
       ),
     );
@@ -472,7 +479,7 @@ class _RoutinesTabState extends State<RoutinesTab> {
                       AppLocalizations.of(context)!.add_routine,
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 16,
                         fontWeight: FontWeight.normal,
                         color: Theme.of(context).colorScheme.secondary,
                       ),
