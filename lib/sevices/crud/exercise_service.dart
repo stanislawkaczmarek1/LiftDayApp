@@ -1574,9 +1574,7 @@ class ExerciseService {
   }
 
   Future<Map<String, int>> getMuscleChartData(
-      //TODO: ogarnąć co z plankiem np, ew małe ikonki i do wykresów
-      List<String> muscleGroups,
-      int range) async {
+      List<String> muscleGroups, int range) async {
     Map<String, int> data = {};
     const rangeOfAllTime = -1;
 
@@ -1613,8 +1611,8 @@ class ExerciseService {
 
       int repsCount = 0;
 
-      for (var wantedSet in wantedSets) {
-        repsCount += wantedSet.reps;
+      for (var i = 0; i < wantedSets.length; i++) {
+        repsCount += 1;
       }
 
       data.putIfAbsent(muscleGroup, () => repsCount);
