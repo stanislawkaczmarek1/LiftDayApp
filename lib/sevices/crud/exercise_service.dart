@@ -1609,13 +1609,15 @@ class ExerciseService {
         wantedSets.addAll(await getSetsForExercise(exerciseId: exercise.id));
       }
 
-      int repsCount = 0;
+      int setsCount = 0;
 
-      for (var i = 0; i < wantedSets.length; i++) {
-        repsCount += 1;
+      for (var wantedSet in wantedSets) {
+        if (wantedSet.duration != 0 || wantedSet.reps != 0) {
+          setsCount += 1;
+        }
       }
 
-      data.putIfAbsent(muscleGroup, () => repsCount);
+      data.putIfAbsent(muscleGroup, () => setsCount);
     }
 
     return data;
