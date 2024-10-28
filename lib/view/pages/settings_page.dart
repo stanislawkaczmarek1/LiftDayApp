@@ -2,7 +2,6 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:liftday/constants/database.dart';
 import 'package:liftday/dialogs/create_backup.dart';
@@ -13,7 +12,7 @@ import 'package:liftday/sevices/bloc/settings/settings_event.dart';
 import 'package:liftday/sevices/bloc/settings/settings_state.dart';
 import 'package:liftday/sevices/crud/exercise_service.dart';
 import 'package:liftday/sevices/settings/settings_service.dart';
-import 'package:liftday/view/routes_views/liftday_club.dart';
+//import 'package:liftday/view/routes_views/liftday_club.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -136,13 +135,13 @@ class _SettingsPageState extends State<SettingsPage> {
           final currentUnit = state.unit;
           return Column(
             children: [
-              const Padding(
-                padding: EdgeInsets.all(8.0),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
                 child: Align(
                   alignment: Alignment.bottomLeft,
                   child: Text(
-                    "Ustawienia",
-                    style: TextStyle(
+                    AppLocalizations.of(context)!.settings,
+                    style: const TextStyle(
                       fontSize: 18.0,
                       fontWeight: FontWeight.bold,
                     ),
@@ -277,7 +276,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   ],
                 ),
               ),
-              const SizedBox(
+              /*const SizedBox(
                 height: 48,
               ),
               const Padding(
@@ -319,7 +318,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     ),
                   ),
                 ),
-              )
+              )*/
             ],
           );
         },

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:liftday/sevices/bloc/settings/settings_bloc.dart';
+import 'package:liftday/sevices/bloc/settings/settings_state.dart';
 import 'package:liftday/sevices/conversion/conversion_service.dart';
 import 'package:liftday/sevices/crud/data_package/snapshot_data.dart';
 import 'package:liftday/sevices/crud/exercise_service.dart';
@@ -243,12 +246,16 @@ class _WeeklySnapshotState extends State<WeeklySnapshot> {
                                 const SizedBox(
                                   height: 10,
                                 ),
-                                Text(
-                                  volumeString,
-                                  style: const TextStyle(
-                                    fontSize: 26,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                BlocBuilder<SettingsBloc, SettingsState>(
+                                  builder: (context, state) {
+                                    return Text(
+                                      "$volumeString ${state.unit}",
+                                      style: const TextStyle(
+                                        fontSize: 26,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    );
+                                  },
                                 ),
                               ],
                             ),
@@ -293,8 +300,8 @@ class VolumeChartWidget extends StatefulWidget {
 }
 
 class _VolumeChartWidgetState extends State<VolumeChartWidget> {
-  int _selectedRangeForBarChart = 7;
-  final List<bool> _selectionsForBarChart = [true, false, false];
+  int _selectedRangeForBarChart = 30;
+  final List<bool> _selectionsForBarChart = [false, true, false];
 
   Future<List<VolumeChartData>> _loadVolumeChartData(int range) async {
     ExerciseService exerciseService = ExerciseService();
@@ -359,7 +366,7 @@ class _VolumeChartWidgetState extends State<VolumeChartWidget> {
             ],
           ),
         ),
-        Center(
+        /*Center(
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: ToggleButtons(
@@ -402,7 +409,7 @@ class _VolumeChartWidgetState extends State<VolumeChartWidget> {
               },
             ),
           ),
-        ),
+        ),*/
       ],
     );
   }
@@ -416,8 +423,8 @@ class MuscleChartWidget extends StatefulWidget {
 }
 
 class _MuscleChartWidgetState extends State<MuscleChartWidget> {
-  int _selectedRangeForRadarChart = 7;
-  final List<bool> _selectionsForRadarChart = [true, false, false, false];
+  int _selectedRangeForRadarChart = 30;
+  final List<bool> _selectionsForRadarChart = [false, true, false, false];
 
   Future<Map<String, int>> _loadMuscleChartData(int range) async {
     ExerciseService exerciseService = ExerciseService();
@@ -485,6 +492,7 @@ class _MuscleChartWidgetState extends State<MuscleChartWidget> {
             ],
           ),
         ),
+        /*
         Center(
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -537,7 +545,7 @@ class _MuscleChartWidgetState extends State<MuscleChartWidget> {
               },
             ),
           ),
-        ),
+        ),*/
       ],
     );
   }
