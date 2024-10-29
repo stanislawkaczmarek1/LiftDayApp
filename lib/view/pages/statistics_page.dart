@@ -301,7 +301,7 @@ class VolumeChartWidget extends StatefulWidget {
 
 class _VolumeChartWidgetState extends State<VolumeChartWidget> {
   int _selectedRangeForBarChart = 30;
-  final List<bool> _selectionsForBarChart = [false, true, false];
+  //final List<bool> _selectionsForBarChart = [false, true, false];
 
   Future<List<VolumeChartData>> _loadVolumeChartData(int range) async {
     ExerciseService exerciseService = ExerciseService();
@@ -363,9 +363,18 @@ class _VolumeChartWidgetState extends State<VolumeChartWidget> {
                   ),
                 ),
               ),
+              Text(
+                AppLocalizations.of(context)!.period_30_days,
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.normal,
+                  color: Colors.grey,
+                ),
+              ),
             ],
           ),
         ),
+
         /*Center(
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -424,7 +433,7 @@ class MuscleChartWidget extends StatefulWidget {
 
 class _MuscleChartWidgetState extends State<MuscleChartWidget> {
   int _selectedRangeForRadarChart = 30;
-  final List<bool> _selectionsForRadarChart = [false, true, false, false];
+  //final List<bool> _selectionsForRadarChart = [false, true, false, false];
 
   Future<Map<String, int>> _loadMuscleChartData(int range) async {
     ExerciseService exerciseService = ExerciseService();
@@ -487,6 +496,17 @@ class _MuscleChartWidgetState extends State<MuscleChartWidget> {
                       }
                     },
                   ),
+                ),
+              ),
+              const SizedBox(
+                height: 16,
+              ),
+              Text(
+                AppLocalizations.of(context)!.period_30_days,
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.normal,
+                  color: Colors.grey,
                 ),
               ),
             ],

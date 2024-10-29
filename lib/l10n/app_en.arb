@@ -292,6 +292,10 @@
     "@workout_statistics": {
         "description": "Section for workout statistics"
     },
+    "period_30_days": "Period: 30 days",
+    "@period_30_days": {
+        "description": "Period label"
+    },
     "weekly_snapshot": "Weekly snapshot",
     "@weekly_snapshot": {
         "description": "Overview of workout activity for the week"
@@ -304,7 +308,7 @@
     "@volume_label": {
         "description": "Label for workout volume"
     },
-    "workout_volume": "Workout volume from last 30 days",
+    "workout_volume": "Workout volume",
     "@workout_volume": {
         "description": "Total volume of workouts"
     },
@@ -332,7 +336,7 @@
     "@core": {
         "description": "Core muscle group"
     },
-    "muscle_distribution": "Muscle distribution from last 30 days",
+    "muscle_distribution": "Muscle distribution",
     "@muscle_distribution": {
         "description": "Muscle distribution overview"
     },

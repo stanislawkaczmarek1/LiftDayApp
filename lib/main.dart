@@ -62,7 +62,7 @@ void main() {
           child: BlocBuilder<SettingsBloc, SettingsState>(
             builder: (context, settingsState) {
               return MaterialApp(
-                title: 'Lift Day',
+                title: 'LiftDay',
                 theme: lightTheme,
                 darkTheme: darkTheme,
                 themeMode: settingsState.themeMode,

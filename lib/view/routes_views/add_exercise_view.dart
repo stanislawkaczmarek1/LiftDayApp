@@ -197,7 +197,7 @@ class _AddExerciseViewState extends State<AddExerciseView> {
       floatingActionButton: Padding(
         padding: const EdgeInsets.symmetric(vertical: 20),
         child: FloatingActionButton(
-          backgroundColor: colorLightGreen,
+          backgroundColor: Theme.of(context).colorScheme.secondary,
           heroTag: 'addBtn',
           onPressed: () {
             if (exerciseName.isEmpty && selectedMuscleGroup == 'empty') {

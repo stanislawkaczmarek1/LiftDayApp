@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:liftday/constants/app_exercises.dart';
-import 'package:liftday/constants/themes.dart';
 import 'package:liftday/sevices/conversion/conversion_service.dart';
 import 'package:liftday/sevices/crud/exercise_service.dart';
 import 'package:liftday/sevices/crud/tables/database_exercise_info.dart';
@@ -297,7 +296,7 @@ class _ExerciseListViewState extends State<ExerciseListView>
       ),
       floatingActionButton: _selectedExercise != null
           ? FloatingActionButton(
-              backgroundColor: colorLightGreen,
+              backgroundColor: Theme.of(context).colorScheme.secondary,
               heroTag: 'addBtn2',
               onPressed: _addSelectedExercise,
               child: const Icon(Icons.check),
