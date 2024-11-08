@@ -74,9 +74,11 @@ final List<DatabaseExerciseInfo> appExercisesEn = [
   DatabaseExerciseInfo(
       id: -252, name: "single-arm french press", muscleGroup: "arms"),
   DatabaseExerciseInfo(
-      id: -253, name: "tricep pushdown (overhand grip)", muscleGroup: "arms"),
+      id: -253,
+      name: "tricep pushdown with overhand grip",
+      muscleGroup: "arms"),
   DatabaseExerciseInfo(
-      id: -254, name: "rope tricep pushdown", muscleGroup: "arms"),
+      id: -254, name: "tricep pushdown with rope", muscleGroup: "arms"),
   DatabaseExerciseInfo(
       id: -255, name: "overhead tricep extension", muscleGroup: "arms"),
   DatabaseExerciseInfo(id: -256, name: "diamond push-ups", muscleGroup: "arms"),
@@ -93,17 +95,21 @@ final List<DatabaseExerciseInfo> appExercisesEn = [
       id: -303, name: "cable lateral raises", muscleGroup: "shoulders"),
   DatabaseExerciseInfo(
       id: -304,
-      name: "incline side-lying lateral raises",
+      name: "lateral raises on incline bench",
       muscleGroup: "shoulders"),
   DatabaseExerciseInfo(
-      id: -305, name: "overhead press (OHP)", muscleGroup: "shoulders"),
+      id: -305, name: "overhead press (ohp)", muscleGroup: "shoulders"),
   DatabaseExerciseInfo(
       id: -306, name: "arnold press", muscleGroup: "shoulders"),
   DatabaseExerciseInfo(id: -307, name: "face pull", muscleGroup: "shoulders"),
   DatabaseExerciseInfo(
       id: -308, name: "cable crossover", muscleGroup: "shoulders"),
   DatabaseExerciseInfo(
-      id: -309, name: "landmine press", muscleGroup: "shoulders"),
+      id: -309, name: "dumbbell reverse fly", muscleGroup: "shoulders"),
+  DatabaseExerciseInfo(
+      id: -310, name: "machine reverse fly", muscleGroup: "shoulders"),
+  DatabaseExerciseInfo(
+      id: -311, name: "landmine press", muscleGroup: "shoulders"),
 
   // Leg exercises
   DatabaseExerciseInfo(id: -401, name: "barbell squat", muscleGroup: "legs"),
@@ -131,7 +137,7 @@ final List<DatabaseExerciseInfo> appExercisesEn = [
   DatabaseExerciseInfo(
       id: -504, name: "hanging leg raises", muscleGroup: "core"),
   DatabaseExerciseInfo(id: -505, name: "lying leg raises", muscleGroup: "core"),
-  DatabaseExerciseInfo(id: -506, name: "ab wheel rollout", muscleGroup: "core"),
+  DatabaseExerciseInfo(id: -506, name: "ab wheel", muscleGroup: "core"),
   DatabaseExerciseInfo(id: -507, name: "front lever", muscleGroup: "core"),
   DatabaseExerciseInfo(id: -508, name: "l-sit", muscleGroup: "core"),
   DatabaseExerciseInfo(id: -509, name: "hollow body hold", muscleGroup: "core"),
@@ -234,13 +240,9 @@ final List<DatabaseExerciseInfo> appExercisesPl = [
   DatabaseExerciseInfo(
       id: -252, name: "wyciskanie fransukie jednorącz", muscleGroup: "arms"),
   DatabaseExerciseInfo(
-      id: -253,
-      name: "wyprosty ramion na lince nachwytem",
-      muscleGroup: "arms"),
+      id: -253, name: "wyprosty ramion nachwytem", muscleGroup: "arms"),
   DatabaseExerciseInfo(
-      id: -254,
-      name: "wyprosty ramion na lince warkoczem",
-      muscleGroup: "arms"),
+      id: -254, name: "wyprosty ramion liną", muscleGroup: "arms"),
   DatabaseExerciseInfo(
       id: -255,
       name: "wyprosty ramion na lince nad głową",
@@ -264,7 +266,8 @@ final List<DatabaseExerciseInfo> appExercisesPl = [
       id: -304,
       name: "wznosy bokiem leżąc na ławce skośnej",
       muscleGroup: "shoulders"),
-  DatabaseExerciseInfo(id: -305, name: "ohp", muscleGroup: "shoulders"),
+  DatabaseExerciseInfo(
+      id: -305, name: "wyciskanie żołnierskie (ohp)", muscleGroup: "shoulders"),
   DatabaseExerciseInfo(id: -306, name: "arnoldki", muscleGroup: "shoulders"),
   DatabaseExerciseInfo(id: -307, name: "face pull", muscleGroup: "shoulders"),
   DatabaseExerciseInfo(
@@ -272,7 +275,13 @@ final List<DatabaseExerciseInfo> appExercisesPl = [
       name: "krzyżowanie linek wyciągu górnego",
       muscleGroup: "shoulders"),
   DatabaseExerciseInfo(
-      id: -309, name: "wyciskanie landmine", muscleGroup: "shoulders"),
+      id: -309, name: "odwrotne rozpiętki hantlami", muscleGroup: "shoulders"),
+  DatabaseExerciseInfo(
+      id: -310,
+      name: "odwrotne rozpiętki na maszynie",
+      muscleGroup: "shoulders"),
+  DatabaseExerciseInfo(
+      id: -311, name: "wyciskanie landmine", muscleGroup: "shoulders"),
 
   // Ćwiczenia na nogi
   DatabaseExerciseInfo(

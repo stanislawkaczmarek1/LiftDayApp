@@ -487,5 +487,13 @@
     "bench_press_flat": "Bench press flat",
     "@bench_press_flat": {
         "description": "Exercise: bench press on a flat bench"
+    },
+    "muscle_chart_info": "The graph shows a comparison of muscle groups in terms of how many sets they were engaged in",
+    "@muscle_chart_info": {
+        "description": "dialog info"
+    },
+    "volume_chart_info": "The graph shows the amount of weight lifted over time",
+    "@volume_chart_info": {
+        "description": "dialog info"
     }
 }

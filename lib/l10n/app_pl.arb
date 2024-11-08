@@ -121,5 +121,7 @@
     "training": "Trening",
     "statistics": "Statystyki",
     "settings": "Ustawienia",
-    "bench_press_flat": "wyciskanie na ławce płaskiej"
+    "bench_press_flat": "wyciskanie na ławce płaskiej",
+    "muscle_chart_info": "Wykres przedstawia porównanie grup mięśniowych pod względem tego w ilu seriach zostały one zaangażowane",
+    "volume_chart_info": "Wykres przedstawia ilość podniesionego ciężaru na przestrzeni czasu"
 }

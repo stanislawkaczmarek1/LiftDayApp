@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:liftday/dialogs/muscle_chart_info_dialog.dart';
+import 'package:liftday/dialogs/volume_chart_info_dialog.dart';
 import 'package:liftday/sevices/bloc/settings/settings_bloc.dart';
 import 'package:liftday/sevices/bloc/settings/settings_state.dart';
 import 'package:liftday/sevices/conversion/conversion_service.dart';
@@ -323,15 +325,26 @@ class _VolumeChartWidgetState extends State<VolumeChartWidget> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Align(
-                alignment: Alignment.bottomLeft,
-                child: Text(
-                  AppLocalizations.of(context)!.workout_volume,
-                  style: const TextStyle(
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.normal,
-                      color: Colors.grey),
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    AppLocalizations.of(context)!.workout_volume,
+                    style: const TextStyle(
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.normal,
+                        color: Colors.grey),
+                  ),
+                  IconButton(
+                      onPressed: () {
+                        showVolumeChartInfoDialog(context);
+                      },
+                      icon: const Icon(
+                        Icons.info_outline,
+                        size: 20,
+                        color: Colors.grey,
+                      ))
+                ],
               ),
               const SizedBox(height: 24.0),
               Center(
@@ -463,15 +476,26 @@ class _MuscleChartWidgetState extends State<MuscleChartWidget> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Align(
-                alignment: Alignment.bottomLeft,
-                child: Text(
-                  AppLocalizations.of(context)!.muscle_distribution,
-                  style: const TextStyle(
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.normal,
-                      color: Colors.grey),
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    AppLocalizations.of(context)!.muscle_distribution,
+                    style: const TextStyle(
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.normal,
+                        color: Colors.grey),
+                  ),
+                  IconButton(
+                      onPressed: () {
+                        showMuscleChartInfoDialog(context);
+                      },
+                      icon: const Icon(
+                        Icons.info_outline,
+                        size: 20,
+                        color: Colors.grey,
+                      ))
+                ],
               ),
               const SizedBox(height: 24.0),
               Center(
