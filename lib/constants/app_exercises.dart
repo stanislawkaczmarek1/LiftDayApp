@@ -221,39 +221,42 @@ final List<DatabaseExerciseInfo> appExercisesPl = [
   // Ćwiczenia na ramiona
   //biceps
   DatabaseExerciseInfo(
-      id: -201, name: "uginanie ramion z hantlami", muscleGroup: "arms"),
+      id: -201, name: "uginanie ramion z hantlami", muscleGroup: "biceps"),
   DatabaseExerciseInfo(
-      id: -202, name: "uginanie ramion ze sztangą", muscleGroup: "arms"),
+      id: -202, name: "uginanie ramion ze sztangą", muscleGroup: "biceps"),
   DatabaseExerciseInfo(
-      id: -203, name: "uginanie ramion młotkowo", muscleGroup: "arms"),
+      id: -203, name: "uginanie ramion młotkowo", muscleGroup: "biceps"),
   DatabaseExerciseInfo(
-      id: -204, name: "uginanie ramion na ławce skośnej", muscleGroup: "arms"),
+      id: -204,
+      name: "uginanie ramion na ławce skośnej",
+      muscleGroup: "biceps"),
   DatabaseExerciseInfo(
-      id: -205, name: "uginanie ramion na modlitewniku", muscleGroup: "arms"),
+      id: -205, name: "uginanie ramion na modlitewniku", muscleGroup: "biceps"),
   DatabaseExerciseInfo(
-      id: -206, name: "uginanie ramion na maszynie", muscleGroup: "arms"),
+      id: -206, name: "uginanie ramion na maszynie", muscleGroup: "biceps"),
   DatabaseExerciseInfo(
-      id: -207, name: "uginanie ramion z linką", muscleGroup: "arms"),
+      id: -207, name: "uginanie ramion z linką", muscleGroup: "biceps"),
   //triceps
   DatabaseExerciseInfo(
-      id: -251, name: "wyciskanie francuskie", muscleGroup: "arms"),
+      id: -251, name: "wyciskanie francuskie", muscleGroup: "triceps"),
   DatabaseExerciseInfo(
-      id: -252, name: "wyciskanie fransukie jednorącz", muscleGroup: "arms"),
+      id: -252, name: "wyciskanie fransukie jednorącz", muscleGroup: "triceps"),
   DatabaseExerciseInfo(
-      id: -253, name: "wyprosty ramion nachwytem", muscleGroup: "arms"),
+      id: -253, name: "wyprosty ramion nachwytem", muscleGroup: "triceps"),
   DatabaseExerciseInfo(
-      id: -254, name: "wyprosty ramion liną", muscleGroup: "arms"),
+      id: -254, name: "wyprosty ramion liną", muscleGroup: "triceps"),
   DatabaseExerciseInfo(
       id: -255,
       name: "wyprosty ramion na lince nad głową",
-      muscleGroup: "arms"),
+      muscleGroup: "triceps"),
   DatabaseExerciseInfo(
-      id: -256, name: "pompki diamentowe", muscleGroup: "arms"),
-  DatabaseExerciseInfo(id: -257, name: "dipy na triceps", muscleGroup: "arms"),
+      id: -256, name: "pompki diamentowe", muscleGroup: "triceps"),
+  DatabaseExerciseInfo(
+      id: -257, name: "dipy na triceps", muscleGroup: "triceps"),
   DatabaseExerciseInfo(
       id: -258,
       name: "wyciskanie na ławce wąskim chwytem",
-      muscleGroup: "arms"),
+      muscleGroup: "triceps"),
 
   // Ćwiczenia na barki
   DatabaseExerciseInfo(

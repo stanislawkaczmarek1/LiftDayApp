@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:liftday/sevices/crud/tables/database_exercise.dart';
 import 'package:liftday/sevices/crud/tables/database_exercise_info.dart';
 import 'package:liftday/sevices/crud/tables/database_set.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ReportView extends StatelessWidget {
   final String trainingTitle;
@@ -22,11 +21,46 @@ class ReportView extends StatelessWidget {
     required this.unit,
   });
 
+  static const List<String> muscleGroups = [
+    "chest",
+    "triceps",
+    "back",
+    "biceps",
+    "legs",
+    "core",
+    "shoulders",
+  ];
+
   String _formatWeight(double value) {
     String formattedValue = value == value.toInt()
         ? value.toInt().toString()
         : value.toStringAsFixed(1);
     return formattedValue;
+  }
+
+  Map<String, int> _getMusclePieChartDataFromTraining(
+    List<String> muscleGroups,
+    final List<DatabaseExercise> exercises,
+    final List<DatabaseExerciseInfo> exerciseInfos,
+    final List<List<DatabaseSet>> allExerciseSets,
+  ) {
+    final Map<String, int> data = {};
+
+    for (var muscleGroup in muscleGroups) {
+      int sets = 0;
+      for (var i = 0; i < exerciseInfos.length; i++) {
+        if (exerciseInfos.elementAt(i).muscleGroup == muscleGroup) {
+          for (var dbSet in allExerciseSets.elementAt(i)) {
+            if (dbSet.reps != 0 || dbSet.duration != 0) {
+              sets += 1;
+            }
+          }
+        }
+      }
+      data.putIfAbsent(muscleGroup, () => sets);
+    }
+
+    return data;
   }
 
   @override
@@ -75,17 +109,37 @@ class ReportView extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                trainingTitle,
-                style: const TextStyle(fontSize: 18),
+              Center(
+                child: Text(
+                  trainingTitle,
+                  style: const TextStyle(fontSize: 18),
+                ),
               ),
               const SizedBox(height: 20),
               ...exerciseWidgets,
-              const SizedBox(height: 20),
-              Text(
-                "${AppLocalizations.of(context)!.volume}${_formatWeight(totalVolume)} $unit",
-                style: const TextStyle(fontSize: 18),
+              /*const SizedBox(height: 20),
+              Center(
+                child: Text(
+                  "${AppLocalizations.of(context)!.volume}${_formatWeight(totalVolume)} $unit",
+                  style: const TextStyle(fontSize: 18),
+                ),
               ),
+              const SizedBox(height: 20),
+              Center(
+                child: Text(
+                  AppLocalizations.of(context)!.muscle_distribution2,
+                  style: const TextStyle(fontSize: 18),
+                ),
+              ),
+              const SizedBox(height: 10),
+              Center(
+                child: SizedBox(
+                  height: 250,
+                  child: MusclePieChart(
+                      data: _getMusclePieChartDataFromTraining(muscleGroups,
+                          exercises, exerciseInfos, allExerciseSets)),
+                ),
+              )*/
             ],
           ),
         ),

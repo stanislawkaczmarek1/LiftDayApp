@@ -492,7 +492,7 @@
     "@muscle_chart_info": {
         "description": "dialog info"
     },
-    "volume_chart_info": "The graph shows the amount of weight lifted over time",
+    "volume_chart_info": "The graph shows the amount of weight (in the selected unit) lifted over time",
     "@volume_chart_info": {
         "description": "dialog info"
     },
@@ -524,6 +524,10 @@
     "@load_in_main_panel_tip": {
         "description": "Instruction to load routines in the main panel"
     },
+    "adding_days_to_routines": "Adding entered days",
+    "@adding_days_to_routines": {
+        "description": "Message when days are loading to Routines"
+    },
     "days_added_to_routines": "The entered days have been added to the Routines tab",
     "@days_added_to_routines": {
         "description": "Confirmation message when days are added to Routines"
@@ -547,5 +551,9 @@
     "automation_completed": "Automation completed, plan has been successfully added to the calendar",
     "@automation_completed": {
         "description": "Confirmation message that calendar automation is finished"
+    },
+    "muscle_distribution2": "muscle distibution:",
+    "@muscle_distribution2": {
+        "description": "text in ReportView"
     }
 }

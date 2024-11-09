@@ -36,8 +36,9 @@ class DatabaseExerciseInfo {
 const List<String> appMuscleGroups = [
   "chest",
   "back",
-  "arms",
   "shoulders",
+  "triceps",
+  "biceps",
   "legs",
   "core",
   "other"

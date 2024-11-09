@@ -123,7 +123,7 @@
     "settings": "Ustawienia",
     "bench_press_flat": "wyciskanie na ławce płaskiej",
     "muscle_chart_info": "Wykres przedstawia porównanie grup mięśniowych pod względem tego w ilu seriach zostały one zaangażowane",
-    "volume_chart_info": "Wykres przedstawia ilość podniesionego ciężaru na przestrzeni czasu",
+    "volume_chart_info": "Wykres przedstawia ilość podniesionego ciężaru (w wybranej jednostce) na przestrzeni czasu",
     "tips": "Wskazówki:",
     "automate_calendar_tip": "> Aby zautomatyzować kalendarz dodaj plan treningowy",
     "button": "(przycisk",
@@ -131,10 +131,12 @@
     "remember_routines_tip": "> Pamiętaj również o możliwości tworzenia rutyn",
     "in_routines_tab": "w zakładce Rutyny)",
     "load_in_main_panel_tip": "i ich wczytywania w panelu głównym",
+    "adding_days_to_routines": "Dodawanie wprowadzonych dni",
     "days_added_to_routines": "Wprowadzone dni zostały dodane do zakładki Rutyny",
     "load_routine_during_training": "Aby wczytać rutynę podczas treningu",
     "click_here": "wystarczy kliknąć w",
     "next_to_button": "(obok przycisku",
     "automating_calendar": "Automatyzujemy twój kalendarz treningowy",
-    "automation_completed": "Automatyzacja zakończona, plan został pomyślnie dodany do kalendarza"
+    "automation_completed": "Automatyzacja zakończona, plan został pomyślnie dodany do kalendarza",
+    "muscle_distribution2": "dystrybucja mięśni:"
 }

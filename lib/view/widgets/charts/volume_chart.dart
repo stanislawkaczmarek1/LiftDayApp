@@ -52,7 +52,7 @@ class _VolumeChartState extends State<VolumeChart> {
           height: 300,
           width: 400,
           child: BarChart(
-            randomData(),
+            chartData(),
           ),
         ),
       ),
@@ -114,7 +114,7 @@ class _VolumeChartState extends State<VolumeChart> {
     }
   }
 
-  BarChartData randomData() {
+  BarChartData chartData() {
     final int numberOfXAxisValues = widget.range;
     final yAxisValuesData = _yAxisValues;
     int maxXAxisValue;

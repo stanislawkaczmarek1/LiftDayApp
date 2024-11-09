@@ -1,6 +1,5 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:liftday/sevices/conversion/conversion_service.dart';
 
 class MuscleChart extends StatefulWidget {
@@ -62,7 +61,7 @@ class _MuscleChartState extends State<MuscleChart> {
                 }
                 return const RadarChartTitle(text: '');
               },
-              tickCount: maxNumber,
+              tickCount: 100 * maxNumber,
               ticksTextStyle:
                   const TextStyle(fontSize: 0, color: Colors.transparent),
               tickBorderData: const BorderSide(color: Colors.transparent),

@@ -302,8 +302,8 @@ class VolumeChartWidget extends StatefulWidget {
 }
 
 class _VolumeChartWidgetState extends State<VolumeChartWidget> {
-  int _selectedRangeForBarChart = 30;
-  //final List<bool> _selectionsForBarChart = [false, true, false];
+  int _selectedRangeForBarChart = 7;
+  final List<bool> _selectionsForBarChart = [true, false];
 
   Future<List<VolumeChartData>> _loadVolumeChartData(int range) async {
     ExerciseService exerciseService = ExerciseService();
@@ -376,62 +376,52 @@ class _VolumeChartWidgetState extends State<VolumeChartWidget> {
                   ),
                 ),
               ),
-              Text(
-                AppLocalizations.of(context)!.period_30_days,
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.normal,
-                  color: Colors.grey,
-                ),
-              ),
             ],
           ),
         ),
-
-        /*Center(
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: ToggleButtons(
-              textStyle: const TextStyle(fontSize: 13),
-              isSelected: _selectionsForBarChart,
-              borderRadius: BorderRadius.circular(8),
-              fillColor: Theme.of(context).colorScheme.onTertiary,
-              borderColor: Theme.of(context).colorScheme.onTertiary,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 14),
-                  child: Text(AppLocalizations.of(context)!.days_7),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 14),
-                  child: Text(AppLocalizations.of(context)!.days_30),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 14),
-                  child: Text(AppLocalizations.of(context)!.days_90),
-                ),
-              ],
-              onPressed: (int newIndex) {
-                setState(() {
-                  for (int i = 0; i < _selectionsForBarChart.length; i++) {
-                    _selectionsForBarChart[i] = i == newIndex;
-                  }
-                  switch (newIndex) {
-                    case 0:
-                      _selectedRangeForBarChart = 7;
-                      break;
-                    case 1:
-                      _selectedRangeForBarChart = 30;
-                      break;
-                    case 2:
-                      _selectedRangeForBarChart = 90;
-                      break;
-                  }
-                });
-              },
+        Center(
+          child: Align(
+            alignment: Alignment.center,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: ToggleButtons(
+                textStyle: const TextStyle(fontSize: 13),
+                isSelected: _selectionsForBarChart,
+                borderRadius: BorderRadius.circular(8),
+                fillColor: Theme.of(context).colorScheme.onTertiary,
+                borderColor: Theme.of(context).colorScheme.onTertiary,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 14),
+                    child: Text(AppLocalizations.of(context)!.days_7),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 14),
+                    child: Text(AppLocalizations.of(context)!.days_30),
+                  ),
+                ],
+                onPressed: (int newIndex) {
+                  setState(() {
+                    for (int i = 0; i < _selectionsForBarChart.length; i++) {
+                      _selectionsForBarChart[i] = i == newIndex;
+                    }
+                    switch (newIndex) {
+                      case 0:
+                        _selectedRangeForBarChart = 7;
+                        break;
+                      case 1:
+                        _selectedRangeForBarChart = 30;
+                        break;
+                      case 2:
+                        _selectedRangeForBarChart = 90;
+                        break;
+                    }
+                  });
+                },
+              ),
             ),
           ),
-        ),*/
+        ),
       ],
     );
   }
@@ -445,18 +435,19 @@ class MuscleChartWidget extends StatefulWidget {
 }
 
 class _MuscleChartWidgetState extends State<MuscleChartWidget> {
-  int _selectedRangeForRadarChart = 30;
-  //final List<bool> _selectionsForRadarChart = [false, true, false, false];
+  int _selectedRangeForRadarChart = 7;
+  final List<bool> _selectionsForRadarChart = [true, false];
 
   Future<Map<String, int>> _loadMuscleChartData(int range) async {
     ExerciseService exerciseService = ExerciseService();
     const List<String> muscleGroups = [
       "chest",
-      "shoulders",
-      "arms",
+      "triceps",
       "back",
+      "biceps",
       "legs",
       "core",
+      "shoulders",
     ];
     final data = await exerciseService.getMuscleChartData(muscleGroups, range);
     return data;
@@ -522,74 +513,60 @@ class _MuscleChartWidgetState extends State<MuscleChartWidget> {
                   ),
                 ),
               ),
-              const SizedBox(
-                height: 16,
-              ),
-              Text(
-                AppLocalizations.of(context)!.period_30_days,
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.normal,
-                  color: Colors.grey,
-                ),
-              ),
             ],
           ),
         ),
-        /*
+        const SizedBox(
+          height: 16,
+        ),
         Center(
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: ToggleButtons(
-              textStyle: const TextStyle(
-                fontSize: 13,
+          child: Align(
+            alignment: Alignment.center,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: ToggleButtons(
+                textStyle: const TextStyle(
+                  fontSize: 13,
+                ),
+                isSelected: _selectionsForRadarChart,
+                borderRadius: BorderRadius.circular(8),
+                fillColor: Theme.of(context).colorScheme.onTertiary,
+                borderColor: Theme.of(context).colorScheme.onTertiary,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 14),
+                    child: Text(AppLocalizations.of(context)!.days_7),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 14),
+                    child: Text(AppLocalizations.of(context)!.days_30),
+                  ),
+                ],
+                onPressed: (int newIndex) {
+                  setState(() {
+                    for (int i = 0; i < _selectionsForRadarChart.length; i++) {
+                      _selectionsForRadarChart[i] = i == newIndex;
+                    }
+                    switch (newIndex) {
+                      case 0:
+                        _selectedRangeForRadarChart = 7;
+                        break;
+                      case 1:
+                        _selectedRangeForRadarChart = 30;
+                        break;
+                      case 2:
+                        _selectedRangeForRadarChart = 90;
+                        break;
+                      case 3:
+                        _selectedRangeForRadarChart = -1;
+                        break;
+                    }
+                  });
+                },
               ),
-              isSelected: _selectionsForRadarChart,
-              borderRadius: BorderRadius.circular(8),
-              fillColor: Theme.of(context).colorScheme.onTertiary,
-              borderColor: Theme.of(context).colorScheme.onTertiary,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 14),
-                  child: Text(AppLocalizations.of(context)!.days_7),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 14),
-                  child: Text(AppLocalizations.of(context)!.days_30),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 14),
-                  child: Text(AppLocalizations.of(context)!.days_90),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 14),
-                  child: Text(AppLocalizations.of(context)!.all_time),
-                ),
-              ],
-              onPressed: (int newIndex) {
-                setState(() {
-                  for (int i = 0; i < _selectionsForRadarChart.length; i++) {
-                    _selectionsForRadarChart[i] = i == newIndex;
-                  }
-                  switch (newIndex) {
-                    case 0:
-                      _selectedRangeForRadarChart = 7;
-                      break;
-                    case 1:
-                      _selectedRangeForRadarChart = 30;
-                      break;
-                    case 2:
-                      _selectedRangeForRadarChart = 90;
-                      break;
-                    case 3:
-                      _selectedRangeForRadarChart = -1;
-                      break;
-                  }
-                });
-              },
             ),
           ),
-        ),*/
+        ),
       ],
     );
   }
