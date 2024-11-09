@@ -31,6 +31,10 @@ class ConfigStateChooseDurationOfPlan extends ConfigState {
   const ConfigStateChooseDurationOfPlan();
 }
 
+class ConfigStateAutomationCompletedTip extends ConfigState {
+  const ConfigStateAutomationCompletedTip();
+}
+
 class ConfigStateMainView extends ConfigState {
   const ConfigStateMainView();
 }
@@ -39,4 +43,12 @@ class ConfigStateAddTrainingDays extends ConfigState {
   final int numberOfDays;
   final bool maximumOfDays;
   const ConfigStateAddTrainingDays(this.numberOfDays, this.maximumOfDays);
+}
+
+class ConfigStateRoutinesAdditionTip extends ConfigState {
+  const ConfigStateRoutinesAdditionTip();
+}
+
+class ConfigStateGeneralTips extends ConfigState {
+  const ConfigStateGeneralTips();
 }

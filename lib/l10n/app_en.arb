@@ -495,5 +495,57 @@
     "volume_chart_info": "The graph shows the amount of weight lifted over time",
     "@volume_chart_info": {
         "description": "dialog info"
+    },
+    "tips": "Tips:",
+    "@tips": {
+        "description": "Heading for workout tips section"
+    },
+    "automate_calendar_tip": "> To automate your calendar, add a workout plan",
+    "@automate_calendar_tip": {
+        "description": "Instruction for automating calendar by adding a workout plan"
+    },
+    "button": "(button",
+    "@button": {
+        "description": "Indicates location of button"
+    },
+    "in_plan_tab": "in the Plan Tab)",
+    "@in_plan_tab": {
+        "description": "Indicates location of plan tab"
+    },
+    "remember_routines_tip": "> Also remember you can create routines",
+    "@remember_routines_tip": {
+        "description": "Reminder about creating routines"
+    },
+    "in_routines_tab": "in the Routines tab)",
+    "@in_routines_tab": {
+        "description": "Indicates location of routines tab"
+    },
+    "load_in_main_panel_tip": "and load them in the main panel",
+    "@load_in_main_panel_tip": {
+        "description": "Instruction to load routines in the main panel"
+    },
+    "days_added_to_routines": "The entered days have been added to the Routines tab",
+    "@days_added_to_routines": {
+        "description": "Confirmation message when days are added to Routines"
+    },
+    "load_routine_during_training": "To load a routine during training",
+    "@load_routine_during_training": {
+        "description": "Instruction to load a routine during training"
+    },
+    "click_here": "just click",
+    "@click_here": {
+        "description": "Instruction to click a button"
+    },
+    "next_to_button": "(next to the button",
+    "@next_to_button": {
+        "description": "Indicates location next to another button"
+    },
+    "automating_calendar": "Automating your workout calendar",
+    "@automating_calendar": {
+        "description": "Message indicating that calendar automation is in progress"
+    },
+    "automation_completed": "Automation completed, plan has been successfully added to the calendar",
+    "@automation_completed": {
+        "description": "Confirmation message that calendar automation is finished"
     }
 }

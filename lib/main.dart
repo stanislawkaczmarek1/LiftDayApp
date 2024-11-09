@@ -13,12 +13,15 @@ import 'package:liftday/sevices/bloc/edit/edit_bloc.dart';
 import 'package:liftday/sevices/bloc/settings/settings_bloc.dart';
 import 'package:liftday/sevices/bloc/settings/settings_state.dart';
 import 'package:liftday/sevices/bloc/tap/tap_bloc.dart';
+import 'package:liftday/view/config/3_general_tips.dart';
 import 'package:liftday/view/config/4_add_first_week_plan_view.dart';
 import 'package:liftday/view/config/3_choose_training_days_view.dart';
 import 'package:liftday/view/config/2_create_plan_or_skip_view.dart';
 import 'package:liftday/view/config/1_start_view.dart';
+import 'package:liftday/view/config/4_routines_tip.dart';
 import 'package:liftday/view/config/5_choose_duration_of_plan_view.dart';
 import 'package:liftday/view/config/3_add_training_days_view.dart';
+import 'package:liftday/view/config/6_automation_completed.dart';
 import 'package:liftday/view/main_view.dart';
 import 'package:liftday/view/routes_views/training_day_view.dart';
 import 'package:provider/provider.dart';
@@ -99,10 +102,16 @@ class HomePage extends StatelessWidget {
           return const AddFirstWeekPlanView();
         } else if (state is ConfigStateChooseDurationOfPlan) {
           return const PlanDurationView();
+        } else if (state is ConfigStateAutomationCompletedTip) {
+          return const AutomationCompletedView();
         } else if (state is ConfigStateMainView) {
           return const MainView();
         } else if (state is ConfigStateAddTrainingDays) {
           return const AddTrainingDaysView();
+        } else if (state is ConfigStateRoutinesAdditionTip) {
+          return const RoutinesTipView();
+        } else if (state is ConfigStateGeneralTips) {
+          return const GeneralTipsView();
         } else {
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),

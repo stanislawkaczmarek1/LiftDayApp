@@ -98,7 +98,7 @@ class _AddTrainingDaysViewState extends State<AddTrainingDaysView> {
             title: Theme.of(context).brightness == Brightness.dark
                 ? Image.asset('assets/liftday_logo_dark.png', height: 25.0)
                 : Image.asset('assets/liftday_logo.png', height: 25.0),
-            backgroundColor: Colors.white,
+            backgroundColor: Theme.of(context).colorScheme.onPrimary,
             elevation: 0,
             scrolledUnderElevation: 0.0,
             actions: [

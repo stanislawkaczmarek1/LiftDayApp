@@ -64,3 +64,15 @@ class ConfigEventPushDoneButton extends ConfigEvent {
   final TrainingDayData trainingDay;
   const ConfigEventPushDoneButton(this.trainingDay);
 }
+
+class ConfigEventUndarstandAutomationTip extends ConfigEvent {
+  const ConfigEventUndarstandAutomationTip();
+}
+
+class ConfigEventUndarstandRoutinesAdditionTip extends ConfigEvent {
+  const ConfigEventUndarstandRoutinesAdditionTip();
+}
+
+class ConfigEventUndarstandGeneralTips extends ConfigEvent {
+  const ConfigEventUndarstandGeneralTips();
+}

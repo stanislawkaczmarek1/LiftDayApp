@@ -6,7 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
-import 'package:liftday/dialogs/are_you_sure_to%20delete_exercise.dart';
+import 'package:liftday/dialogs/are_you_sure_to_delete_exercise.dart';
 import 'package:liftday/dialogs/no_days_to_load.dart';
 import 'package:liftday/dialogs/unavailable_operation.dart';
 import 'package:liftday/sevices/bloc/settings/settings_bloc.dart';

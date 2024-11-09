@@ -69,7 +69,7 @@ class ConfigBloc extends Bloc<ConfigEvent, ConfigState> {
       (event, emit) {
         _stateHistory.clear();
         _settingsService.setAppConfiguredFlag(true);
-        emit(const ConfigStateMainView());
+        emit(const ConfigStateGeneralTips());
       },
     );
 
@@ -118,7 +118,7 @@ class ConfigBloc extends Bloc<ConfigEvent, ConfigState> {
         _currentDayOfPlanConfig = 0;
         _exerciseDaysData.clear();
 
-        emit(const ConfigStateMainView());
+        emit(const ConfigStateRoutinesAdditionTip());
       },
     );
 
@@ -187,6 +187,24 @@ class ConfigBloc extends Bloc<ConfigEvent, ConfigState> {
         _currentDayOfPlanConfig = 0;
         _exerciseDaysData.clear();
 
+        emit(const ConfigStateAutomationCompletedTip());
+      },
+    );
+
+    on<ConfigEventUndarstandAutomationTip>(
+      (event, emit) {
+        emit(const ConfigStateMainView());
+      },
+    );
+
+    on<ConfigEventUndarstandRoutinesAdditionTip>(
+      (event, emit) {
+        emit(const ConfigStateMainView());
+      },
+    );
+
+    on<ConfigEventUndarstandGeneralTips>(
+      (event, emit) {
         emit(const ConfigStateMainView());
       },
     );
