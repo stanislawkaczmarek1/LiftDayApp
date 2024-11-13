@@ -65,6 +65,7 @@ void main() {
           child: BlocBuilder<SettingsBloc, SettingsState>(
             builder: (context, settingsState) {
               return MaterialApp(
+                debugShowCheckedModeBanner: false,
                 title: 'LiftDay',
                 theme: lightTheme,
                 darkTheme: darkTheme,

@@ -33,10 +33,10 @@ final List<DatabaseExerciseInfo> appExercisesEn = [
   DatabaseExerciseInfo(id: -6, name: "dumbbell flyes", muscleGroup: "chest"),
   DatabaseExerciseInfo(id: -7, name: "pec deck flyes", muscleGroup: "chest"),
   DatabaseExerciseInfo(id: -8, name: "cable flyes", muscleGroup: "chest"),
-  DatabaseExerciseInfo(id: -7, name: "push-ups", muscleGroup: "chest"),
-  DatabaseExerciseInfo(id: -9, name: "chest dips", muscleGroup: "chest"),
+  DatabaseExerciseInfo(id: -9, name: "push-ups", muscleGroup: "chest"),
+  DatabaseExerciseInfo(id: -10, name: "chest dips", muscleGroup: "chest"),
   DatabaseExerciseInfo(
-      id: -10, name: "chest press machine", muscleGroup: "chest"),
+      id: -11, name: "chest press machine", muscleGroup: "chest"),
 
   // Back exercises
   DatabaseExerciseInfo(id: -101, name: "pull-ups", muscleGroup: "back"),
@@ -183,11 +183,11 @@ final List<DatabaseExerciseInfo> appExercisesPl = [
       id: -7, name: "rozpiętki na maszynie", muscleGroup: "chest"),
   DatabaseExerciseInfo(
       id: -8, name: "rozpiętki na bramie", muscleGroup: "chest"),
-  DatabaseExerciseInfo(id: -7, name: "pompki", muscleGroup: "chest"),
+  DatabaseExerciseInfo(id: -9, name: "pompki", muscleGroup: "chest"),
   DatabaseExerciseInfo(
-      id: -9, name: "dipy na klatkę piersiową", muscleGroup: "chest"),
+      id: -10, name: "dipy na klatkę piersiową", muscleGroup: "chest"),
   DatabaseExerciseInfo(
-      id: -10, name: "wyciskanie na maszynie", muscleGroup: "chest"),
+      id: -11, name: "wyciskanie na maszynie", muscleGroup: "chest"),
 
   // Ćwiczenia na plecy
   DatabaseExerciseInfo(

@@ -35,7 +35,7 @@ class _GeneralTipsView extends State<GeneralTipsView> {
         body: Center(
           child: SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -69,13 +69,13 @@ class _GeneralTipsView extends State<GeneralTipsView> {
                           textAlign: TextAlign.center,
                         ),
                         Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 6.0),
+                          margin: const EdgeInsets.all(6.0),
                           padding: const EdgeInsets.all(12.0),
                           decoration: BoxDecoration(
                               color: Theme.of(context).colorScheme.onPrimary,
                               borderRadius: BorderRadius.circular(9.0),
                               border: Border.all(
-                                color: Theme.of(context).colorScheme.onTertiary,
+                                color: Colors.grey.withOpacity(0.6),
                               )),
                           child: Text(
                             AppLocalizations.of(context)!.add_plan,
@@ -86,14 +86,14 @@ class _GeneralTipsView extends State<GeneralTipsView> {
                                 color: Colors.grey),
                           ),
                         ),
-                        Text(
-                          AppLocalizations.of(context)!.in_plan_tab,
-                          style: const TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.normal),
-                          textAlign: TextAlign.center,
-                        ),
                       ],
                     ),
+                  ),
+                  Text(
+                    AppLocalizations.of(context)!.in_plan_tab,
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.normal),
+                    textAlign: TextAlign.center,
                   ),
                   const SizedBox(
                     height: 24.0,
@@ -119,7 +119,7 @@ class _GeneralTipsView extends State<GeneralTipsView> {
                           textAlign: TextAlign.center,
                         ),
                         Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 6.0),
+                          margin: const EdgeInsets.all(6.0),
                           padding: const EdgeInsets.all(12.0),
                           decoration: BoxDecoration(
                               color: Theme.of(context).colorScheme.onPrimary,
@@ -143,14 +143,14 @@ class _GeneralTipsView extends State<GeneralTipsView> {
                             ),
                           ),
                         ),
-                        Text(
-                          AppLocalizations.of(context)!.in_routines_tab,
-                          style: const TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.normal),
-                          textAlign: TextAlign.center,
-                        ),
                       ],
                     ),
+                  ),
+                  Text(
+                    AppLocalizations.of(context)!.in_routines_tab,
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.normal),
+                    textAlign: TextAlign.center,
                   ),
                   const SizedBox(
                     height: 8.0,
