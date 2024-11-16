@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:liftday/dialogs/muscle_chart_info_dialog.dart';
@@ -450,6 +452,7 @@ class _MuscleChartWidgetState extends State<MuscleChartWidget> {
       "shoulders",
     ];
     final data = await exerciseService.getMuscleChartData(muscleGroups, range);
+    log(data.toString());
     return data;
   }
 

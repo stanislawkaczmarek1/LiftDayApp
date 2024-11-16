@@ -1058,24 +1058,21 @@ class ExerciseService {
         .toList();
   }
 
-  Future<void> updateTrainingDayByName({required String name}) async {
+  Future<void> updateTrainingDayName(
+      {required String oldName, required String newName}) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
 
     //mozna ew stworzyc geter z id i updateowac po id
 
-    final updatesCount = await db.update(
+    await db.update(
       trainingDaysTable,
       {
-        dayNameColumn: name,
+        dayNameColumn: newName,
       },
       where: "$dayNameColumn = ?",
-      whereArgs: [name],
+      whereArgs: [oldName],
     );
-
-    if (updatesCount == 0) {
-      throw CouldNotUpdateInDb();
-    }
   }
 
   Future<void> deleteTrainingDayByName({required String name}) async {
@@ -1336,7 +1333,8 @@ class ExerciseService {
       }
     }
 
-    await updateTrainingDayByName(name: trainingDay.name);
+    await updateTrainingDayName(
+        oldName: currentName, newName: trainingDay.name);
 
     //jesli wiemy z jakiego dnia pochodza cwiczenia, a znamy zawsze bo nazwy dni sa unikatowe
     //to mozemy usunac cwiczenia danego dnia a potem dodac nowe przeslane w data (zawsze przysylamy wszystkie)

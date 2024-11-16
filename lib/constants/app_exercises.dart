@@ -61,30 +61,31 @@ final List<DatabaseExerciseInfo> appExercisesEn = [
 
   // Arm exercises
   // Biceps
-  DatabaseExerciseInfo(id: -201, name: "dumbbell curls", muscleGroup: "arms"),
-  DatabaseExerciseInfo(id: -202, name: "barbell curls", muscleGroup: "arms"),
-  DatabaseExerciseInfo(id: -203, name: "hammer curls", muscleGroup: "arms"),
+  DatabaseExerciseInfo(id: -201, name: "dumbbell curls", muscleGroup: "biceps"),
+  DatabaseExerciseInfo(id: -202, name: "barbell curls", muscleGroup: "biceps"),
+  DatabaseExerciseInfo(id: -203, name: "hammer curls", muscleGroup: "biceps"),
   DatabaseExerciseInfo(
-      id: -204, name: "incline dumbbell curls", muscleGroup: "arms"),
-  DatabaseExerciseInfo(id: -205, name: "preacher curls", muscleGroup: "arms"),
-  DatabaseExerciseInfo(id: -206, name: "machine curls", muscleGroup: "arms"),
-  DatabaseExerciseInfo(id: -207, name: "cable curls", muscleGroup: "arms"),
+      id: -204, name: "incline dumbbell curls", muscleGroup: "biceps"),
+  DatabaseExerciseInfo(id: -205, name: "preacher curls", muscleGroup: "biceps"),
+  DatabaseExerciseInfo(id: -206, name: "machine curls", muscleGroup: "biceps"),
+  DatabaseExerciseInfo(id: -207, name: "cable curls", muscleGroup: "biceps"),
   // Triceps
-  DatabaseExerciseInfo(id: -251, name: "french press", muscleGroup: "arms"),
+  DatabaseExerciseInfo(id: -251, name: "french press", muscleGroup: "triceps"),
   DatabaseExerciseInfo(
-      id: -252, name: "single-arm french press", muscleGroup: "arms"),
+      id: -252, name: "single-arm french press", muscleGroup: "triceps"),
   DatabaseExerciseInfo(
       id: -253,
       name: "tricep pushdown with overhand grip",
-      muscleGroup: "arms"),
+      muscleGroup: "triceps"),
   DatabaseExerciseInfo(
-      id: -254, name: "tricep pushdown with rope", muscleGroup: "arms"),
+      id: -254, name: "tricep pushdown with rope", muscleGroup: "triceps"),
   DatabaseExerciseInfo(
-      id: -255, name: "overhead tricep extension", muscleGroup: "arms"),
-  DatabaseExerciseInfo(id: -256, name: "diamond push-ups", muscleGroup: "arms"),
-  DatabaseExerciseInfo(id: -257, name: "tricep dips", muscleGroup: "arms"),
+      id: -255, name: "overhead tricep extension", muscleGroup: "triceps"),
   DatabaseExerciseInfo(
-      id: -258, name: "close-grip bench press", muscleGroup: "arms"),
+      id: -256, name: "diamond push-ups", muscleGroup: "triceps"),
+  DatabaseExerciseInfo(id: -257, name: "tricep dips", muscleGroup: "triceps"),
+  DatabaseExerciseInfo(
+      id: -258, name: "close-grip bench press", muscleGroup: "triceps"),
 
   // Shoulder exercises
   DatabaseExerciseInfo(

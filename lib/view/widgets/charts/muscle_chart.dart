@@ -21,6 +21,7 @@ class _MuscleChartState extends State<MuscleChart> {
   Widget build(BuildContext context) {
     final muscleGroupNames = widget.muscleChartData.keys.toList();
     final setsPerMuscleGroup = widget.muscleChartData.values.toList();
+
     int maxNumber;
     if (setsPerMuscleGroup.isNotEmpty) {
       maxNumber = setsPerMuscleGroup.reduce((a, b) => a > b ? a : b);
@@ -46,9 +47,16 @@ class _MuscleChartState extends State<MuscleChart> {
                     return RadarEntry(value: value.toDouble());
                   }).toList(),
                 ),
+                RadarDataSet(
+                  fillColor: Colors.transparent,
+                  borderColor: Colors.transparent,
+                  dataEntries: setsPerMuscleGroup.map((value) {
+                    return const RadarEntry(value: 0);
+                  }).toList(),
+                ),
               ],
               radarBackgroundColor: Colors.transparent,
-              borderData: FlBorderData(show: false),
+              borderData: FlBorderData(show: true),
               radarBorderData: const BorderSide(color: Colors.transparent),
               titlePositionPercentageOffset: 0.2,
               titleTextStyle: TextStyle(color: widget.textColor, fontSize: 14),
@@ -61,7 +69,7 @@ class _MuscleChartState extends State<MuscleChart> {
                 }
                 return const RadarChartTitle(text: '');
               },
-              tickCount: 100 * maxNumber,
+              tickCount: maxNumber * 100,
               ticksTextStyle:
                   const TextStyle(fontSize: 0, color: Colors.transparent),
               tickBorderData: const BorderSide(color: Colors.transparent),
