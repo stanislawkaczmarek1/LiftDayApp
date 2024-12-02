@@ -155,6 +155,7 @@ final List<DatabaseExerciseInfo> appExercisesEn = [
   DatabaseExerciseInfo(
       id: -5009, name: "hollow body hold", muscleGroup: "core"),
 ];
+//na razie bez innych
 
 final List<DatabaseExerciseInfo> appExercisesPl = [
   // Ćwiczenia na klatkę piersiową
