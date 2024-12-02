@@ -39,7 +39,9 @@ const List<String> appMuscleGroups = [
   "shoulders",
   "triceps",
   "biceps",
-  "legs",
+  "quadriceps",
+  "hamstrings",
+  "glutes",
   "core",
   "other"
 ];

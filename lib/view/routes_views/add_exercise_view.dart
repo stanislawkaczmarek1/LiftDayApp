@@ -83,7 +83,7 @@ class _AddExerciseViewState extends State<AddExerciseView> {
                       style: const TextStyle(fontSize: 18),
                     ),
                     TextField(
-                      maxLength: 30,
+                      maxLength: 150,
                       buildCounter: (BuildContext context,
                           {int? currentLength,
                           bool? isFocused,

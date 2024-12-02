@@ -9,6 +9,7 @@ import 'package:liftday/sevices/bloc/settings/settings_state.dart';
 import 'package:liftday/sevices/conversion/conversion_service.dart';
 import 'package:liftday/sevices/crud/data_package/snapshot_data.dart';
 import 'package:liftday/sevices/crud/exercise_service.dart';
+import 'package:liftday/sevices/crud/tables/database_exercise_info.dart';
 import 'package:liftday/view/widgets/charts/muscle_chart.dart';
 import 'package:liftday/view/widgets/charts/volume_chart.dart';
 import 'package:liftday/sevices/crud/data_package/volume_chart_data.dart';
@@ -442,18 +443,41 @@ class _MuscleChartWidgetState extends State<MuscleChartWidget> {
 
   Future<Map<String, int>> _loadMuscleChartData(int range) async {
     ExerciseService exerciseService = ExerciseService();
-    const List<String> muscleGroups = [
-      "chest",
-      "triceps",
-      "back",
-      "biceps",
-      "legs",
-      "core",
-      "shoulders",
-    ];
-    final data = await exerciseService.getMuscleChartData(muscleGroups, range);
-    log(data.toString());
-    return data;
+
+    final data =
+        await exerciseService.getMuscleChartData(appMuscleGroups, range);
+
+    const armsMuscles = {"triceps", "biceps"};
+    const legsMuscles = {"quadriceps", "hamstrings", "glutes"};
+
+    Map<String, int> aggregatedData = {
+      "arms": 0,
+      "legs": 0,
+    };
+
+    for (var entry in data.entries) {
+      if (armsMuscles.contains(entry.key)) {
+        aggregatedData["arms"] = (aggregatedData["arms"] ?? 0) + entry.value;
+      } else if (legsMuscles.contains(entry.key)) {
+        aggregatedData["legs"] = (aggregatedData["legs"] ?? 0) + entry.value;
+      } else {
+        aggregatedData[entry.key] = entry.value;
+      }
+    }
+
+    const desiredOrder = ["chest", "back", "arms", "legs", "core", "shoulders"];
+    Map<String, int> orderedData = {};
+
+    for (var key in desiredOrder) {
+      if (aggregatedData.containsKey(key)) {
+        orderedData[key] = aggregatedData[key]!;
+      } else {
+        orderedData[key] = 0;
+      }
+    }
+
+    log(orderedData.toString());
+    return orderedData;
   }
 
   @override

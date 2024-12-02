@@ -41,6 +41,12 @@ class ConversionService {
           return 'barki';
         case 'legs':
           return 'nogi';
+        case 'quadriceps':
+          return 'czworogłowe uda';
+        case 'hamstrings':
+          return 'dwugłowe uda';
+        case 'glutes':
+          return 'pośladki';
         case 'core':
           return 'brzuch';
         case 'other':

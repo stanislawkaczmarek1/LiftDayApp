@@ -39,129 +39,121 @@ final List<DatabaseExerciseInfo> appExercisesEn = [
       id: -11, name: "chest press machine", muscleGroup: "chest"),
 
   // Back exercises
-  DatabaseExerciseInfo(id: -101, name: "pull-ups", muscleGroup: "back"),
-  DatabaseExerciseInfo(id: -102, name: "chin-ups", muscleGroup: "back"),
+  DatabaseExerciseInfo(id: -1001, name: "pull-ups", muscleGroup: "back"),
+  DatabaseExerciseInfo(id: -1002, name: "chin-ups", muscleGroup: "back"),
   DatabaseExerciseInfo(
-      id: -103, name: "neutral grip pull-ups", muscleGroup: "back"),
-  DatabaseExerciseInfo(id: -104, name: "inverted rows", muscleGroup: "back"),
-  DatabaseExerciseInfo(id: -105, name: "lat pulldown", muscleGroup: "back"),
-  DatabaseExerciseInfo(id: -106, name: "barbell rows", muscleGroup: "back"),
+      id: -1003, name: "neutral grip pull-ups", muscleGroup: "back"),
+  DatabaseExerciseInfo(id: -1004, name: "inverted rows", muscleGroup: "back"),
+  DatabaseExerciseInfo(id: -1005, name: "lat pulldown", muscleGroup: "back"),
+  DatabaseExerciseInfo(id: -1006, name: "barbell rows", muscleGroup: "back"),
   DatabaseExerciseInfo(
-      id: -107, name: "one-arm dumbbell row", muscleGroup: "back"),
-  DatabaseExerciseInfo(id: -108, name: "machine rows", muscleGroup: "back"),
-  DatabaseExerciseInfo(id: -109, name: "cable rows", muscleGroup: "back"),
+      id: -1007, name: "one-arm dumbbell row", muscleGroup: "back"),
+  DatabaseExerciseInfo(id: -1008, name: "machine rows", muscleGroup: "back"),
+  DatabaseExerciseInfo(id: -1009, name: "cable rows", muscleGroup: "back"),
   DatabaseExerciseInfo(
-      id: -110, name: "single-arm cable row", muscleGroup: "back"),
+      id: -1010, name: "single-arm cable row", muscleGroup: "back"),
   DatabaseExerciseInfo(
-      id: -111, name: "straight-arm pulldown", muscleGroup: "back"),
-  DatabaseExerciseInfo(id: -112, name: "t-bar row", muscleGroup: "back"),
+      id: -1011, name: "straight-arm pulldown", muscleGroup: "back"),
+  DatabaseExerciseInfo(id: -1012, name: "t-bar row", muscleGroup: "back"),
   DatabaseExerciseInfo(
-      id: -113, name: "nautilus pullover", muscleGroup: "back"),
-  DatabaseExerciseInfo(id: -114, name: "shrugs", muscleGroup: "back"),
+      id: -1013, name: "nautilus pullover", muscleGroup: "back"),
+  DatabaseExerciseInfo(id: -1014, name: "shrugs", muscleGroup: "back"),
 
   // Arm exercises
   // Biceps
-  DatabaseExerciseInfo(id: -201, name: "dumbbell curls", muscleGroup: "biceps"),
-  DatabaseExerciseInfo(id: -202, name: "barbell curls", muscleGroup: "biceps"),
-  DatabaseExerciseInfo(id: -203, name: "hammer curls", muscleGroup: "biceps"),
   DatabaseExerciseInfo(
-      id: -204, name: "incline dumbbell curls", muscleGroup: "biceps"),
-  DatabaseExerciseInfo(id: -205, name: "preacher curls", muscleGroup: "biceps"),
-  DatabaseExerciseInfo(id: -206, name: "machine curls", muscleGroup: "biceps"),
-  DatabaseExerciseInfo(id: -207, name: "cable curls", muscleGroup: "biceps"),
+      id: -2001, name: "dumbbell curls", muscleGroup: "biceps"),
+  DatabaseExerciseInfo(id: -2002, name: "barbell curls", muscleGroup: "biceps"),
+  DatabaseExerciseInfo(id: -2003, name: "hammer curls", muscleGroup: "biceps"),
+  DatabaseExerciseInfo(
+      id: -2004, name: "incline dumbbell curls", muscleGroup: "biceps"),
+  DatabaseExerciseInfo(
+      id: -2005, name: "preacher curls", muscleGroup: "biceps"),
+  DatabaseExerciseInfo(id: -2006, name: "machine curls", muscleGroup: "biceps"),
+  DatabaseExerciseInfo(id: -2007, name: "cable curls", muscleGroup: "biceps"),
   // Triceps
-  DatabaseExerciseInfo(id: -251, name: "french press", muscleGroup: "triceps"),
+  DatabaseExerciseInfo(id: -2501, name: "french press", muscleGroup: "triceps"),
   DatabaseExerciseInfo(
-      id: -252, name: "single-arm french press", muscleGroup: "triceps"),
+      id: -2502, name: "single-arm french press", muscleGroup: "triceps"),
   DatabaseExerciseInfo(
-      id: -253,
+      id: -2503,
       name: "tricep pushdown with overhand grip",
       muscleGroup: "triceps"),
   DatabaseExerciseInfo(
-      id: -254, name: "tricep pushdown with rope", muscleGroup: "triceps"),
+      id: -2504, name: "tricep pushdown with rope", muscleGroup: "triceps"),
   DatabaseExerciseInfo(
-      id: -255, name: "overhead tricep extension", muscleGroup: "triceps"),
+      id: -2505, name: "overhead tricep extension", muscleGroup: "triceps"),
   DatabaseExerciseInfo(
-      id: -256, name: "diamond push-ups", muscleGroup: "triceps"),
-  DatabaseExerciseInfo(id: -257, name: "tricep dips", muscleGroup: "triceps"),
+      id: -2506, name: "diamond push-ups", muscleGroup: "triceps"),
+  DatabaseExerciseInfo(id: -2507, name: "tricep dips", muscleGroup: "triceps"),
   DatabaseExerciseInfo(
-      id: -258, name: "close-grip bench press", muscleGroup: "triceps"),
+      id: -2508, name: "close-grip bench press", muscleGroup: "triceps"),
 
   // Shoulder exercises
   DatabaseExerciseInfo(
-      id: -301, name: "lateral raises", muscleGroup: "shoulders"),
+      id: -3001, name: "lateral raises", muscleGroup: "shoulders"),
   DatabaseExerciseInfo(
-      id: -302, name: "machine lateral raises", muscleGroup: "shoulders"),
+      id: -3002, name: "machine lateral raises", muscleGroup: "shoulders"),
   DatabaseExerciseInfo(
-      id: -303, name: "cable lateral raises", muscleGroup: "shoulders"),
+      id: -3003, name: "cable lateral raises", muscleGroup: "shoulders"),
   DatabaseExerciseInfo(
-      id: -304,
+      id: -3004,
       name: "lateral raises on incline bench",
       muscleGroup: "shoulders"),
   DatabaseExerciseInfo(
-      id: -305, name: "overhead press (ohp)", muscleGroup: "shoulders"),
+      id: -3005, name: "overhead press (ohp)", muscleGroup: "shoulders"),
   DatabaseExerciseInfo(
-      id: -306, name: "arnold press", muscleGroup: "shoulders"),
-  DatabaseExerciseInfo(id: -307, name: "face pull", muscleGroup: "shoulders"),
+      id: -3006, name: "arnold press", muscleGroup: "shoulders"),
+  DatabaseExerciseInfo(id: -3007, name: "face pull", muscleGroup: "shoulders"),
   DatabaseExerciseInfo(
-      id: -308, name: "cable crossover", muscleGroup: "shoulders"),
+      id: -3008, name: "cable crossover", muscleGroup: "shoulders"),
   DatabaseExerciseInfo(
-      id: -309, name: "dumbbell reverse fly", muscleGroup: "shoulders"),
+      id: -3009, name: "dumbbell reverse fly", muscleGroup: "shoulders"),
   DatabaseExerciseInfo(
-      id: -310, name: "machine reverse fly", muscleGroup: "shoulders"),
+      id: -3010, name: "machine reverse fly", muscleGroup: "shoulders"),
   DatabaseExerciseInfo(
-      id: -311, name: "landmine press", muscleGroup: "shoulders"),
+      id: -3011, name: "landmine press", muscleGroup: "shoulders"),
 
   // Leg exercises
-  DatabaseExerciseInfo(id: -401, name: "barbell squat", muscleGroup: "legs"),
-  DatabaseExerciseInfo(id: -402, name: "front squat", muscleGroup: "legs"),
   DatabaseExerciseInfo(
-      id: -403, name: "bulgarian split squat", muscleGroup: "legs"),
-  DatabaseExerciseInfo(id: -404, name: "goblet squat", muscleGroup: "legs"),
-  DatabaseExerciseInfo(id: -405, name: "lunges", muscleGroup: "legs"),
-  DatabaseExerciseInfo(id: -406, name: "deadlift", muscleGroup: "legs"),
-  DatabaseExerciseInfo(id: -407, name: "sumo deadlift", muscleGroup: "legs"),
+      id: -4001, name: "barbell squat", muscleGroup: "quadriceps"),
   DatabaseExerciseInfo(
-      id: -408, name: "romanian deadlift", muscleGroup: "legs"),
+      id: -4002, name: "front squat", muscleGroup: "quadriceps"),
   DatabaseExerciseInfo(
-      id: -409, name: "leg extension machine", muscleGroup: "legs"),
-  DatabaseExerciseInfo(id: -410, name: "leg curl machine", muscleGroup: "legs"),
-  DatabaseExerciseInfo(id: -411, name: "leg press", muscleGroup: "legs"),
-  DatabaseExerciseInfo(id: -412, name: "hack squat", muscleGroup: "legs"),
-  DatabaseExerciseInfo(id: -413, name: "hip thrust", muscleGroup: "legs"),
+      id: -4003, name: "bulgarian split squat", muscleGroup: "quadriceps"),
+  DatabaseExerciseInfo(
+      id: -4004, name: "goblet squat", muscleGroup: "quadriceps"),
+  DatabaseExerciseInfo(id: -4005, name: "lunges", muscleGroup: "quadriceps"),
+  DatabaseExerciseInfo(
+      id: -4006, name: "leg extension machine", muscleGroup: "quadriceps"),
+  DatabaseExerciseInfo(id: -4007, name: "leg press", muscleGroup: "quadriceps"),
+  DatabaseExerciseInfo(
+      id: -4008, name: "hack squat", muscleGroup: "quadriceps"),
+
+  DatabaseExerciseInfo(id: -4301, name: "deadlift", muscleGroup: "hamstrings"),
+  DatabaseExerciseInfo(
+      id: -4302, name: "sumo deadlift", muscleGroup: "hamstrings"),
+  DatabaseExerciseInfo(
+      id: -4303, name: "romanian deadlift", muscleGroup: "hamstrings"),
+  DatabaseExerciseInfo(
+      id: -4304, name: "leg curl machine", muscleGroup: "hamstrings"),
+
+  DatabaseExerciseInfo(id: -4601, name: "hip thrust", muscleGroup: "glutes"),
 
   // Core exercises
-  DatabaseExerciseInfo(id: -501, name: "cable crunches", muscleGroup: "core"),
+  DatabaseExerciseInfo(id: -5001, name: "cable crunches", muscleGroup: "core"),
   DatabaseExerciseInfo(
-      id: -502, name: "plank", muscleGroup: "core", type: "duration"),
-  DatabaseExerciseInfo(id: -503, name: "russian twists", muscleGroup: "core"),
+      id: -5002, name: "plank", muscleGroup: "core", type: "duration"),
+  DatabaseExerciseInfo(id: -5003, name: "russian twists", muscleGroup: "core"),
   DatabaseExerciseInfo(
-      id: -504, name: "hanging leg raises", muscleGroup: "core"),
-  DatabaseExerciseInfo(id: -505, name: "lying leg raises", muscleGroup: "core"),
-  DatabaseExerciseInfo(id: -506, name: "ab wheel", muscleGroup: "core"),
-  DatabaseExerciseInfo(id: -507, name: "front lever", muscleGroup: "core"),
-  DatabaseExerciseInfo(id: -508, name: "l-sit", muscleGroup: "core"),
-  DatabaseExerciseInfo(id: -509, name: "hollow body hold", muscleGroup: "core"),
-
-  // Other exercises
+      id: -5004, name: "hanging leg raises", muscleGroup: "core"),
   DatabaseExerciseInfo(
-      id: -601,
-      name: "treadmill running",
-      muscleGroup: "other",
-      type: "duration"),
+      id: -5005, name: "lying leg raises", muscleGroup: "core"),
+  DatabaseExerciseInfo(id: -5006, name: "ab wheel", muscleGroup: "core"),
+  DatabaseExerciseInfo(id: -5007, name: "front lever", muscleGroup: "core"),
+  DatabaseExerciseInfo(id: -5008, name: "l-sit", muscleGroup: "core"),
   DatabaseExerciseInfo(
-      id: -602,
-      name: "stationary bike",
-      muscleGroup: "other",
-      type: "duration"),
-  DatabaseExerciseInfo(
-      id: -603, name: "boxing", muscleGroup: "other", type: "duration"),
-  DatabaseExerciseInfo(
-      id: -604, name: "elliptical", muscleGroup: "other", type: "duration"),
-  DatabaseExerciseInfo(
-      id: -605, name: "rowing machine", muscleGroup: "other", type: "duration"),
-  DatabaseExerciseInfo(
-      id: -606, name: "jump rope", muscleGroup: "other", type: "duration"),
+      id: -5009, name: "hollow body hold", muscleGroup: "core"),
 ];
 
 final List<DatabaseExerciseInfo> appExercisesPl = [
@@ -192,150 +184,148 @@ final List<DatabaseExerciseInfo> appExercisesPl = [
 
   // Ćwiczenia na plecy
   DatabaseExerciseInfo(
-      id: -101, name: "podciąganie nachwytem", muscleGroup: "back"),
+      id: -1001, name: "podciąganie nachwytem", muscleGroup: "back"),
   DatabaseExerciseInfo(
-      id: -102, name: "podciąganie podchwytem", muscleGroup: "back"),
+      id: -1002, name: "podciąganie podchwytem", muscleGroup: "back"),
   DatabaseExerciseInfo(
-      id: -103, name: "podciąganie chwytem neutralnym", muscleGroup: "back"),
+      id: -1003, name: "podciąganie chwytem neutralnym", muscleGroup: "back"),
   DatabaseExerciseInfo(
-      id: -104, name: "podciąganie australijskie", muscleGroup: "back"),
+      id: -1004, name: "podciąganie australijskie", muscleGroup: "back"),
   DatabaseExerciseInfo(
-      id: -105, name: "ściąganie drążka wyciągu górnego", muscleGroup: "back"),
+      id: -1005, name: "ściąganie drążka wyciągu górnego", muscleGroup: "back"),
   DatabaseExerciseInfo(
-      id: -106, name: "wiosłowanie sztangą", muscleGroup: "back"),
+      id: -1006, name: "wiosłowanie sztangą", muscleGroup: "back"),
   DatabaseExerciseInfo(
-      id: -107, name: "wiosłowanie jednorącz hantlem", muscleGroup: "back"),
+      id: -1007, name: "wiosłowanie jednorącz hantlem", muscleGroup: "back"),
   DatabaseExerciseInfo(
-      id: -108, name: "wiosłowanie na maszynie", muscleGroup: "back"),
+      id: -1008, name: "wiosłowanie na maszynie", muscleGroup: "back"),
   DatabaseExerciseInfo(
-      id: -109, name: "wiosłowanie na wyciągu", muscleGroup: "back"),
+      id: -1009, name: "wiosłowanie na wyciągu", muscleGroup: "back"),
   DatabaseExerciseInfo(
-      id: -110, name: "wiosłowanie jednorącz na wyciągu", muscleGroup: "back"),
+      id: -1010, name: "wiosłowanie jednorącz na wyciągu", muscleGroup: "back"),
   DatabaseExerciseInfo(
-      id: -111, name: "narciarz na wyciągu", muscleGroup: "back"),
+      id: -1011, name: "narciarz na wyciągu", muscleGroup: "back"),
   DatabaseExerciseInfo(
-      id: -112, name: "wiosłowanie t-bar", muscleGroup: "back"),
+      id: -1012, name: "wiosłowanie t-bar", muscleGroup: "back"),
   DatabaseExerciseInfo(
-      id: -113, name: "nautilus pullover", muscleGroup: "back"),
-  DatabaseExerciseInfo(id: -114, name: "szrugsy", muscleGroup: "back"),
+      id: -1013, name: "nautilus pullover", muscleGroup: "back"),
+  DatabaseExerciseInfo(id: -1014, name: "szrugsy", muscleGroup: "back"),
 
   // Ćwiczenia na ramiona
   //biceps
   DatabaseExerciseInfo(
-      id: -201, name: "uginanie ramion z hantlami", muscleGroup: "biceps"),
+      id: -2001, name: "uginanie ramion z hantlami", muscleGroup: "biceps"),
   DatabaseExerciseInfo(
-      id: -202, name: "uginanie ramion ze sztangą", muscleGroup: "biceps"),
+      id: -2002, name: "uginanie ramion ze sztangą", muscleGroup: "biceps"),
   DatabaseExerciseInfo(
-      id: -203, name: "uginanie ramion młotkowo", muscleGroup: "biceps"),
+      id: -2003, name: "uginanie ramion młotkowo", muscleGroup: "biceps"),
   DatabaseExerciseInfo(
-      id: -204,
+      id: -2004,
       name: "uginanie ramion na ławce skośnej",
       muscleGroup: "biceps"),
   DatabaseExerciseInfo(
-      id: -205, name: "uginanie ramion na modlitewniku", muscleGroup: "biceps"),
+      id: -2005,
+      name: "uginanie ramion na modlitewniku",
+      muscleGroup: "biceps"),
   DatabaseExerciseInfo(
-      id: -206, name: "uginanie ramion na maszynie", muscleGroup: "biceps"),
+      id: -2006, name: "uginanie ramion na maszynie", muscleGroup: "biceps"),
   DatabaseExerciseInfo(
-      id: -207, name: "uginanie ramion z linką", muscleGroup: "biceps"),
+      id: -2007, name: "uginanie ramion z linką", muscleGroup: "biceps"),
   //triceps
   DatabaseExerciseInfo(
-      id: -251, name: "wyciskanie francuskie", muscleGroup: "triceps"),
+      id: -2501, name: "wyciskanie francuskie", muscleGroup: "triceps"),
   DatabaseExerciseInfo(
-      id: -252, name: "wyciskanie fransukie jednorącz", muscleGroup: "triceps"),
+      id: -2502,
+      name: "wyciskanie francuskie jednorącz",
+      muscleGroup: "triceps"),
   DatabaseExerciseInfo(
-      id: -253, name: "wyprosty ramion nachwytem", muscleGroup: "triceps"),
+      id: -2503, name: "wyprosty ramion nachwytem", muscleGroup: "triceps"),
   DatabaseExerciseInfo(
-      id: -254, name: "wyprosty ramion liną", muscleGroup: "triceps"),
+      id: -2504, name: "wyprosty ramion liną", muscleGroup: "triceps"),
   DatabaseExerciseInfo(
-      id: -255,
+      id: -2505,
       name: "wyprosty ramion na lince nad głową",
       muscleGroup: "triceps"),
   DatabaseExerciseInfo(
-      id: -256, name: "pompki diamentowe", muscleGroup: "triceps"),
+      id: -2506, name: "pompki diamentowe", muscleGroup: "triceps"),
   DatabaseExerciseInfo(
-      id: -257, name: "dipy na triceps", muscleGroup: "triceps"),
+      id: -2507, name: "dipy na triceps", muscleGroup: "triceps"),
   DatabaseExerciseInfo(
-      id: -258,
+      id: -2508,
       name: "wyciskanie na ławce wąskim chwytem",
       muscleGroup: "triceps"),
 
   // Ćwiczenia na barki
   DatabaseExerciseInfo(
-      id: -301, name: "wznosy bokiem", muscleGroup: "shoulders"),
+      id: -3001, name: "wznosy bokiem", muscleGroup: "shoulders"),
   DatabaseExerciseInfo(
-      id: -302, name: "wznosy bokiem na maszynie", muscleGroup: "shoulders"),
+      id: -3002, name: "wznosy bokiem na maszynie", muscleGroup: "shoulders"),
   DatabaseExerciseInfo(
-      id: -303, name: "wznosy bokiem na lince", muscleGroup: "shoulders"),
+      id: -3003, name: "wznosy bokiem na lince", muscleGroup: "shoulders"),
   DatabaseExerciseInfo(
-      id: -304,
+      id: -3004,
       name: "wznosy bokiem leżąc na ławce skośnej",
       muscleGroup: "shoulders"),
   DatabaseExerciseInfo(
-      id: -305, name: "wyciskanie żołnierskie (ohp)", muscleGroup: "shoulders"),
-  DatabaseExerciseInfo(id: -306, name: "arnoldki", muscleGroup: "shoulders"),
-  DatabaseExerciseInfo(id: -307, name: "face pull", muscleGroup: "shoulders"),
+      id: -3005,
+      name: "wyciskanie żołnierskie (ohp)",
+      muscleGroup: "shoulders"),
+  DatabaseExerciseInfo(id: -3006, name: "arnoldki", muscleGroup: "shoulders"),
+  DatabaseExerciseInfo(id: -3007, name: "face pull", muscleGroup: "shoulders"),
   DatabaseExerciseInfo(
-      id: -308,
+      id: -3008,
       name: "krzyżowanie linek wyciągu górnego",
       muscleGroup: "shoulders"),
   DatabaseExerciseInfo(
-      id: -309, name: "odwrotne rozpiętki hantlami", muscleGroup: "shoulders"),
+      id: -3009, name: "odwrotne rozpiętki hantlami", muscleGroup: "shoulders"),
   DatabaseExerciseInfo(
-      id: -310,
+      id: -3010,
       name: "odwrotne rozpiętki na maszynie",
       muscleGroup: "shoulders"),
   DatabaseExerciseInfo(
-      id: -311, name: "wyciskanie landmine", muscleGroup: "shoulders"),
+      id: -3011, name: "wyciskanie landmine", muscleGroup: "shoulders"),
 
   // Ćwiczenia na nogi
+  //Czworoglowe
   DatabaseExerciseInfo(
-      id: -401, name: "przysiad ze sztangą", muscleGroup: "legs"),
-  DatabaseExerciseInfo(id: -402, name: "przysiad przedni", muscleGroup: "legs"),
+      id: -4001, name: "przysiad ze sztangą", muscleGroup: "quadriceps"),
   DatabaseExerciseInfo(
-      id: -403, name: "przysiad bułgarski", muscleGroup: "legs"),
-  DatabaseExerciseInfo(id: -404, name: "goblet squat", muscleGroup: "legs"),
-  DatabaseExerciseInfo(id: -405, name: "wykroki", muscleGroup: "legs"),
-  DatabaseExerciseInfo(id: -406, name: "martwy ciąg", muscleGroup: "legs"),
-  DatabaseExerciseInfo(id: -407, name: "martwy ciąg sumo", muscleGroup: "legs"),
+      id: -4002, name: "przysiad przedni", muscleGroup: "quadriceps"),
   DatabaseExerciseInfo(
-      id: -408, name: "rumuński martwy ciąg", muscleGroup: "legs"),
+      id: -4003, name: "przysiad bułgarski", muscleGroup: "quadriceps"),
   DatabaseExerciseInfo(
-      id: -409, name: "maszyna na czworogłowe", muscleGroup: "legs"),
+      id: -4004, name: "goblet squat", muscleGroup: "quadriceps"),
+  DatabaseExerciseInfo(id: -4005, name: "wykroki", muscleGroup: "quadriceps"),
   DatabaseExerciseInfo(
-      id: -410, name: "maszyna na dwugłowe", muscleGroup: "legs"),
+      id: -4006, name: "maszyna na czworogłowe", muscleGroup: "quadriceps"),
   DatabaseExerciseInfo(
-      id: -411, name: "prostowanie nóg na suwnicy", muscleGroup: "legs"),
+      id: -4007, name: "prostowanie nóg na suwnicy", muscleGroup: "quadriceps"),
   DatabaseExerciseInfo(
-      id: -412, name: "przysiad na hack maszynie", muscleGroup: "legs"),
-  DatabaseExerciseInfo(id: -413, name: "hip-thrusty", muscleGroup: "legs"),
+      id: -4008, name: "przysiad na hack maszynie", muscleGroup: "quadriceps"),
+  //Dwuglowe
+  DatabaseExerciseInfo(
+      id: -4301, name: "martwy ciąg", muscleGroup: "hamstrings"),
+  DatabaseExerciseInfo(
+      id: -4302, name: "martwy ciąg sumo", muscleGroup: "hamstrings"),
+  DatabaseExerciseInfo(
+      id: -4303, name: "rumuński martwy ciąg", muscleGroup: "hamstrings"),
+  DatabaseExerciseInfo(
+      id: -4304, name: "maszyna na dwugłowe", muscleGroup: "hamstrings"),
+  //Posladki
+  DatabaseExerciseInfo(id: -4601, name: "hip-thrusty", muscleGroup: "glutes"),
 
   // Ćwiczenia na core
-  DatabaseExerciseInfo(id: -501, name: "allahy", muscleGroup: "core"),
+  DatabaseExerciseInfo(id: -5001, name: "allahy", muscleGroup: "core"),
   DatabaseExerciseInfo(
-      id: -502, name: "plank", muscleGroup: "core", type: "duration"),
-  DatabaseExerciseInfo(id: -503, name: "rosyjskie skręty", muscleGroup: "core"),
+      id: -5002, name: "plank", muscleGroup: "core", type: "duration"),
   DatabaseExerciseInfo(
-      id: -504, name: "wznosy nóg w zwisie", muscleGroup: "core"),
-  DatabaseExerciseInfo(id: -505, name: "wznosy nóg leżąc", muscleGroup: "core"),
-  DatabaseExerciseInfo(id: -506, name: "kólko", muscleGroup: "core"),
-  DatabaseExerciseInfo(id: -507, name: "front lever", muscleGroup: "core"),
-  DatabaseExerciseInfo(id: -508, name: "l-sit", muscleGroup: "core"),
-  DatabaseExerciseInfo(id: -509, name: "hollow body", muscleGroup: "core"),
-
-  // Inne ćwiczenia
+      id: -5003, name: "rosyjskie skręty", muscleGroup: "core"),
   DatabaseExerciseInfo(
-      id: -601, name: "bieg na bieżni", muscleGroup: "other", type: "duration"),
+      id: -5004, name: "wznosy nóg w zwisie", muscleGroup: "core"),
   DatabaseExerciseInfo(
-      id: -602,
-      name: "rowerek stacjonarny",
-      muscleGroup: "other",
-      type: "duration"),
-  DatabaseExerciseInfo(
-      id: -603, name: "boks", muscleGroup: "other", type: "duration"),
-  DatabaseExerciseInfo(
-      id: -604, name: "orbitrek", muscleGroup: "other", type: "duration"),
-  DatabaseExerciseInfo(
-      id: -605, name: "wioślarz", muscleGroup: "other", type: "duration"),
-  DatabaseExerciseInfo(
-      id: -606, name: "skakanka", muscleGroup: "other", type: "duration"),
+      id: -5005, name: "wznosy nóg leżąc", muscleGroup: "core"),
+  DatabaseExerciseInfo(id: -5006, name: "kólko", muscleGroup: "core"),
+  DatabaseExerciseInfo(id: -5007, name: "front lever", muscleGroup: "core"),
+  DatabaseExerciseInfo(id: -5008, name: "l-sit", muscleGroup: "core"),
+  DatabaseExerciseInfo(id: -5009, name: "hollow body", muscleGroup: "core"),
 ];
