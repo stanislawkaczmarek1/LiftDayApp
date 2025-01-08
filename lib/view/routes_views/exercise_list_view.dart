@@ -134,9 +134,8 @@ class _ExerciseListViewState extends State<ExerciseListView>
                       },
                       decoration: InputDecoration(
                         hintText: AppLocalizations.of(context)!.search_exercise,
-                        hintStyle: TextStyle(
-                            fontWeight: FontWeight.normal,
-                            color: Colors.grey.withOpacity(0.7)),
+                        hintStyle: const TextStyle(
+                            fontWeight: FontWeight.normal, color: Colors.grey),
                         prefixIcon:
                             const Icon(Icons.search, color: Colors.grey),
                         filled: true,
@@ -199,9 +198,9 @@ class _ExerciseListViewState extends State<ExerciseListView>
                                         ? Theme.of(context)
                                             .colorScheme
                                             .secondary
-                                        : Theme.of(context).colorScheme.primary,
+                                        : Colors.grey,
                                     fontWeight: isSelected
-                                        ? FontWeight.bold
+                                        ? FontWeight.w800
                                         : FontWeight.normal,
                                   ),
                                 ),

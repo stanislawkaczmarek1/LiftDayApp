@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:liftday/dialogs/are_you_sure_to_delate_plan.dart';
@@ -454,41 +452,68 @@ class _RoutinesTabState extends State<RoutinesTab> {
               const SizedBox(
                 height: 10,
               ),
-              GestureDetector(
-                onTap: () {
-                  if (!maximumOfOtherTrainingDays) {
-                    context
-                        .read<EditBloc>()
-                        .add(EditEventAddOtherTrainingDay(context));
-                  } else {
-                    showReachMaxiumumOfRoutinesDialog(context);
-                  }
-                },
-                child: Container(
-                  margin: const EdgeInsets.symmetric(vertical: 8.0),
-                  padding: const EdgeInsets.all(16.0),
-                  decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.onPrimary,
-                      borderRadius: BorderRadius.circular(12.0),
-                      border: Border.all(
-                        width: 0.3,
-                        color: Theme.of(context).colorScheme.secondary,
-                      )),
-                  child: Center(
-                    child: Text(
-                      AppLocalizations.of(context)!.add_routine,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.normal,
-                        color: Theme.of(context).colorScheme.secondary,
-                      ),
-                    ),
-                  ),
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _buildTextButton(
+                      AppLocalizations.of(context)!.add_routine, null, () {
+                    if (!maximumOfOtherTrainingDays) {
+                      context
+                          .read<EditBloc>()
+                          .add(EditEventAddOtherTrainingDay(context));
+                    } else {
+                      showReachMaxiumumOfRoutinesDialog(context);
+                    }
+                  }),
+                ],
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextButton(
+      String title, IconData? icon, void Function() onPressed) {
+    return Expanded(
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 5),
+        child: TextButton(
+          onPressed: onPressed,
+          style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              backgroundColor: Theme.of(context).colorScheme.onPrimary,
+              foregroundColor: Colors.grey,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  side: BorderSide(
+                    color: Theme.of(context).colorScheme.onTertiary,
+                  )),
+              minimumSize: const Size(double.infinity, 0)),
+          child: icon == null
+              ? Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.normal),
+                )
+              : Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      icon,
+                      size: 32,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      title,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.normal),
+                    ),
+                  ],
+                ),
         ),
       ),
     );

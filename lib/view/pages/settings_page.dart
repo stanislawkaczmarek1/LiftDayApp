@@ -134,6 +134,7 @@ class _SettingsPageState extends State<SettingsPage> {
             final isDarkMode = state.themeMode == ThemeMode.dark;
             final currentLocale = state.locale;
             final currentUnit = state.unit;
+            final showCalendar = state.showCalendar;
             return Column(
               children: [
                 Align(
@@ -161,6 +162,26 @@ class _SettingsPageState extends State<SettingsPage> {
                       onChanged: (value) {
                         BlocProvider.of<SettingsBloc>(context).add(
                           SettingsEventChangeTheme(isDarkMode: value),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                ListTile(
+                  title: Text(
+                    AppLocalizations.of(context)!.show_calendar,
+                    style: const TextStyle(
+                      fontSize: 16,
+                    ),
+                  ),
+                  trailing: Transform.scale(
+                    scale: 0.8,
+                    child: Switch(
+                      value: showCalendar,
+                      focusColor: Theme.of(context).colorScheme.secondary,
+                      onChanged: (value) {
+                        BlocProvider.of<SettingsBloc>(context).add(
+                          SettingsEventShowCalendar(showCalendar: value),
                         );
                       },
                     ),
@@ -276,6 +297,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     ],
                   ),
                 ),
+
                 /*const SizedBox(
                   height: 48,
                 ),

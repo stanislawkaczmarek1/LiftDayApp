@@ -65,7 +65,7 @@
     "edit": "Edytuj",
     "my_routines": "Moje rutyny",
     "add_routine": "+ Dodaj rutynę",
-    "dark_mode": "Tryb Ciemny",
+    "dark_mode": "Tryb ciemny",
     "language": "Język",
     "unit": "Jednostka",
     "send_backup": "Wyślij kopie zapasową",
@@ -138,5 +138,6 @@
     "next_to_button": "(obok przycisku",
     "automating_calendar": "Automatyzujemy twój kalendarz treningowy",
     "automation_completed": "Automatyzacja zakończona, plan został pomyślnie dodany do kalendarza",
-    "muscle_distribution2": "dystrybucja mięśni:"
+    "muscle_distribution2": "dystrybucja mięśni:",
+    "show_calendar": "Pokazuj kalendarz"
 }

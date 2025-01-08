@@ -452,7 +452,7 @@
     "@generate_report": {
         "description": "Button to generate a report"
     },
-    "set": "Set",
+    "set": "set",
     "@set": {
         "description": "Label for a workout set"
     },
@@ -555,5 +555,9 @@
     "muscle_distribution2": "muscle distibution:",
     "@muscle_distribution2": {
         "description": "text in ReportView"
+    },
+    "show_calendar": "Show calendar",
+    "@show_calendar": {
+        "description": "calendar visability settings"
     }
 }

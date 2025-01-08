@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:liftday/constants/themes.dart';
 import 'package:liftday/dialogs/entry_exerciese_name.dart';
 import 'package:liftday/dialogs/entry_exercise_musle.dart';
 import 'package:liftday/dialogs/entry_exercise_name_and_muscle.dart';
@@ -54,7 +53,8 @@ class _AddExerciseViewState extends State<AddExerciseView> {
                 foregroundColor: Theme.of(context).colorScheme.secondary),
             child: Text(
               AppLocalizations.of(context)!.exercise_list,
-              style: const TextStyle(fontSize: 18.0),
+              style:
+                  const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
             ),
           )
         ],
@@ -68,46 +68,62 @@ class _AddExerciseViewState extends State<AddExerciseView> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                padding: const EdgeInsets.only(left: 16, right: 16),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.onPrimary,
-                  borderRadius: BorderRadius.circular(12.0),
-                ),
-                alignment: Alignment.topLeft,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      AppLocalizations.of(context)!.enter_name,
-                      style: const TextStyle(fontSize: 18),
-                    ),
-                    TextField(
-                      maxLength: 150,
-                      buildCounter: (BuildContext context,
-                          {int? currentLength,
-                          bool? isFocused,
-                          int? maxLength}) {
-                        return null;
-                      },
-                      onChanged: (value) {
-                        setState(() {
-                          exerciseName = value.trimRight();
-                        });
-                      },
-                      decoration: InputDecoration(
-                        hintText: '',
-                        focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                              width: 2,
-                              color: Theme.of(context).colorScheme.primary),
-                        ),
+                  padding: const EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.onPrimary,
+                    borderRadius: BorderRadius.circular(12.0),
+                    border: Border.all(
+                        color: Theme.of(context).colorScheme.onPrimary),
+                  ),
+                  alignment: Alignment.topLeft,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        AppLocalizations.of(context)!.enter_name,
+                        style: TextStyle(
+                            fontSize: 16,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .primary
+                                .withOpacity(0.8)),
                       ),
-                      style: const TextStyle(fontSize: 15),
-                    ),
-                  ],
-                ),
-              ),
+                      const SizedBox(height: 8),
+                      TextField(
+                        maxLength: 150,
+                        buildCounter: (BuildContext context,
+                            {int? currentLength,
+                            bool? isFocused,
+                            int? maxLength}) {
+                          return null;
+                        },
+                        onChanged: (value) {
+                          setState(() {
+                            exerciseName = value.trimRight();
+                          });
+                        },
+                        decoration: InputDecoration(
+                          hintText: '',
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                                width: 2,
+                                color: Theme.of(context).colorScheme.primary),
+                          ),
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                                width: 1.5,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .primary
+                                    .withOpacity(0.2)),
+                          ),
+                        ),
+                        style: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  )),
               const SizedBox(height: 24),
               GestureDetector(
                 onTap: () {
@@ -126,8 +142,13 @@ class _AddExerciseViewState extends State<AddExerciseView> {
                 child: Container(
                   padding: const EdgeInsets.all(16.0),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.onTertiary,
+                    color: Theme.of(context).colorScheme.onPrimary,
                     borderRadius: BorderRadius.circular(12.0),
+                    border: Border.all(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .primary
+                            .withOpacity(0.2)),
                   ),
                   alignment: Alignment.topLeft,
                   child: Column(
@@ -136,17 +157,22 @@ class _AddExerciseViewState extends State<AddExerciseView> {
                     children: [
                       Text(
                         AppLocalizations.of(context)!.select_type,
-                        style: const TextStyle(fontSize: 14),
+                        style: TextStyle(
+                            fontSize: 14,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .primary
+                                .withOpacity(0.8)),
                       ),
-                      const SizedBox(height: 14),
+                      const SizedBox(height: 22),
                       Text(
                         exerciseTypeText == "empty"
                             ? AppLocalizations.of(context)!.weight_and_reps
                             : exerciseTypeText,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: colorBabyBlue,
-                          fontSize: 14,
+                          color: Theme.of(context).colorScheme.secondary,
+                          fontSize: 16,
                         ),
                       ),
                     ],
@@ -161,9 +187,13 @@ class _AddExerciseViewState extends State<AddExerciseView> {
                 child: Container(
                   padding: const EdgeInsets.all(16.0),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.onTertiary,
-                    borderRadius: BorderRadius.circular(12.0),
-                  ),
+                      color: Theme.of(context).colorScheme.onPrimary,
+                      borderRadius: BorderRadius.circular(12.0),
+                      border: Border.all(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .primary
+                              .withOpacity(0.2))),
                   alignment: Alignment.topLeft,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -171,18 +201,23 @@ class _AddExerciseViewState extends State<AddExerciseView> {
                     children: [
                       Text(
                         AppLocalizations.of(context)!.select_muscle_group,
-                        style: const TextStyle(fontSize: 14),
+                        style: TextStyle(
+                            fontSize: 14,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .primary
+                                .withOpacity(0.8)),
                       ),
-                      const SizedBox(height: 14),
+                      const SizedBox(height: 22),
                       Text(
                         selectedMuscleGroup != "empty"
                             ? ConversionService.getPolishMuscleNameOrReturn(
                                 selectedMuscleGroup)
                             : AppLocalizations.of(context)!.select,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                          color: colorBabyBlue,
+                          fontSize: 16,
+                          color: Theme.of(context).colorScheme.secondary,
                         ),
                       ),
                     ],

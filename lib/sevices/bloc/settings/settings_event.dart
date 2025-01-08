@@ -20,3 +20,8 @@ class SettingsEventChangeWeightUnit extends SettingsEvent {
   final String unit;
   const SettingsEventChangeWeightUnit(this.unit);
 }
+
+class SettingsEventShowCalendar extends SettingsEvent {
+  final bool showCalendar;
+  const SettingsEventShowCalendar({required this.showCalendar});
+}

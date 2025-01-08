@@ -72,7 +72,8 @@ class _AutomationCompletedView extends State<AutomationCompletedView> {
                           padding: const EdgeInsets.all(16.0),
                           child: LinearProgressIndicator(
                             key: const ValueKey(1),
-                            backgroundColor: Colors.grey[200],
+                            backgroundColor:
+                                Theme.of(context).colorScheme.onTertiary,
                             valueColor: AlwaysStoppedAnimation<Color>(
                                 Theme.of(context).colorScheme.secondary),
                           ),

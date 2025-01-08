@@ -9,12 +9,18 @@ import 'package:liftday/sevices/crud/exercise_service.dart';
 import 'package:liftday/sevices/settings/settings_service.dart';
 import 'package:table_calendar/table_calendar.dart';
 
+typedef CalendarVisibilityCallback = void Function(bool visable, DateTime date);
+
 class AppCalendar extends StatefulWidget {
   final Function(DateTime) onDaySelected;
+  final CalendarVisibilityCallback callback;
+  final DateTime? currentDay;
 
   const AppCalendar({
     super.key,
+    required this.callback,
     required this.onDaySelected,
+    this.currentDay,
   });
 
   @override
@@ -22,7 +28,7 @@ class AppCalendar extends StatefulWidget {
 }
 
 class _AppCalendarState extends State<AppCalendar> {
-  DateTime _focusedDay = DateTime.now();
+  late DateTime _focusedDay;
   CalendarFormat _calendarFormat = CalendarFormat.week;
   DateTime? _selectedDay;
   Timer? _resetTitleTimer;
@@ -93,6 +99,7 @@ class _AppCalendarState extends State<AppCalendar> {
 
   @override
   void initState() {
+    _focusedDay = widget.currentDay ?? DateTime.now();
     //_exerciseService = ExerciseService();
     _selectedDay ??= _focusedDay;
     DateTime start = _focusedDay.subtract(const Duration(days: 31));
@@ -247,10 +254,37 @@ class _AppCalendarState extends State<AppCalendar> {
               color: Colors.transparent,
               child: Icon(
                 _calendarFormat == CalendarFormat.month
-                    ? Icons.arrow_upward
-                    : Icons.arrow_downward,
+                    ? Icons.keyboard_arrow_up
+                    : Icons.keyboard_arrow_down,
                 size: 25,
-                color: colorBabyBlue,
+                color: Theme.of(context).colorScheme.secondary,
+              ),
+            ), // Użycie ikony kalendarza
+          ),
+        ),
+      ),
+      Positioned(
+        right: 45,
+        bottom: 1,
+        child: GestureDetector(
+          onTap: () {
+            if (_calendarFormat == CalendarFormat.week) {
+              setState(() {
+                widget.callback(false, _focusedDay);
+              });
+            }
+          },
+          child: SizedBox(
+            height: 30,
+            width: 30,
+            child: Container(
+              color: Colors.transparent,
+              child: Icon(
+                _calendarFormat == CalendarFormat.week
+                    ? Icons.keyboard_arrow_up
+                    : null,
+                size: 25,
+                color: Theme.of(context).colorScheme.secondary,
               ),
             ), // Użycie ikony kalendarza
           ),

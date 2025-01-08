@@ -14,6 +14,7 @@ class SettingsService {
   static const String _isDarkModeKey = 'isDarkMode';
   static const String _languageKey = 'language';
   static const String _weightUnitKey = 'weightUnit';
+  static const String _showCalendarKey = 'showCalendar';
 
   Future<void> init() async {
     _preferences = await SharedPreferences.getInstance();
@@ -86,5 +87,15 @@ class SettingsService {
   String? weightUnit() {
     _ensureInitialized();
     return _preferences.getString(_weightUnitKey);
+  }
+
+  Future<void> setShowCalendarFlag(bool value) async {
+    _ensureInitialized();
+    await _preferences.setBool(_showCalendarKey, value);
+  }
+
+  bool showCalendar() {
+    _ensureInitialized();
+    return _preferences.getBool(_showCalendarKey) ?? true; //default show
   }
 }
