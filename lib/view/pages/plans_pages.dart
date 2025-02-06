@@ -41,7 +41,13 @@ class _PlansTabState extends State<PlansTab> {
       final DateTime now = DateTime.now();
       final DateTime currentDate = DateTime(now.year, now.month, now.day);
 
-      return lastDate.difference(currentDate).inDays;
+      int days = lastDate.difference(currentDate).inDays;
+      if (days < 0) {
+        //plan ended
+        return 0;
+      } else {
+        return lastDate.difference(currentDate).inDays;
+      }
     } else {
       return null;
     }

@@ -137,7 +137,7 @@ class _SettingsPageState extends State<SettingsPage> {
             final showCalendar = state.showCalendar;
             return Column(
               children: [
-                Align(
+                /*Align(
                   alignment: Alignment.bottomLeft,
                   child: Text(
                     AppLocalizations.of(context)!.settings,
@@ -146,7 +146,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                ),
+                ),*/
                 ListTile(
                   title: Text(
                     AppLocalizations.of(context)!.dark_mode,

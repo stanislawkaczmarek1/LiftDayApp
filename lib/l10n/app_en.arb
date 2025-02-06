@@ -360,7 +360,7 @@
     "@weight_and_reps": {
         "description": "Exercise based on weight and repetitions"
     },
-    "select": "Select",
+    "select": "select",
     "@select": {
         "description": "Button to make a selection"
     },
