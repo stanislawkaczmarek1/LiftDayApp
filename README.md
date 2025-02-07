@@ -46,16 +46,20 @@ A cross-platform mobile application designed to help users effortlessly track th
 ## 📸 **Screenshots**
 
 <div style="display: flex; flex-wrap: wrap;">
-  <img src="assets/screenshots/screenshot1.png" width="200" style="margin: 10px;" />
-  <img src="assets/screenshots/screenshot2.png" width="200" style="margin: 10px;" />
-  <img src="assets/screenshots/screenshot3.png" width="200" style="margin: 10px;" />
+  <img src="assets/screenshots/screenshot1.png" width="380" style="margin: 10px;" />
+  <img src="assets/screenshots/screenshot2.png" width="380" style="margin: 10px;" />
 </div>
 
 <div style="display: flex; flex-wrap: wrap;">
-  <img src="assets/screenshots/screenshot4.png" width="200" style="margin: 10px;" />
-  <img src="assets/screenshots/screenshot5.png" width="200" style="margin: 10px;" />
-  <img src="assets/screenshots/screenshot6.png" width="200" style="margin: 10px;" />
+  <img src="assets/screenshots/screenshot3.png" width="380" style="margin: 10px;" />
+  <img src="assets/screenshots/screenshot4.png" width="380" style="margin: 10px;" />
 </div>
+
+<div style="display: flex; flex-wrap: wrap;">
+  <img src="assets/screenshots/screenshot5.png" width="380" style="margin: 10px;" />
+  <img src="assets/screenshots/screenshot6.png" width="380" style="margin: 10px;" />
+</div>
+
 
 ---
 
