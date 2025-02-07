@@ -45,8 +45,17 @@ A cross-platform mobile application designed to help users effortlessly track th
 
 ## 📸 **Screenshots**
 
-![App Screenshot1](assets/screenshots/screenshot1.png) ![App Screenshot2](assets/screenshots/screenshot2.png) ![App Screenshot3](assets/screenshots/screenshot3.png)
-![App Screenshot4](assets/screenshots/screenshot4.png) ![App Screenshot5](assets/screenshots/screenshot5.png) ![App Screenshot6](assets/screenshots/screenshot6.png)
+<div style="display: flex; flex-wrap: wrap;">
+  <img src="assets/screenshots/screenshot1.png" width="200" style="margin: 10px;" />
+  <img src="assets/screenshots/screenshot2.png" width="200" style="margin: 10px;" />
+  <img src="assets/screenshots/screenshot3.png" width="200" style="margin: 10px;" />
+</div>
+
+<div style="display: flex; flex-wrap: wrap;">
+  <img src="assets/screenshots/screenshot4.png" width="200" style="margin: 10px;" />
+  <img src="assets/screenshots/screenshot5.png" width="200" style="margin: 10px;" />
+  <img src="assets/screenshots/screenshot6.png" width="200" style="margin: 10px;" />
+</div>
 
 ---
 
