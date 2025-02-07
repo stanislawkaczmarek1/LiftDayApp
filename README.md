@@ -1,16 +1,56 @@
-# liftday
+This README refers to version 1.0.5
 
-A new Flutter project.
+# LiftDay - Gym Workout Tracker 🦾
 
-## Getting Started
+A cross-platform mobile application designed to help users effortlessly track their workouts. The user interface is simple and intuitive, functioning like a calendar for easy workout logging and progress tracking.
 
-This project is a starting point for a Flutter application.
+---
 
-A few resources to get you started if this is your first Flutter project:
+## 🛠 **Technologies Used**
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- Dart
+- Flutter
+- SQFlite
+- BLoC
+- Provider
+- FL Chart
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+---
+
+## **Main features organized by app tabs**
+
+### 📅 **Calendar Panel**  
+- Log exercises with sets 
+- Add custom exercises or choose from a predefined exercise list  
+- View the history of previous training sessions  
+- Automate the calendar with a workout plan  
+- Load workout routines 
+- Generate training reports  
+
+### 📋 **Plan Panel**  
+- Create and edit workout plans
+- Design and manage custom workout routines
+
+### 📊 **Statistics Panel**  
+- View a snapshot of the current week
+- Analyze muscle group distribution over a selected period
+- Track weight lifted over time 
+
+### ⚙️ **Settings**  
+- Toggle between dark and light mode  
+- Choose measurement units: kg/lbs  
+- Create and restore app data backups
+
+---
+
+## 📸 **Screenshots**
+
+![App Screenshot1](assets/screenshots/screenshot1.png)
+![App Screenshot2](assets/screenshots/screenshot2.png)
+![App Screenshot3](assets/screenshots/screenshot3.png)
+![App Screenshot4](assets/screenshots/screenshot4.png)
+![App Screenshot5](assets/screenshots/screenshot5.png)
+![App Screenshot6](assets/screenshots/screenshot6.png)
+
+---
+
