@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
@@ -679,7 +677,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
                           Expanded(
                             child: Text(
                               widget.exerciseName,
-                              softWrap: true, //TODO: dodac gdzie potrzeba
+                              softWrap: true,
                               maxLines: 2, //
                               overflow: TextOverflow.ellipsis, //
                               style: const TextStyle(
