@@ -5,11 +5,7 @@ class SettingsState extends AppState {
   final Locale locale;
   final ThemeMode themeMode;
   final String unit;
-  final bool showCalendar;
 
   const SettingsState(
-      {required this.locale,
-      required this.themeMode,
-      required this.unit,
-      required this.showCalendar});
+      {required this.locale, required this.themeMode, required this.unit});
 }

@@ -35,43 +35,41 @@ class _StatisticsPageState extends State<StatisticsPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const WeeklySnapshot(),
-              const SizedBox(
-                height: 20,
-              ),
-              Container(
-                padding: const EdgeInsets.all(16.0),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  color: Theme.of(context).colorScheme.onPrimary,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Align(
-                      alignment: Alignment.bottomLeft,
-                      child: Text(
-                        AppLocalizations.of(context)!.workout_statistics,
-                        style: const TextStyle(
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              // Container(
+              //   padding: const EdgeInsets.all(16.0),
+              //   decoration: BoxDecoration(
+              //     borderRadius: BorderRadius.circular(8),
+              //     color: Theme.of(context).colorScheme.onPrimary,
+              //   ),
+              //   child: Column(
+              //     crossAxisAlignment: CrossAxisAlignment.start,
+              //     children: [
+              //       Align(
+              //         alignment: Alignment.bottomLeft,
+              //         child: Text(
+              //           AppLocalizations.of(context)!.workout_statistics,
+              //           style: const TextStyle(
+              //             fontSize: 18.0,
+              //             fontWeight: FontWeight.bold,
+              //           ),
+              //         ),
+              //       ),
+              //     ],
+              //   ),
+              // ),
               const MuscleChartWidget(),
-              Divider(
-                color: Theme.of(context).colorScheme.tertiary,
-                thickness: 1,
-                height: 60,
-              ),
-              const VolumeChartWidget(),
-              Divider(
-                color: Theme.of(context).colorScheme.tertiary,
-                thickness: 1,
-                height: 60,
-              ),
+              const SizedBox(height: 40)
+              // Divider(
+              //   color: Theme.of(context).colorScheme.tertiary,
+              //   thickness: 1,
+              //   height: 60,
+              // ),
+              // const VolumeChartWidget(),
+              // Divider(
+              //   color: Theme.of(context).colorScheme.tertiary,
+              //   thickness: 1,
+              //   height: 60,
+              // ),
             ],
           ),
         ),
@@ -439,7 +437,7 @@ class MuscleChartWidget extends StatefulWidget {
 
 class _MuscleChartWidgetState extends State<MuscleChartWidget> {
   int _selectedRangeForRadarChart = 7;
-  final List<bool> _selectionsForRadarChart = [true, false];
+  final List<bool> _selectionsForRadarChart = [true, false, false, false];
 
   Future<Map<String, int>> _loadMuscleChartData(int range) async {
     ExerciseService exerciseService = ExerciseService();
@@ -500,9 +498,9 @@ class _MuscleChartWidgetState extends State<MuscleChartWidget> {
                   Text(
                     AppLocalizations.of(context)!.muscle_distribution,
                     style: const TextStyle(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.normal,
-                        color: Colors.grey),
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   IconButton(
                       onPressed: () {
@@ -567,6 +565,14 @@ class _MuscleChartWidgetState extends State<MuscleChartWidget> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 14),
                     child: Text(AppLocalizations.of(context)!.days_30),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 14),
+                    child: Text(AppLocalizations.of(context)!.days_90),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 14),
+                    child: Text(AppLocalizations.of(context)!.all_time),
                   ),
                 ],
                 onPressed: (int newIndex) {

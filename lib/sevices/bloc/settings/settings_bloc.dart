@@ -12,7 +12,6 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
           locale: _getDefaultLocale(),
           themeMode: ThemeMode.dark,
           unit: 'kg',
-          showCalendar: true,
         )) {
     _loadUserSettings();
 
@@ -24,7 +23,6 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
         locale: event.locale,
         themeMode: state.themeMode,
         unit: state.unit,
-        showCalendar: state.showCalendar,
       ));
     });
 
@@ -37,7 +35,6 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
         locale: state.locale,
         themeMode: themeMode,
         unit: state.unit,
-        showCalendar: state.showCalendar,
       ));
     });
 
@@ -53,22 +50,8 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
         locale: state.locale,
         themeMode: state.themeMode,
         unit: event.unit,
-        showCalendar: state.showCalendar,
       ));
     });
-
-    on<SettingsEventShowCalendar>(
-      (event, emit) async {
-        SettingsService settingsService = SettingsService();
-        await settingsService.setShowCalendarFlag(event.showCalendar);
-        emit(SettingsState(
-          locale: state.locale,
-          themeMode: state.themeMode,
-          unit: state.unit,
-          showCalendar: event.showCalendar,
-        ));
-      },
-    );
   }
 
   static Locale _getDefaultLocale() {
@@ -98,8 +81,5 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     } else {
       add(const SettingsEventChangeWeightUnit("kg"));
     }
-
-    add(SettingsEventShowCalendar(
-        showCalendar: settingsService.showCalendar()));
   }
 }

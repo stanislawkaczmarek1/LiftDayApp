@@ -1458,10 +1458,12 @@ class ExerciseService {
     final DateTime startDate, endDate;
 
     startDate = now;
-    endDate = now.subtract(Duration(days: ((startDate.weekday + 7) % 7) - 1));
+    endDate = now.subtract(Duration(days: startDate.weekday - 1));
+    log(endDate.toString());
 
     final rangeDates =
         await getDatesFromBetweenTwoDatesBackInTime(startDate, endDate);
+    log(rangeDates.toString());
 
     for (var date in rangeDates) {
       final exercises = await getExercisesForDate(dateId: date.id);
@@ -1538,8 +1540,7 @@ class ExerciseService {
 
         if (i == 0) {
           startDate = now;
-          endDate =
-              now.subtract(Duration(days: ((startDate.weekday + 7) % 7) - 1));
+          endDate = now.subtract(Duration(days: startDate.weekday - 1));
         } else {
           startDate = now.subtract(Duration(
               days: ((i - 1) * weekInterval) +

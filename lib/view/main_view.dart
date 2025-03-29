@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:liftday/sevices/bloc/app_bar/app_bar_bloc.dart';
 import 'package:liftday/sevices/bloc/app_bar/app_bar_state.dart';
 import 'package:liftday/view/pages/settings_page.dart';
+import 'package:liftday/view/pages/statistics_page.dart';
 import 'package:liftday/view/pages/training_page.dart';
 import 'package:liftday/view/pages/plans_pages.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -19,7 +20,7 @@ class _MainViewState extends State<MainView>
   final List<Widget> _pages = [
     const TrainingPage(),
     const PlansTab(),
-    /*const StatisticsPage(),*/
+    const StatisticsPage(),
     const SettingsPage(),
   ];
 
@@ -115,10 +116,10 @@ class _MainViewState extends State<MainView>
             icon: const Icon(Icons.description),
             label: AppLocalizations.of(context)!.plan,
           ),
-          /*BottomNavigationBarItem(
+          BottomNavigationBarItem(
             icon: const Icon(Icons.bar_chart),
             label: AppLocalizations.of(context)!.statistics,
-          ),*/
+          ),
           BottomNavigationBarItem(
             icon: const Icon(Icons.settings),
             label: AppLocalizations.of(context)!.settings,
