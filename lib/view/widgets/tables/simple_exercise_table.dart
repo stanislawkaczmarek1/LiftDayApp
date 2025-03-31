@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:liftday/constants/app_exercises.dart';
 import 'package:liftday/sevices/crud/data_package/exercise_data.dart';
 import 'package:liftday/sevices/crud/tables/database_exercise_info.dart';
-import 'package:liftday/view/routes_views/add_exercise_view.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:liftday/view/routes_views/exercise_list_view.dart';
 
 typedef ExercisesCallback = void Function(
     List<ExerciseData> exercisesFromTable);
@@ -47,7 +47,7 @@ class _SimpleExerciseTableState extends State<SimpleExerciseTable> {
   void _showAddExerciseView() {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => AddExerciseView(
+        builder: (context) => ExerciseListView(
           onResult: (name, type, muscleGroup, exerciseInfoId) {
             _addExercise(ExerciseData(
                 name: name,

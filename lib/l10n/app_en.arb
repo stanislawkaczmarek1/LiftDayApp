@@ -559,5 +559,9 @@
     "show_calendar": "Show calendar",
     "@show_calendar": {
         "description": "calendar visability settings"
+    },
+    "create_custom_exercise": "Exercise Creator",
+    "@create_custom_exercise": {
+        "description": "create exercise buttom"
     }
 }

@@ -139,5 +139,6 @@
     "automating_calendar": "Automatyzujemy twój kalendarz treningowy",
     "automation_completed": "Automatyzacja zakończona, plan został pomyślnie dodany do kalendarza",
     "muscle_distribution2": "dystrybucja mięśni:",
-    "show_calendar": "Pokazuj kalendarz"
+    "show_calendar": "Pokazuj kalendarz",
+    "create_custom_exercise": "Kreator ćwiczeń"
 }

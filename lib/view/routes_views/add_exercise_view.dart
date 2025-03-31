@@ -4,7 +4,6 @@ import 'package:liftday/dialogs/entry_exercise_musle.dart';
 import 'package:liftday/dialogs/entry_exercise_name_and_muscle.dart';
 import 'package:liftday/sevices/conversion/conversion_service.dart';
 import 'package:liftday/sevices/crud/tables/database_exercise_info.dart';
-import 'package:liftday/view/routes_views/exercise_list_view.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 typedef AddExerciseViewCallback = void Function(
@@ -29,35 +28,13 @@ class _AddExerciseViewState extends State<AddExerciseView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "",
+        title: Text(
+          AppLocalizations.of(context)!.create_custom_exercise,
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.normal),
         ),
         backgroundColor: Theme.of(context).colorScheme.onPrimary,
         elevation: 0,
         scrolledUnderElevation: 0.0,
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => ExerciseListView(
-                    onResult: (exerciseInfoId) {
-                      Navigator.of(context).pop();
-                      widget.onResult(null, null, null, exerciseInfoId);
-                    },
-                  ),
-                ),
-              );
-            },
-            style: TextButton.styleFrom(
-                foregroundColor: Theme.of(context).colorScheme.secondary),
-            child: Text(
-              AppLocalizations.of(context)!.exercise_list,
-              style:
-                  const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-            ),
-          )
-        ],
       ),
       resizeToAvoidBottomInset: false,
       body: SingleChildScrollView(

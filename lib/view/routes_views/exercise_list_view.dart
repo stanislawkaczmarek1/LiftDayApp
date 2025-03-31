@@ -5,8 +5,10 @@ import 'package:liftday/sevices/crud/exercise_service.dart';
 import 'package:liftday/sevices/crud/tables/database_exercise_info.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:liftday/sevices/settings/settings_service.dart';
+import 'package:liftday/view/routes_views/add_exercise_view.dart';
 
-typedef AddExerciseFromListCallback = void Function(int? exerciseInfoId);
+typedef AddExerciseFromListCallback = void Function(
+    String? name, String? type, String? muscleGroup, int? exerciseInfoId);
 
 Future<List<DatabaseExerciseInfo>> getAllExerciseInfos() async {
   ExerciseService exerciseService = ExerciseService();
@@ -99,7 +101,7 @@ class _ExerciseListViewState extends State<ExerciseListView>
 
   void _addSelectedExercise() {
     if (_selectedExercise != null) {
-      widget.onResult(_selectedExercise!.id);
+      widget.onResult(null, null, null, _selectedExercise!.id);
       Navigator.of(context).pop();
     }
   }
@@ -112,6 +114,29 @@ class _ExerciseListViewState extends State<ExerciseListView>
           AppLocalizations.of(context)!.exercise_list,
           style: const TextStyle(fontSize: 20, fontWeight: FontWeight.normal),
         ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => AddExerciseView(
+                    onResult: (name, type, muscleGroup, exerciseInfoId) {
+                      Navigator.of(context).pop();
+                      widget.onResult(name, type, muscleGroup, exerciseInfoId);
+                    },
+                  ),
+                ),
+              );
+            },
+            style: TextButton.styleFrom(
+                foregroundColor: Theme.of(context).colorScheme.secondary),
+            child: Text(
+              AppLocalizations.of(context)!.create_custom_exercise,
+              style:
+                  const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+            ),
+          )
+        ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(190), // sum of all boxes
           child: Padding(

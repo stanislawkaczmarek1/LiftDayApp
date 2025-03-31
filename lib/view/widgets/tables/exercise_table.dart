@@ -17,7 +17,7 @@ import 'package:liftday/sevices/crud/tables/database_exercise.dart';
 import 'package:liftday/sevices/crud/tables/database_exercise_info.dart';
 import 'package:liftday/sevices/crud/tables/database_set.dart';
 import 'package:liftday/sevices/crud/data_package/training_day_data.dart';
-import 'package:liftday/view/routes_views/add_exercise_view.dart';
+import 'package:liftday/view/routes_views/exercise_list_view.dart';
 import 'package:liftday/view/routes_views/report_view.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -140,7 +140,7 @@ class _ExerciseTableState extends State<ExerciseTable> {
   void _showAddExerciseView() {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => AddExerciseView(
+        builder: (context) => ExerciseListView(
           onResult: (name, type, muscleGroup, exerciseInfoId) {
             _addExercise(name, type, muscleGroup, exerciseInfoId);
           },
