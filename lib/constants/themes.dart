@@ -30,6 +30,7 @@ ThemeData lightTheme = ThemeData(
   bottomSheetTheme: const BottomSheetThemeData(
     surfaceTintColor: colorWhite,
   ),
+  splashColor: Colors.transparent,
 );
 
 ThemeData darkTheme = ThemeData(
@@ -48,4 +49,5 @@ ThemeData darkTheme = ThemeData(
   bottomSheetTheme: const BottomSheetThemeData(
     surfaceTintColor: colorBlack,
   ),
+  splashColor: Colors.transparent,
 );

@@ -28,13 +28,13 @@ class _StatisticsPageState extends State<StatisticsPage> {
     return Container(
       color: Theme.of(context).colorScheme.onPrimary,
       height: MediaQuery.of(context).size.height,
-      child: SingleChildScrollView(
+      child: const SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(8.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const WeeklySnapshot(),
+              WeeklySnapshot(),
               // Container(
               //   padding: const EdgeInsets.all(16.0),
               //   decoration: BoxDecoration(
@@ -57,8 +57,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
               //     ],
               //   ),
               // ),
-              const MuscleChartWidget(),
-              const SizedBox(height: 40)
+              MuscleChartWidget(),
+              //const SizedBox(height: 40)
               // Divider(
               //   color: Theme.of(context).colorScheme.tertiary,
               //   thickness: 1,
